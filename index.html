@@ -9,6 +9,10 @@
 <body>
     <div class="header-image"></div>
     
+    <div class="page-title-container">
+        <h1 class="page-main-title">Lunetra Wiki</h1>
+    </div>
+    
     <div class="container">
         <div class="sidebar">
             <div class="callout">
@@ -167,7 +171,7 @@
             <div class="chat-box">
                 <div class="chat-message">
                     <div class="chat-avatar-square">
-                        <div class="avatar-image">👤</div>
+                        <img src="https://via.placeholder.com/80" alt="オクルス" class="avatar-image-img">
                     </div>
                     <div class="chat-text">
                         <div class="chat-name">オクルス</div>
@@ -179,7 +183,7 @@
             <div class="chat-box">
                 <div class="chat-message">
                     <div class="chat-avatar-square">
-                        <div class="avatar-image">🌟</div>
+                        <img src="https://via.placeholder.com/80" alt="まなづる" class="avatar-image-img">
                     </div>
                     <div class="chat-text">
                         <div class="chat-name">まなづる</div>
@@ -191,24 +195,33 @@
     </div>
     
     <style>
+        /* ===== フォント読み込み ===== */
+        @font-face {
+            font-family: 'MainFont';
+            src: url('./font/mainfont.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* ===== カラーテーマ ===== */
         /* テーマ1: 古書図書館（デフォルト） */
         :root {
-            --primary-color: #a68968;
-            --secondary-color: #c9a876;
-            --accent-color: #e8d5b8;
+            --primary-color: #604d3d;
+            --secondary-color: #847468;
+            --accent-color: #b9a89b;
+            --accent-green: #6e8878;
             --text-color: #f9f6f0;
             --text-secondary: #f0e8d8;
-            --text-muted: #d4c5a9;
-            --background: #4a3f32;
-            --callout-bg: rgba(166, 137, 104, 0.2);
-            --callout-border: rgba(201, 168, 118, 0.3);
-            --link-color: #e8d5b8;
+            --text-muted: #b9a89b;
+            --background: #3a2f26;
+            --callout-bg: rgba(96, 77, 61, 0.3);
+            --callout-border: rgba(185, 168, 155, 0.4);
+            --link-color: #b9a89b;
             --link-hover: #f0e8d8;
-            --border-color: rgba(166, 137, 104, 0.3);
-            --welcome-color: #e8ba8f;
-            --blockquote-border: #c9a876;
-            --blockquote-bg: rgba(166, 137, 104, 0.15);
+            --border-color: rgba(132, 116, 104, 0.3);
+            --welcome-color: #6e8878;
+            --blockquote-border: #847468;
+            --blockquote-bg: rgba(96, 77, 61, 0.2);
         }
 
         /* テーマ2: ファンタジーパープル */
@@ -239,7 +252,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-family: 'MainFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             line-height: 1.6;
             color: var(--text-color);
             background: var(--background);
@@ -248,10 +261,19 @@
         .header-image {
             width: 100%;
             height: 30vh;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-green) 100%);
             margin-bottom: 2em;
             position: relative;
+            background-size: cover;
+            background-position: center;
         }
+        
+        /* ヘッダーに画像を使用する場合は、以下のように指定してください */
+        /* 
+        .header-image {
+            background-image: url('your-image-url.jpg');
+        }
+        */
         
         .header-image::after {
             content: '';
@@ -261,6 +283,22 @@
             right: 0;
             height: 50%;
             background: linear-gradient(to bottom, transparent, rgba(245, 243, 240, 0.3));
+        }
+
+        .page-title-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2em;
+            margin-top: -1.5em;
+            margin-bottom: 2em;
+        }
+
+        .page-main-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .container {
@@ -322,6 +360,33 @@
 
         summary {
             user-select: none;
+            list-style: none;
+            position: relative;
+            padding-left: 1.5em;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::before {
+            content: '+';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: var(--text-muted);
+            border: 1px solid var(--text-muted);
+            width: 1em;
+            height: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+            font-size: 0.9em;
+        }
+
+        details[open] summary::before {
+            content: '−';
         }
 
         .submenu {
@@ -403,52 +468,62 @@
         }
 
         /* チャットスタイル */
-        .chat-container {
-            margin: 2em 0;
+        .chat-box {
+            background: rgba(96, 77, 61, 0.2);
+            border: 1px solid var(--callout-border);
+            border-radius: 8px;
+            padding: 1em;
+            margin-bottom: 1em;
         }
 
         .chat-message {
             display: flex;
             gap: 1em;
-            margin-bottom: 1.5em;
+            align-items: flex-start;
         }
 
-        .chat-avatar {
+        .chat-avatar-square {
             flex-shrink: 0;
-        }
-
-        .avatar-placeholder {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(166, 137, 104, 0.3);
+            width: 80px;
+            height: 80px;
+            background: rgba(132, 116, 104, 0.3);
+            border: 2px solid rgba(185, 168, 155, 0.5);
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5em;
-            border: 2px solid var(--callout-border);
+            overflow: hidden;
         }
 
-        .chat-content {
+        .avatar-image {
+            font-size: 2.5em;
+        }
+
+        .avatar-image-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-text {
             flex: 1;
+            padding-top: 0.3em;
+            background: rgba(110, 136, 120, 0.15);
+            border: 1px solid rgba(185, 168, 155, 0.4);
+            border-radius: 6px;
+            padding: 0.8em 1em;
         }
 
         .chat-name {
-            font-size: 0.9em;
-            color: var(--text-muted);
-            margin-bottom: 0.3em;
-            font-weight: 500;
+            font-size: 1em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5em;
+            font-weight: 600;
         }
 
-        .chat-bubble {
-            background: rgba(166, 137, 104, 0.15);
-            border: 1px solid var(--callout-border);
-            padding: 0.8em 1.2em;
-            border-radius: 12px;
-            display: inline-block;
-            max-width: 80%;
+        .chat-dialogue {
             color: var(--text-color);
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         @media (max-width: 768px) {
@@ -460,8 +535,13 @@
                 width: 100%;
             }
             
-            .chat-bubble {
-                max-width: 90%;
+            .chat-avatar-square {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .avatar-image {
+                font-size: 2em;
             }
         }
     </style>
