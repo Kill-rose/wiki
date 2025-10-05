@@ -14,124 +14,20 @@
     </div>
     
     <div class="container">
-        <div class="sidebar">
-            <div class="callout">
-                <span class="icon">📑</span>
-                <strong>Menu</strong>
-            </div>
-            
-            <ul class="menu-list">
-                <li><a href="#">トップページ</a></li>
-                <li><a href="#">このサイトについて</a></li>
-                <li><a href="#">ブログ（外部）</a></li>
-            </ul>
-            
-            <hr>
-            
-            <ul class="menu-list">
-                <li><a href="#">世界観</a></li>
-                <li>
-                    <details open>
-                        <summary>イルミナの世界</summary>
-                        <ul class="submenu">
-                            <li>キャラクター</li>
-                        </ul>
-                    </details>
-                </li>
-                <li><a href="#">エクスプレイニスト</a></li>
-                <li><a href="#">イレグナの世界</a></li>
-            </ul>
-            
-            <hr>
-            
-            <ul class="menu-list">
-                <li><a href="#">初心者の手引き</a></li>
-            </ul>
-            
-            <hr>
-            
-            <ul class="menu-list">
-                <li><a href="#">ゲーム関連</a></li>
-            </ul>
-            
-            <hr>
-            
-            <ul class="menu-list">
-                <li>
-                    <details open>
-                        <summary>安置所</summary>
-                        <ul class="submenu">
-                            <li>rkgk置き場</li>
-                            <li><a href="#">SS置き場</a></li>
-                            <li><a href="#">キャラクター集</a></li>
-                        </ul>
-                    </details>
-                </li>
-                <li>
-                    <details open>
-                        <summary>その他</summary>
-                        <ul class="submenu">
-                            <li><a href="#">リンク集</a></li>
-                            <li><a href="#">ご意見・ご要望Box</a></li>
-                        </ul>
-                    </details>
-                </li>
-            </ul>
-            
-            <div class="callout">
-                <span class="icon">↗</span>
-                <strong>最近の更新</strong>
-            </div>
-            
-            <ul class="menu-list">
-                <li>
-                    <details open>
-                        <summary>2025-08-14</summary>
-                        <ul class="submenu">
-                            <li><a href="#">トップページ</a></li>
-                        </ul>
-                    </details>
-                </li>
-            </ul>
-            
-            <div class="callout">
-                <span class="icon">📕</span>
-                <strong>ページ一覧</strong>
-            </div>
-            
-            <ul class="menu-list">
-                <li>
-                    <details open>
-                        <summary>全てのページ</summary>
-                        <ul class="submenu">
-                            <li><a href="#">このサイトについて</a></li>
-                            <li><a href="#">意見箱</a></li>
-                            <li><a href="#">リンク集</a></li>
-                            <li><a href="#">初心者の手引き</a></li>
-                            <li><a href="#">SS置き場</a></li>
-                            <li><a href="#">rkgk置き場</a></li>
-                            <li><a href="#">エクスプレイニスト</a></li>
-                            <li><a href="#">イレグナの世界</a></li>
-                            <li><a href="#">イルミナの世界</a></li>
-                            <li><a href="#">ゲーム関連</a></li>
-                        </ul>
-                    </details>
-                </li>
-            </ul>
-            
-            <p class="note">→ページ一覧はトップページでのみ確認できます</p>
-        </div>
+        <div id="sidebar"></div>
         
         <div class="main-content">
             <div class="callout main-header">
-                <span class="icon">🏠</span>
+                <span class="icon">
+                <img src="img/icon/home.png">
+                </span>
                 <strong>トップページ</strong>
             </div>
 
             <div class="chat-box">
                 <div class="chat-message">
                     <div class="chat-avatar-square">
-                        <img src="img/icon/oc/＾＾.png" class="avatar-image-img">
+                        <img src="img/face/oc/＾＾.png" class="avatar-image-img">
                     </div>
                     <div class="chat-text">
                         <div class="chat-name">オクルス</div>
@@ -139,7 +35,6 @@
                     </div>
                 </div>
             </div>
-
 
 
 
@@ -172,9 +67,23 @@
             <p>身内ノリ大爆発だから、制作者がURL送った人以外に送っちゃダメだよ</p>
             <p class="note">ところで身内ノリ大爆発って右乳首大爆発みたいだね</p>
             
-            <hr>
+        </div>
+    </div>
             
-            
+<script >
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) {
+    fetch('parts/sidebar.html')
+      .then(res => res.text())
+      .then(html => {
+        sidebar.innerHTML = html;
+      })
+      .catch(err => console.error('サイドバーの読み込みに失敗しました:', err));
+  }
+});
 
+
+</script>
 </body>
 </html>

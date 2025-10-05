@@ -48,6 +48,12 @@
 }
 */
 
+.icon img {
+    width: 1.3em;
+    height: 1.3em;
+}
+
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -134,9 +140,6 @@ body {
     border: 1px solid var(--callout-border);
 }
 
-.icon {
-    font-size: 1.3em;
-}
 
 .menu-list {
     list-style: none;
