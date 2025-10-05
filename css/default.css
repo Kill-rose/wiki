@@ -62,30 +62,35 @@ body {
 
 .header-image {
     width: 100%;
-    /* 高さを自動調整するために padding-top を使用 */
-    /* 画像の縦横比に応じて調整してください（例: 16:9 なら 56.25%、4:3 なら 75%） */
-    padding-top: 40%; /* この値を画像の縦横比に合わせて調整 */
+    height: 50vh; /* PCでは高めに設定 */
     background-color: rgb(245, 250, 246);
     background-image: url('../img/header.png');
-    background-size: contain;
+    background-size: cover; /* PCでは余白なし */
     background-position: center;
     background-repeat: no-repeat;
     margin-bottom: 0;
     position: relative;
 }
 
-/* タブレット・スマホ用の調整 */
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
     .header-image {
-        padding-top: 60%; /* スマホでは少し高めに表示 */
+        height: 25vh; /* スマホでは低く設定 */
+        background-size: contain; /* スマホでは画像全体を表示 */
         background-attachment: scroll;
     }
 }
 
-/* 小さいスマホ用 */
 @media (max-width: 480px) {
     .header-image {
-        padding-top: 70%; /* より小さい画面ではさらに調整 */
+        height: auto; /* 高さを自動調整 */
+        padding-top: 40%; /* 画像の縦横比に合わせて調整（例: 横1200px×縦480pxなら40%） */
+        background-size: contain;
+    }
+}
+
+@media (max-width: 360px) {
+    .header-image {
+        padding-top: 45%; /* さらに小さい画面用に微調整 */
     }
 }
 
