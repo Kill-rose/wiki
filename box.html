@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="永キ創作wiki">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="apple-touch-icon-180x180.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="android-chrome-192x192.png" sizes="192x192">
+    <title>ご意見・ご要望box - Lunetra wiki</title>
+    <link rel="stylesheet" href="css/default.css">
+    <style>
+
+        .form-group {
+            margin-bottom: 1.5em;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5em;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8em;
+            background: rgba(139, 158, 125, 0.1);
+            border: 1px solid var(--callout-border);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-family: 'MainFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 1em;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(139, 158, 125, 0.15);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .submit-button {
+            background: var(--primary-color);
+            color: var(--text-color);
+            padding: 0.8em 2em;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'MainFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+
+        .submit-button:hover {
+            background: var(--secondary-color);
+        }
+
+        .form-note {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin-top: 0.3em;
+        }
+
+        .success-message {
+            background: rgba(139, 158, 125, 0.2);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 1em;
+            margin: 1em 0;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+        select {
+            background-color: var(--callout-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 0.5em;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+    option {
+        background-color: var(--background);
+        color: var(--text-color);
+    }
+    </style>
+</head>
+<body>
+    <div class="header-image"></div>
+
+    <div class="container">
+        <div id="sidebar"></div>
+        
+        <div class="main-content">
+            <div class="callout main-header">
+                <strong>ご意見・ご要望box</strong>
+            </div>
+
+            <div class="chat-box">
+                <div class="chat-message">
+                    <div class="chat-avatar-square">
+                        <img src="img/face/oc/＾＾.png" class="avatar-image-img">
+                    </div>
+                    <div class="chat-text">
+                        <div class="chat-name">オクルス</div>
+                        <div class="chat-dialogue">「なにか気になることがあったら、気軽に送ってね～」</div>
+                    </div>
+                </div>
+            </div>
+
+            <p>制作者に言いたいことなんでもどうぞ。</p>
+            <p>匿名でも送れるヨ！</p>
+
+            <div class="success-message" id="successMessage">
+                <strong>✓ 送信完了！</strong>
+                <p>ご意見ありがとうございました～</p>
+            </div>
+
+            <form id="feedbackForm" action="https://formspree.io/f/xnngzvgb" method="POST">
+                <div class="form-group">
+                    <label for="category">カテゴリ <span style="color: #ff8888;">*</span></label>
+                    <select id="category" name="category">
+                        <option value="opinion">特に何も理由はない</option>
+                        <option value="request">要望</option>
+                        <option value="bug">バグ報告（きになること）</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">お名前（任意）</label>
+                    <input type="text" id="name" name="name" placeholder="空欄もOK">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">内容 <span style="color: #ff8888;">*</span></label>
+                    <textarea id="message" name="message" placeholder="ここに内容を書いてね" required></textarea>
+                </div>
+
+                <button type="submit" class="submit-button">送信する</button>
+            </form>
+
+
+            <hr>
+
+            <h2>注意事項</h2>
+
+            <p>制作者の知ってる人じゃないと返信できないよ～<br>そもそも身内以外が見てたらおかしいんだけど…</p>
+
+        </div>
+    </div>
+
+    <script src="js/load_sidebar.js"></script>
+    <script>
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const category = document.getElementById('category').value;
+        const name = document.getElementById('name').value;
+        const message = document.getElementById('message').value;
+
+        if (!message.trim()) {
+            alert('内容を入力してください');
+            return;
+        }
+
+        fetch('https://formspree.io/f/xnngzvgb', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category, name, message })
+        }).then(() => {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.add('show');
+            this.reset();
+            successMsg.scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => successMsg.classList.remove('show'), 3000);
+        });
+        });
+
+    </script>
+</body>
+</html>
