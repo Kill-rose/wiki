@@ -1,4 +1,3 @@
-
 /* ===== フォント読み込み ===== */
 @font-face {
     font-family: 'MainFont';
@@ -10,43 +9,33 @@
 /* ===== カラーテーマ ===== */
 /* テーマ1: 古書図書館（デフォルト） */
 :root {
-    --primary-color: #604d3d;
-    --secondary-color: #847468;
-    --accent-color: #b9a89b;
-    --accent-green: #6e887800;
-    --text-color: #f9f6f0;
-    --text-secondary: #f0e8d8;
-    --text-muted: #b9a89b;
-    --background: #3a2f26;
-    --callout-bg: rgba(99, 80, 64, 0.5);
-    --callout-border: rgba(185, 168, 155, 0.8);
-    --link-color: #b9a89b;
-    --link-hover: #f0e8d8;
-    --border-color: rgba(132, 116, 104, 0.6);
-    --blockquote-border: #847468;
-    --blockquote-bg: rgba(105, 88, 74, 0.2);
+    --primary-color: #8b9e7d;
+    --secondary-color: #a0b392;
+    --accent-color: #9b8b80;
+    --accent-green: #7a8e6e;
+    --text-color: #ffffff;
+    --text-secondary: #e8e8e8;
+    --text-muted: #b5b5b5;
+    --background: #1a1a1a;
+    --callout-bg: rgba(139, 158, 125, 0.15);
+    --callout-border: rgba(139, 158, 125, 0.5);
+    --link-color: #a0b392;
+    --link-hover: #b8caa8;
+    --border-color: rgba(139, 158, 125, 0.3);
+    --blockquote-border: #8b9e7d;
+    --blockquote-bg: rgba(139, 158, 125, 0.08);
 }
 
-/* テーマ2: ファンタジーパープル */
-/* 使用する場合は以下のコメントを外してください
-:root {
-    --primary-color: #9b8fc7;
-    --secondary-color: #c9b8d9;
-    --accent-color: #e8d5d8;
-    --text-color: #4a4456;
-    --text-secondary: #6b5d7a;
-    --text-muted: #a89bb0;
-    --background: #f5f3f0;
-    --callout-bg: rgba(217, 207, 219, 0.3);
-    --callout-border: rgba(155, 143, 199, 0.2);
-    --link-color: #6b5d7a;
-    --link-hover: #9b8fc7;
-    --border-color: rgba(155, 143, 199, 0.2);
-    --welcome-color: #d498a6;
-    --blockquote-border: #9b8fc7;
-    --blockquote-bg: rgba(217, 207, 219, 0.1);
+.styled-heading {
+    border-left: 3px solid var(--blockquote-border);
+    padding-left: 1em;
+    background: var(--blockquote-bg);
+    padding: 0.8em 1em;
+    border-radius: 4px;
+    font-size: 1em;
+    font-weight: 600;
+    margin: 1em 0;
 }
-*/
 
 .icon img {
     width: 1.3em;
@@ -73,48 +62,26 @@ body {
 
 .header-image {
     width: 100%;
-    height: 30vh;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-green) 100%);
-    margin-bottom: 2em;
-    position: relative;
-    background-size: cover;
-    background-position: center;
-}
-
-.header-image {
+    height: 47vh;
+    background-color: rgb(245, 250, 246); /* フォールバック用背景色 */
     background-image: url('../img/header.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-bottom: 0;
+    position: relative;
 }
 
-.header-image::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(to bottom, transparent, rgba(245, 243, 240, 0.3));
-}
-
-.page-title-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2em;
-    margin-top: -1.5em;
-    margin-bottom: 2em;
-}
-
-.page-main-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--text-color);
-    margin: 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+@media (max-width: 768px) {
+    .header-image {
+        background-attachment: scroll; /* スマホでは fixed を避ける */
+    }
 }
 
 .container {
     display: flex;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 2em auto 10em auto;
     gap: 2em;
     padding: 0 2em;
 }
@@ -132,7 +99,7 @@ body {
 .callout {
     background: var(--callout-bg);
     border-radius: 8px;
-    padding: 0.8em 1em;
+    padding: 0.7em 1em 0.5em 1em; /* 上を0.7emにして余白を減らす */
     margin-bottom: 1em;
     display: flex;
     align-items: center;
@@ -278,6 +245,7 @@ blockquote {
     border-radius: 8px;
     padding: 1em;
     margin-bottom: 1em;
+    width: 70%;
 }
 
 .chat-message {

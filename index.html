@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>月のゆりかご</title>
+    <title>Lunetra wiki</title>
     <link rel="stylesheet" href="css/default.css">
 </head>
 <body>
     <div class="header-image"></div>
-    
-    <div class="page-title-container">
-        <h1 class="page-main-title">月のゆりかご</h1>
-    </div>
+
     
     <div class="container">
         <div id="sidebar"></div>
@@ -35,55 +32,35 @@
                     </div>
                 </div>
             </div>
-
-
-
-            <h1 style="color: rgb(189, 172, 149);">welcome!</h1>
+            <h1 style="color: rgb(220, 201, 192);">うぇるかむ！！！！</h1>
             
             <p>自創作設定すら覚えられない万年ボケ中二病による自創作まとめ（備忘録）</p>
             
             <hr>
             
             <h2>つまり</h2>
+            <image src="img/logo.png" style="width: 30%;"></image>
             
-            
-            <p>制作者まなづるの一次創作がWiki風にまとまっています。</p>
+            <p>制作者永キの一次創作がWiki風にまとまっています。</p>
             <p>名前は前作ってたサイトのものを拝借。考えたのはAIちゃんなので由来は知らん。</p>
             <p>初心者(?)の方は<a href="#">こちら</a>へどうぞ。</p>
             
             <h2>あてんしょん</h2>
             
-            <blockquote>
-                <strong>リンク先どこ…？　ここ…？　　なんか内容少なくない？</strong>
-            </blockquote>
+            <h2 class="styled-heading">リンク先どこ…？　ここ…？　　なんか内容少なくない？</h2>
             
             <p>まだ作りたてなんだ。ごめんね。</p>
             <p>気が向いた時に更新してるよ</p>
             
-            <blockquote>
-                <strong>人に教えてはいけない</strong>
-            </blockquote>
+            <h2 class="styled-heading">人に教えてはいけない</h2>
             
             <p>身内ノリ大爆発だから、制作者がURL送った人以外に送っちゃダメだよ</p>
-            <p class="note">ところで身内ノリ大爆発って右乳首大爆発みたいだね</p>
+            <p style="color: #b9a89b7c">ところで身内ノリ大爆発って右乳首大爆発みたいだね</p>
             
         </div>
     </div>
             
-<script >
-document.addEventListener('DOMContentLoaded', () => {
-  const sidebar = document.getElementById('sidebar');
-  if (sidebar) {
-    fetch('parts/sidebar.html')
-      .then(res => res.text())
-      .then(html => {
-        sidebar.innerHTML = html;
-      })
-      .catch(err => console.error('サイドバーの読み込みに失敗しました:', err));
-  }
-});
 
-
-</script>
+<script src="js/load_sidebar.js"></script>
 </body>
 </html>
