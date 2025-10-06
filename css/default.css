@@ -1,3 +1,8 @@
+@media (max-width: 703px) {
+    .toggle-btn {
+        display: none !important;
+    }
+}
 /* ===== フォント読み込み ===== */
 @font-face {
     font-family: 'MainFont';
