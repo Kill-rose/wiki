@@ -70,27 +70,72 @@ body {
     background-repeat: no-repeat;
     margin-bottom: 0;
     position: relative;
+    transition: height 0.4s ease, padding-top 0.4s ease;
 }
 
-@media (max-width: 1100px) {
+/* 閉じた状態 */
+.header-image.closed {
+    height: 60px;
+}
+
+/* トグルボタン */
+.toggle-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #4CAF50;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: transform 0.3s ease;
+    z-index: 10;
+}
+
+.toggle-btn:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 1);
+}
+
+@media (max-width: 768px) {
     .header-image {
-        height: 25vh; /* スマホでは低く設定 */
-        background-size: contain; /* スマホでは画像全体を表示 */
+        height: 25vh;
+        background-size: contain;
         background-attachment: scroll;
+    }
+
+    .header-image.closed {
+        height: 50px;
     }
 }
 
 @media (max-width: 480px) {
     .header-image {
-        height: auto; /* 高さを自動調整 */
-        padding-top: 40%; /* 画像の縦横比に合わせて調整（例: 横1200px×縦480pxなら40%） */
+        height: auto;
+        padding-top: 40%;
         background-size: contain;
+    }
+
+    .header-image.closed {
+        height: 40px;
+        padding-top: 0;
+    }
+
+    .toggle-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
     }
 }
 
 @media (max-width: 360px) {
     .header-image {
-        padding-top: 45%; /* さらに小さい画面用に微調整 */
+        padding-top: 45%;
     }
 }
 
