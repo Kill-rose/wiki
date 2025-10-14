@@ -1,0 +1,59 @@
+<アイテムの追加方法>
+SupponSS addItem 文字1 数値1 数値2 数値3
+文字1 : アイテムを追加するショップ名です。
+数値1 : 追加するアイテムのIDです。
+数値2 : 在庫の個数を割り当てる変数のIDです。-1にすると変数は使わず、
+        在庫は内部のデータで処理されます。
+数値3 : 在庫数の設定値です。省略した場合、
+        数値2で指定した変数の値が適用されます。
+例 : SupponSS addItem omise 1 2 3
+例 : SupponSS addItem omise 4 -1 10
+
+
+<武器の追加方法>
+SupponSS addWeapon 文字1 数値1 数値2 数値3
+    文字1、数値1~3 : アイテムの追加と同様です。
+
+<防具の追加方法>
+SupponSS addArmor 文字1 数値1 数値2 数値3
+    文字1、数値1~3 : アイテムの追加と同様です。
+
+<アイテムの削除方法>
+SupponSS removeItem 文字1 数値1
+    文字1 : 削除したいアイテムがあるショップ名です。
+    数値1 : 削除するアイテムのIDです。
+例 : SupponSS removeItem omise 1
+
+<武器の削除方法>
+SupponSS removeWeapon 文字1 数値1
+    文字1、数値1 : アイテムの削除方法と同様です。
+
+<防具の削除方法>
+SupponSS removeArmor 文字1 数値1
+    文字1、数値1 : アイテムの削除方法と同様です。
+
+<ショップの起動方法>
+SupponSS openShop 文字1 数値1
+文字1 : 起動するショップ名です。
+数値1 : 購買時のソートオプションです。
+          0は、商品の表示順は追加した順になります。
+          1は、アイテムID順、次に武器ID順、次に防具ID順になります。
+          2は、カテゴリー選択できます。さらにID順になります。
+          省略時は、0と同じになります。
+例 : SupponSS openShop omise 2
+
+
+<ショップの削除方法>
+SupponSS deleteShop 文字1
+    文字1 : 削除したいショップのショップ名です。
+例 : SupponSS deleteShop omise
+
+
+<変数管理しないアイテムの在庫数の取り出し方法>
+SupponSS getNumItem 文字1 数値1 数値2
+SupponSS getNumWeapon 文字1 数値1 数値2
+SupponSS getNumArmor 文字1 数値1 数値2
+    文字1 : 調べたいアイテムのあるショップ名です。
+    数値1 : アイテム、武器、防具のIDです。
+    数値2 : アイテムの個数を格納する変数のIDです。
+例 : SupponSS getNumItem omise 1 2
