@@ -56,7 +56,7 @@
     "skills": [
       {
         "type": "P",
-        "name": "",
+        "name": "チアリーダー",
         "text": "このカードがバトルゾーンにいる時に発動できる。場のさばる族でないモンスターの受けるダメージは10増加する。"
       }
     ],
@@ -177,12 +177,7 @@
     "skills": [
       {
         "type": "A",
-        "name": " D60 C2",
-        "text": ""
-      },
-      {
-        "type": "P",
-        "name": "増殖",
+        "name": "増殖　D60  C2",
         "text": "同名カードのこのスキルは1ターンに1度しか使用できない。デッキから「原始生命体さ/ば/る」を場に出し、そのカードの攻撃力を0にする。"
       },
       {
@@ -262,7 +257,7 @@
     "cardName": "さばと味噌カツの煮物",
     "cardRuby": "",
     "monsterType": "進化",
-    "tribe": "サバルンゴ族",
+    "tribe": "さばる族",
     "monsterTypeText": "",
     "evolutionSource": "さばる族モンスター+「味噌カツ」",
     "attack": 10,
@@ -288,7 +283,7 @@
     "cardName": "味噌カツ",
     "cardRuby": "",
     "monsterType": "進化",
-    "tribe": "サバルンゴ族",
+    "tribe": "さばる族",
     "monsterTypeText": "",
     "evolutionSource": "さばる族モンスター+「味噌カツ」",
     "attack": 0,
