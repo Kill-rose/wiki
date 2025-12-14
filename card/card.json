@@ -1,0 +1,2321 @@
+[
+  {
+    "cardBase": "ex",
+    "attribute": "yami",
+    "cardName": "創世剣 コスモ・ド・サバルンゴ",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "さばる族モンスター2体",
+    "attack": 50,
+    "hp": 140,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "廃滅のギャラクシア　D50  C3",
+        "text": "墓地から魔法カードを1枚指定して手札に加える。このモンスターは50ダメージ受ける。"
+      },
+      {
+        "type": "P",
+        "name": "Absolute＆Infinity",
+        "text": "このターン、自分のバトルゾーンのさばる族モンスターの受けるダメージは10減少する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "ハロー、ハッピーサバールド！",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "相手か自分を選んで効果を適用できる。3枚デッキからカードを引き、さばる族以外のカードをデッキに戻す。この処理によって手札のカードが増えなかった場合、手札を1枚墓地に送るかデッキに戻す。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "kaze",
+    "cardName": "チアさばーる",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 30,
+    "hp": 130,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "",
+        "text": "このカードがバトルゾーンにいる時に発動できる。場のさばる族でないモンスターの受けるダメージは10増加する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "原宿(日本の中心)",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "デッキからカードを5枚引く。その中からさばる族を1枚選んで手札に加える。それ以外の引いたカードを墓地に送る。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "ワールドエンド・サバルンゴ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 8,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "カード名の違うさばる族モンスターが場に6枚存在する場合使用できる。自分の場の全てのモンスターを墓地に送り、EXからさばるを進化モンスターを1体場に出す。そのモンスターが「終焉を告げるサバルンゴ」でない場合、そのモンスターはアタックスキル1回に加え通常攻撃を1回できる。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "ti",
+    "cardName": "サバデュオ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 20,
+    "hp": 100,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "ツインさばる",
+        "text": "このカードは通常攻撃を1ターンに2回行える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "ti",
+    "cardName": "サバトリオ",
+    "cardRuby": "",
+    "monsterType": "特殊進化",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "「サバデュオ」",
+    "attack": 30,
+    "hp": 120,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "トリプルさばる",
+        "text": "このカードは通常攻撃を1ターンに3回行える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "ti",
+    "cardName": "サバカルテット",
+    "cardRuby": "",
+    "monsterType": "特殊進化",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "「サバトリオ」",
+    "attack": 40,
+    "hp": 140,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": " D180 C3",
+        "text": ""
+      },
+      {
+        "type": "P",
+        "name": "ダブルブルブルさばる",
+        "text": "このカードは通常攻撃を1ターンに4回行える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "yami",
+    "cardName": "原始生命体さ/ば/る",
+    "cardRuby": "",
+    "monsterType": "特殊進化",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "モンスター1体",
+    "attack": 30,
+    "hp": 150,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": " D60 C2",
+        "text": ""
+      },
+      {
+        "type": "P",
+        "name": "増殖",
+        "text": "同名カードのこのスキルは1ターンに1度しか使用できない。デッキから「原始生命体さ/ば/る」を場に出し、そのカードの攻撃力を0にする。"
+      },
+      {
+        "type": "P",
+        "name": "ぼくは さばる",
+        "text": "同名カードのこのスキルは1ターンに1度しか使用できない。デッキから魔法カードを1枚指定し、墓地へ送る。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "yami",
+    "cardName": "終焉を告げるサバルンゴ",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 50,
+    "hp": 220,
+    "supplementText": "このモンスターはコスト8以上の魔法の効果でしか場に出せない。",
+    "skills": [
+      {
+        "type": "A",
+        "name": "終わりの始まり D80 C5",
+        "text": "相手の場のモンスターすべてに20ダメージを与える。"
+      },
+      {
+        "type": "P",
+        "name": "唯一生命体",
+        "text": "このモンスターがバトルゾーンにいる限り、自分バトルゾーンに他のモンスターは出せない。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hikari",
+    "cardName": "予言されし少女",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 20,
+    "hp": 180,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "悪辣 D40 C1",
+        "text": ""
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "地獄のさばも金次第",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の場のさばる族モンスター1体を墓地へ送る。相手の場のモンスター1体をデッキに戻す。相手の場のモンスターがEXに戻った場合、相手はこのターンのエンドフェイズに自分の手札か自分の場のモンスターを1体墓地に送り、そのモンスターを再び場に出す。"
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "ti",
+    "cardName": "さばと味噌カツの煮物",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "サバルンゴ族",
+    "monsterTypeText": "",
+    "evolutionSource": "さばる族モンスター+「味噌カツ」",
+    "attack": 10,
+    "hp": 300,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "味噌カツ D80 C2",
+        "text": "このモンスターのHPを威力だけ回復する。"
+      },
+      {
+        "type": "P",
+        "name": "この私を倒してから行け",
+        "text": "次のターン、このモンスターがバトルゾーンにいる限り、モンスターを対象に取る効果、攻撃はこのモンスターにしか行えない。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "ti",
+    "cardName": "味噌カツ",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "サバルンゴ族",
+    "monsterTypeText": "",
+    "evolutionSource": "さばる族モンスター+「味噌カツ」",
+    "attack": 0,
+    "hp": 200,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "味噌カツ D100 C3",
+        "text": "このモンスターのHPを威力だけ回復する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "さばたこ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 20,
+    "hp": 160,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "食尽の触手　D50  C2",
+        "text": "この攻撃で与えたダメージ分、このモンスターのHPを回復する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "永遠のヒキニート☆人生オワタコ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 1,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "手札を1枚捨てる。デッキを上から3枚めくり、好きな順番で戻す。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "yami",
+    "cardName": "サバールフレンズ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "さばる族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 90,
+    "hp": 80,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "狡猾",
+        "text": "このカードは相手のバトルゾーンにモンスターがいても直接攻撃できる。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "転生したらさばーるだった件",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 1,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "相手の場のモンスター1体を、次の自分のエンドフェイズまでさばる族にする。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "決戦！さばる城",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の場に３体以上さばる族モンスターがいる時に発動できる。このターン、自分フィールドのさばる族モンスターが破壊されたとき、それを手札に加える。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "サバールマンが倒せない",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "このターン、場のさばる族のモンスターが受けるダメージは20減る。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "ti",
+    "cardName": "わたなべ君",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "さばる族",
+    "monsterTypeText": "学園",
+    "evolutionSource": "",
+    "attack": 30,
+    "hp": 100,
+    "supplementText": "このカードは魔法カードとして、手札からパッシブスキルをコスト2支払って発動し、墓地に送ることができる。",
+    "skills": [
+      {
+        "type": "P",
+        "name": "謎の愛嬌",
+        "text": "このカードが場に出た時に発動する。デッキから2枚ドローする。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "hikari",
+    "cardName": "最強カワイイ天才魔術師☆バニラ",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "",
+    "monsterTypeText": "魔術師",
+    "evolutionSource": "",
+    "attack": 0,
+    "hp": 30,
+    "supplementText": "自分がこのターンに7回以上魔法カードの効果を発動した場合、墓地から魔法カード3枚をデッキに戻して、EXからこのカードを場に出せる。",
+    "skills": [
+      {
+        "type": "P",
+        "name": "今日もオレが一番かわいい",
+        "text": "自分のターンに常時発動する。自分が魔法カードを発動するたび、山札を1枚めくる。それが魔法カードだった場合、自分のマナを1し、そのカードを山札の一番下に置く。そうでなかった場合、墓地に送る。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hi",
+    "cardName": "魔道具店店主 イル",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "魔術師",
+    "evolutionSource": "",
+    "attack": 60,
+    "hp": 150,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "無尽蔵の魔力",
+        "text": "このターン、次に魔法カードを発動した後、マナを2する。"
+      },
+      {
+        "type": "P",
+        "name": "港を蒸発させちゃだめなんですか！？",
+        "text": "このターンに3回以上魔法カードを発動した際に発動できる。手札から魔法カード1枚をコストを支払わず発動する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "yami",
+    "cardName": "師匠(笑) フリート",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "魔術師",
+    "evolutionSource": "",
+    "attack": 10,
+    "hp": 180,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "禁じ手",
+        "text": "このモンスターの攻撃力とHPを入れ替える。"
+      },
+      {
+        "type": "P",
+        "name": "魔力のリサイクル",
+        "text": "墓地の魔法カードの数が10枚以上の場合発動できる。このターン、自分が発動する魔法カードのコストは2される。墓地の魔法カードを10枚デッキに戻す。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "kaze",
+    "cardName": "魔術師(？) ルフィル",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "魔術師",
+    "evolutionSource": "",
+    "attack": 40,
+    "hp": 160,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "炎の矢(？) D50 C1",
+        "text": "このアタックスキルの発動は「コスト1の魔法カードを1回発動した」と扱う。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hikari",
+    "cardName": "ルエル＝ニクス",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "さばる族",
+    "monsterTypeText": "魔術師",
+    "evolutionSource": "",
+    "attack": 10,
+    "hp": 180,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "祈り手",
+        "text": "「HP」の記述がある魔法カードを墓地から1枚手札に加える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "yami",
+    "cardName": "災厄 サーヴァ＝ニクス",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "さばる族",
+    "monsterTypeText": "魔術師",
+    "evolutionSource": "「ルエル＝ニクス」",
+    "attack": 40,
+    "hp": 160,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "ルーチェスター D60 C5",
+        "text": "このターン、自分が魔法発動に支払うコストは1減少する。"
+      },
+      {
+        "type": "P",
+        "name": "ウィザーズセイバー",
+        "text": "火、水、風、地、光、闇のうちどれか1つを選んでこのモンスターの属性を変更する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "yami",
+    "cardName": "邪神 サーヴァ＝ロスエレス",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "",
+    "monsterTypeText": "魔術師",
+    "evolutionSource": "光属性モンスター1体",
+    "attack": 0,
+    "hp": 160,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "カリス＝アンブレラ D30 C8",
+        "text": "このターン、自分が魔法に支払うコストは1減少する。墓地をシャッフルし、墓地から6枚ランダムで手札に加えた後、手札から5枚選んで墓地へ送る。"
+      },
+      {
+        "type": "P",
+        "name": "魂への介入",
+        "text": "次の相手のターン終了まで、場のモンスター1体を闇属性に変更する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "捕食",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 1,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の場のモンスターに40ダメージ。1枚ドロー。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "オレの本気を見せてやるよ！",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "このターンに魔法を発動するために支払ったコストの数だけ、場のカード名に「バニラ」を含むタイプ:魔術師モンスターの攻撃力は、次の相手ターン終了まで10する。攻撃力とHPが魔法カードの効果で逆転した/している時、HPに同じ処理を行う。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "ご注文は魔法ですか？",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "このカードはデッキに1枚までしか入らない。",
+    "skills": [],
+    "contentText": "魔法カードをを山札から3枚選び、ランダムで1枚手札に加える。それ以外のカードはデッキに戻す。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "再起命令",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の墓地のEXモンスターを1体EXデッキに戻す。"
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "油断は禁物",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "次の相手のターン終了までにカウンター魔法を発動した時、支払うコストは3される。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "真理の逆転",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "HPが100以下の自分の場のモンスター1体の攻撃力とHPは逆転する。"
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "ラスト・ダンジョン",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分のカウンターゾーンに何もない場合発動できる。魔法カードを3枚選び、ランダム1枚を自分カウンターゾーンに置く。"
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "テレポーター",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "マナを支払わずに場のモンスターを移動する。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "次元歪曲",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "場のモンスターを移動する。このカードは1ターンに何回でも発動できる。"
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "ライフ・リブート",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の手札をすべて捨て、その枚数ドローする。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "増殖するT",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 1,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "このターン、相手がカードをデッキからドローした時、自分は1枚ドローする。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "神秘の再現",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "手札のモンスターのコスト1以下のAスキルを1つ発動する。そのモンスターをデッキに戻す。1枚ドローする。"
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "みかんの慈愛",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "場のモンスター1枚を選択する。そのモンスターの体力を50回復する。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "禁書解放",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 9,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "この魔法はカウンターゾーンに置いている間に発動した魔法カードの数だけコストが下がる。",
+    "skills": [],
+    "contentText": "相手の場のモンスターの数だけドローする。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "インクリメントフレイム",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 1,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "場のモンスター1体に、20+このターンに発動した同名魔法カードの数×10の火属性ダメージ。1ターンに何度でも使用可能。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "じゅげむじゅげむ5秒で息切れ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "このターン中、このカードが自分の墓地の一番上にあるとき、このターンに攻撃した相手モンスターは、HPに20ダメージを受ける。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "呪縛鎖",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "場のモンスター1枚を選んで発動できる。そのモンスターのアタックスキルとパッシブスキルをこのターン中無効にする。"
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "yami",
+    "cardName": "寺生まれのT",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "とやま族",
+    "monsterTypeText": "バスター",
+    "evolutionSource": "「日野生まれのとやま」+「タイムマシン」",
+    "attack": 100,
+    "hp": 150,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "とびげり D150 C4",
+        "text": ""
+      },
+      {
+        "type": "P",
+        "name": "",
+        "text": "この効果は相手ターンに発動する。場の「女子高生のたけもと」を破壊するカードの効果が働く時または、カードの攻撃やダメージ、能力で破壊される時に発動する。自分の場の「女子高生のたけもと」は、このターン中破壊されず、HPは1以下にならない。相手と自分の場の「女子高生のたけもと」と「通りすがりのT」以外の、他の場のモンスター1体を選び100ダメージを与える。この効果でモンスターが破壊されても、シールドは減少しない。自分は手札を1枚捨てる。このカードをexデッキに戻す。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "kaze",
+    "cardName": "日野生まれのとやま",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "とやま族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 60,
+    "hp": 140,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "なきごえ D50 C2",
+        "text": "次のターン、相手モンスターの攻撃力は10する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "hikari",
+    "cardName": "通りすがりのT",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "ろきさ族",
+    "monsterTypeText": "バスター",
+    "evolutionSource": "「女子高生のたけもと」+「タイムマシン」",
+    "attack": 60,
+    "hp": 250,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "備えあれば憂いなし D50 C4",
+        "text": "魔法カードが手札にない場合、魔法カードを引くまでドローし、引いた魔法カード以外はデッキに戻す。"
+      },
+      {
+        "type": "P",
+        "name": "クレーン車",
+        "text": "この効果は相手・自分ターンに発動できる。場の「日野生まれのとやま」を対象に相手の効果が発動した時に発動できる。その効果を無効にし、相手のカードをランダム2枚を墓場に送り、相手は2枚ドローする。手札から1枚墓地に送る。このカードをデッキに戻す。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "女子高生のたけもと",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "ろきさ族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 40,
+    "hp": 160,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "たいあたり D60 C1",
+        "text": ""
+      },
+      {
+        "type": "P",
+        "name": "",
+        "text": "自分の場のモンスターを1体選び、HPを20回復する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hikari",
+    "cardName": "タイムマシン",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 20,
+    "hp": 200,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "",
+        "text": "自分の場のモンスターを1体選び、このターン中攻撃力を20する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "限界社畜ちゃん",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の手札のモンスターカードを全て捨てる。その数ドローする。"
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "任務完了！",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "このターン、相手のモンスターが墓地に送られている場合発動できる。自分の山札から3枚選び、ランダムで1枚手札に加える。選ばれなかった2枚は墓地に捨てる。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "レッツ・闇鍋タイム！",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分は通常モンスターを引くまでドローし、そのモンスター以外をデッキに戻す。そのモンスターを場に出し、「闇鍋ぐるぐる」に進化させる。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "yami",
+    "cardName": "闇鍋ぐるぐる",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "ろきさ族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 30,
+    "hp": 120,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "",
+        "text": "手札を1枚捨てる。3枚ドローし、引いたモンスターを場に出す。手札を2枚捨てる。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "yami",
+    "cardName": "喰尽のろきさ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "ろきさ族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 50,
+    "hp": 150,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "おかわり！ D30 C3",
+        "text": "自分は2枚ドローする。手札から2枚捨てる。"
+      },
+      {
+        "type": "A",
+        "name": "いただき！ D30 C3",
+        "text": "この攻撃で与えたダメージ量だけ自分のHPを回復する。墓地からランダムに1枚デッキに戻す。"
+      },
+      {
+        "type": "P",
+        "name": "食卓は戦場である！",
+        "text": "自分メインフェイズに発動できる。自分の場の他のモンスターに100ダメージを与え、自分のHPを70回復する。"
+      },
+      {
+        "type": "P",
+        "name": "いっぱい食べたらぶっ飛ばす！",
+        "text": "このモンスターが場に出ている間発動する。1.自分がドローしたとき、山札が0枚であれば、シールドを無視して相手のHPに5ダメージを与える。2.自分が発動した魔法・サポーターは全てデッキに戻す。3.このモンスターは通常攻撃できない。4.このモンスターは場に1枚以上存在できない。"
+      },
+      {
+        "type": "P",
+        "name": "まだ食えるだろうが！！",
+        "text": "このモンスターが場に出た時発動する。墓地のカードを全てデッキに戻す。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "アンコール",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "カード名に「アイドル」が含まれるカードを墓地から１枚手札に加える。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "神もみかんもいるんだよ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": ""
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "こたつだけのハピネス",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "手札の攻撃力が50以下のモンスターを好きな数捨てる。その数だけデッキからドローする。"
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "風紀！",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の場のモンスターを1体選ぶ。そのモンスターの攻撃力は相手の場のモンスターの攻撃力になる。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hikari",
+    "cardName": "猫殺隊 御神響",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "剣士",
+    "evolutionSource": "",
+    "attack": 80,
+    "hp": 100,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "殺意",
+        "text": "このターン中、このカードがさばる族のモンスターに攻撃する時、与えるダメージが50増加する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "",
+    "cardName": "超弩級戦隊ロボ・ギガントパニッシャー",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "？？？族",
+    "monsterTypeText": "機械",
+    "evolutionSource": "「ギガントライナー」+「ギガントブレード」+「ギガントクラッシャー」+「ギガントブレット」+「ギガントジェット」+「ギガントコア」",
+    "attack": 100,
+    "hp": 1000,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "ギガントパニッシュメント C8",
+        "text": "バトルゾーンのモンスター全てに？？？属性500ダメージ。"
+      },
+      {
+        "type": "P",
+        "name": "合体！",
+        "text": "場に出た時に発動できる。相手のシールドを全て破壊する。"
+      },
+      {
+        "type": "P",
+        "name": "ギガントブレイカー",
+        "text": "直接攻撃のダメージが5ダメージになる。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "mizu",
+    "cardName": "ギガントライナー",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "？？？族",
+    "monsterTypeText": "機械",
+    "evolutionSource": "",
+    "attack": 100,
+    "hp": 140,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "ドリルクラッシュ D100 C3",
+        "text": ""
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "kaze",
+    "cardName": "路上占い師 塩タルト",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "とやま族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 50,
+    "hp": 160,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "僕の占いは D50 C1",
+        "text": "コイントスを行う。表で1マナ。裏で1マナ。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "いきもの収集",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 4,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の墓場、山札のカード名が「いきもの」である通常モンスターを1体場に出すか手札に加える。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hikari",
+    "cardName": "差別を撲殺する赤ずきん",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "世界の味方",
+    "evolutionSource": "",
+    "attack": 70,
+    "hp": 100,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "多様性ぱんち D60 C1",
+        "text": "属性有利のモンスターにこのスキルで攻撃した場合、属性有利で増えるダメージ量が40になる。"
+      },
+      {
+        "type": "P",
+        "name": "平和と公正を",
+        "text": "この効果は前自分ターンに発動しなかった場合、相手メインフェイズにも発動できる。このターン、全てのモンスターカードの名前は「いきもの」になる。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hikari",
+    "cardName": "悪を抹殺する平凡な少女",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "世界の味方",
+    "evolutionSource": "",
+    "attack": 50,
+    "hp": 120,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "人に非ず D60 C1",
+        "text": "属性有利のモンスターにこのスキルで攻撃した場合、属性有利で増えるダメージ量が40になる。"
+      },
+      {
+        "type": "P",
+        "name": "許さない",
+        "text": "このモンスターが場にいる間、常時発動する。1.場の闇属性モンスターの受けるダメージが20増加する。2.カード名に「悪」を含むモンスターの受けるダメージが100増加する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "凄腕スナイパー あやし",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "あやし族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 40,
+    "hp": 120,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "精密射撃 D70 C2",
+        "text": "このアタックスキルは控えゾーンのモンスターにも攻撃できる。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "yami",
+    "cardName": "極寒の死神 アヤ",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "あやし族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 10,
+    "hp": 200,
+    "supplementText": "このモンスターは、場に合計6匹以上のモンスターがいる場合に、自分の場のモンスター1体のHPを80減少させて場に出すことができる。",
+    "skills": [
+      {
+        "type": "A",
+        "name": "死神の弾丸 D1000 C2",
+        "text": ""
+      },
+      {
+        "type": "P",
+        "name": "狙った獲物は",
+        "text": "このモンスターのHPを50減少させ発動できる。このモンスターはこのターン1回だけ控えゾーンのモンスターにも攻撃できる。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "hit＆away",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 1,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "場のあやし族モンスターを移動する。このカードは1ターンに3回まで発動できる。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "応急手当",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 1,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "場のあやし族モンスターのHPを40回復する。このカードは1ターンに3回まで発動できる。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hikari",
+    "cardName": "守護天使みかん",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "みかん族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 20,
+    "hp": 160,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "まもって！守護みかん",
+        "text": "次の相手のエンドフェイズまで、控えゾーンのモンスターはダメージを受けない。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "破滅の歌声",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 1,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の場のモンスター1体を墓地へ送る。場のタイプ:アンデッドモンスターは全てHPを20回復。そうでないバトルゾーンのモンスターは全てHPに闇属性20ダメージ。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "怨響の歌声",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 4,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の場のタイプ:アンデッドモンスターをすべて墓地へ送る。場のタイプ:アンデッドでないバトルゾーンのモンスターは全てHPにこの効果で墓地に送ったモンスターの数×30の闇属性ダメージ。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "yami",
+    "cardName": "白金狂えるとやまっち",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "とやま族",
+    "monsterTypeText": "アンデッド",
+    "evolutionSource": "",
+    "attack": 40,
+    "hp": 200,
+    "supplementText": "このモンスターは、手札のカード名に「とやま」を含むカードかとやま族モンスターカードを墓地に送り、手札から場に出せる。",
+    "skills": [
+      {
+        "type": "A",
+        "name": "白金が！もったいない！ D60 C2",
+        "text": "自分の墓場の一番上のカードを手札に加える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "リバイバルとやま",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "とやま族",
+    "monsterTypeText": "アンデッド",
+    "evolutionSource": "",
+    "attack": 50,
+    "hp": 120,
+    "supplementText": "このモンスターが墓地に送られた時、コスト1を支払って自分の場に出すことができる。",
+    "skills": [
+      {
+        "type": "A",
+        "name": "ﾁﾋﾟﾁﾋﾟ D70 C1",
+        "text": ""
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "ゾンビとやま",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "とやま族",
+    "monsterTypeText": "アンデッド",
+    "evolutionSource": "",
+    "attack": 30,
+    "hp": 180,
+    "supplementText": "このモンスターが墓地に送られた時、コスト1を支払って自分の場に出すことができる。",
+    "skills": [
+      {
+        "type": "A",
+        "name": "ﾁｬﾊﾟﾁｬﾊﾟ D50 C1",
+        "text": ""
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "ゴースとやま",
+    "cardRuby": "",
+    "monsterType": "特殊進化",
+    "tribe": "とやま族",
+    "monsterTypeText": "アンデッド",
+    "evolutionSource": "とやま族モンスター",
+    "attack": 60,
+    "hp": 180,
+    "supplementText": "このモンスターが墓地に送られた時、コスト1を支払って自分の場に出すことができる。",
+    "skills": [
+      {
+        "type": "A",
+        "name": "ﾄﾞｩﾋﾞﾄﾞｩﾋﾞ D80 C1",
+        "text": ""
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "mizu",
+    "cardName": "スケルとやまン",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "とやま族",
+    "monsterTypeText": "アンデッド",
+    "evolutionSource": "とやま族モンスター2体",
+    "attack": 60,
+    "hp": 220,
+    "supplementText": "このモンスターが墓地に送られた時、コスト2を支払って自分の場に出すことができる。",
+    "skills": [
+      {
+        "type": "A",
+        "name": "ﾀﾞﾊﾞﾀﾞﾊﾞ D80 C1",
+        "text": ""
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "hikari",
+    "cardName": "カタストロフとやま",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "とやま族",
+    "monsterTypeText": "アンデッド",
+    "evolutionSource": "",
+    "attack": 60,
+    "hp": 260,
+    "supplementText": "このモンスターは、このターン墓地に送られたタイプ:アンデッドモンスターが3体以上の時、墓地からモンスター3体をデッキに戻して自分のバトルゾーンに出せる。",
+    "skills": [
+      {
+        "type": "A",
+        "name": "いただきmammoth D60 C2",
+        "text": "威力だけ自分のHPを回復する。"
+      },
+      {
+        "type": "P",
+        "name": "うわ…私の年収、低すぎ？",
+        "text": "手札もしくは自分の場からモンスターを1体墓地に送って発動できる。1マナ。1枚ドローする。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "リビングとやまの鳴き声",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "墓地から1枚のとやま族モンスターを場に出す。"
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "とやまは滅びぬ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "手札のカード名に「とやま」を含むカードかとやま族モンスターカードを墓地に送り、1枚ドローする。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "とやまと真人間の逆転",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 8,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "このカードが使われたゲームでは、互いにドローフェイズのドローを墓地からドローすることができる。",
+    "skills": [],
+    "contentText": "互いの墓地が10枚以上の時に使用できる。互いに墓地とデッキのカードを入れ替え、墓地をシャッフルし5枚ドローする。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "飛翔するT",
+    "cardRuby": "とやま・ウィング",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 3,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "このターン、すべてのドロー効果は墓地からのドローとなる。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "このハゲーーー！！！",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 1,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "次の相手ターン終了まで、場のモンスター1体のカード名を「ハゲ」にする。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "とやまの励まし",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 3,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "このターン、現在の相手の手札のカード名を「ハゲ」にする。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "ti",
+    "cardName": "生後６ヶ月の内気なTPad",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "とやま族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 30,
+    "hp": 170,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "Tumitter D30 C2",
+        "text": "自分の場のとやま族モンスター1体のHPを40回復。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "TpplePencil",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "とやま族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 60,
+    "hp": 120,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "おえかき D100 C2",
+        "text": ""
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "大粒ラムネ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "デッキから「生後6ヶ月の内気なTPad」か「TpplePencil」を場に出す。"
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "kaze",
+    "cardName": "走るとやま",
+    "cardRuby": "",
+    "monsterType": "進化",
+    "tribe": "とやま族",
+    "monsterTypeText": "",
+    "evolutionSource": "「生後6ヶ月の内気なTPad」+「TpplePencil」",
+    "attack": 50,
+    "hp": 180,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "火事場の馬鹿力 D80 C2",
+        "text": "このアタックスキルは、相手のバトルゾーンにモンスターがいても直接攻撃ができる。"
+      },
+      {
+        "type": "P",
+        "name": "まだ日は沈まぬ",
+        "text": "このカードは1ターンに1回ずつ、アタックスキルと通常攻撃ができる。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "mizu",
+    "cardName": "逆境無頼ろきさ",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "ろきさ族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 150,
+    "hp": 10,
+    "supplementText": "このモンスターは、自分のシールドが0の時、2コスト支払いEXから場に出すことができる。",
+    "skills": [
+      {
+        "type": "P",
+        "name": "最強",
+        "text": "手札からモンスターを選び、墓地へ捨て、どちらかの効果を使用する。1.プレイヤーHPを1回復する。2.攻撃力とHPを20上げる。"
+      },
+      {
+        "type": "P",
+        "name": "越境",
+        "text": "このモンスターのHPが変動したときいつでも何回でも発動する。1枚ドローする。"
+      },
+      {
+        "type": "P",
+        "name": "無頼の逆転",
+        "text": "ターン終了時に発動する。このカードの攻撃力とHPを入れ替える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "無敵のアイドル ろきさ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "ろきさ族",
+    "monsterTypeText": "アイドル",
+    "evolutionSource": "",
+    "attack": 40,
+    "hp": 220,
+    "supplementText": "このモンスターは、自分のシールドが0の時のみ場に出すことができる。\nこのモンスターが手札から墓地へ送られた場合、3コスト支払いこのモンスターを場に出すことができる。",
+    "skills": [
+      {
+        "type": "P",
+        "name": "夢を見せてあげる！",
+        "text": "シールドが0枚の時発動できる。マナを1回復。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "涙の狂戦士 キロサ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "ろきさ族",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "attack": 100,
+    "hp": 40,
+    "supplementText": "このモンスターが手札から墓地へ送られた場合、1コスト支払いこのモンスターを場に出すことができる。",
+    "skills": [
+      {
+        "type": "P",
+        "name": "突撃！撤退！",
+        "text": "場の通常モンスターを1体手札に戻す。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "supporter",
+    "attribute": "",
+    "cardName": "究極ご都合主義",
+    "cardRuby": "デウス=エクス=マキナ",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 0,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "5-シールドの数だけドローする。"
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hi",
+    "cardName": "夢桜学園1年 早川アカネ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "学園",
+    "evolutionSource": "",
+    "attack": 40,
+    "hp": 160,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "P",
+        "name": "誰か助けて〜！",
+        "text": "このモンスターが場に出た時に発動できる。カード名に「早川アカネ」を含まないカード名に「夢桜学園」を含むモンスターを1枚手札に加える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "kaze",
+    "cardName": "夢桜学園1年 志賀アオイ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "学園",
+    "evolutionSource": "",
+    "attack": 30,
+    "hp": 160,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "隙だらけだよ D30×2 C1",
+        "text": "30威力で2回攻撃する。対象を変えることはできない。"
+      },
+      {
+        "type": "P",
+        "name": "絆",
+        "text": "このカードが場に出た時発動できる。「変身—茜色の絆」をデッキから手札に加える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "yami",
+    "cardName": "謎の転校生 黒霧シノ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "学園",
+    "evolutionSource": "",
+    "attack": 80,
+    "hp": 80,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "百発百中 D80 C2",
+        "text": "このアタックスキルは控えゾーンのモンスターにも攻撃できる。"
+      },
+      {
+        "type": "P",
+        "name": "一匹狼",
+        "text": "このモンスターがバトルゾーンにいる場合のみ発動できる。バトルゾーンに自分以外のモンスターがいない場合、このモンスターのアタックスキルと通常攻撃の威力は20増加する。"
+      },
+      {
+        "type": "P",
+        "name": "1人で十分",
+        "text": "このモンスターが場に出た時発動できる。「変身—漆黒の正体」をデッキから手札に加える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "ti",
+    "cardName": "夢桜学園2年 五月女キリ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "学園",
+    "evolutionSource": "",
+    "attack": 30,
+    "hp": 200,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "守り抜く D40 C2",
+        "text": "次の相手ターンに他の自分の場のモンスターが攻撃されるとき、1回だけ攻撃対象をこのモンスターに変更する。"
+      },
+      {
+        "type": "P",
+        "name": "取り戻す",
+        "text": "このモンスターのHPが150以下の時に発動できる。デッキから「変身—桜の約束」を1枚手札に加える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "mizu",
+    "cardName": "夢桜学園2年 西条リンネ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "学園",
+    "evolutionSource": "",
+    "attack": 40,
+    "hp": 150,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "ティータイムにしましょう D20 C1",
+        "text": "このターン中、発動するコスト2以下の魔法カードは1回だけ支払うコストが0になる。"
+      },
+      {
+        "type": "P",
+        "name": "トランプはいかが？",
+        "text": "カード名に「西条リンネ」を含まないモンスターが自分の場に出た時に発動できる。デッキから魔法カードを3枚選び、ランダム1枚を手札に加える。残りの2枚はデッキに戻す。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "monster",
+    "attribute": "hikari",
+    "cardName": "夢桜学園3年 篠澤ユリ",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "学園",
+    "evolutionSource": "",
+    "attack": 30,
+    "hp": 180,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "風紀委員の務め D40 C3",
+        "text": "与えたダメージの量、自分のHPを回復させる。上限は超えない。"
+      },
+      {
+        "type": "P",
+        "name": "危ないことはしちゃダメ",
+        "text": "自分場のすべてのモンスターのHPを10回復する。上限は超えない。"
+      },
+      {
+        "type": "P",
+        "name": "準備は大事",
+        "text": "このモンスターが場に出た時に発動できる。デッキからカード名に「変身」を含む魔法カードを1枚手札に加える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "変身—茜色の絆",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "カード名に「早川アカネ」を含む自分の場のモンスターを1体墓地に送り、EXから「プロミネンス・プロミス」を場に出す。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "変身—春風の絆",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "カード名に「志賀アオイ」を含む自分の場のモンスターを1体墓地に送り、EXから「ウィング・ウィンド」を場に出す。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "変身—漆黒の正体",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "カード名に「黒霧シノ」を含む自分の場のモンスターを1体墓地に送り、EXから「ブラック・バレット」を場に出す。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "変身—桜の約束",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "カード名に「五月女キリ」を含む自分の場のモンスターを1体墓地に送り、EXから「クリスタル・ガーディアン」を場に出す。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "変身—銀の価値",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "カード名に「西条リンネ」を含む自分の場のモンスターを1体墓地に送り、EXから「サイレント・ウォーター」を場に出す。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "変身—光の誓い",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "カード名に「篠澤ユリ」を含む自分の場のモンスターを1体墓地に送り、EXから「ヒーリング・ルミナス」1体を場に出す。"
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "hi",
+    "cardName": "プロミネンス・プロミス",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "",
+    "monsterTypeText": "桜花絢爛",
+    "evolutionSource": "",
+    "attack": 60,
+    "hp": 180,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "シャイニングブレイド D? C2",
+        "text": "このアタックスキルの威力は自分の攻撃力と同じになる。自分は1枚ドローする。"
+      },
+      {
+        "type": "P",
+        "name": "劫火一刀",
+        "text": "次の自分ドローフェイズまで、HPと攻撃力を自分の場の他のタイプ:桜花絢爛モンスターの数×20上げる。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "kaze",
+    "cardName": "ウィング・ウィンド",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "",
+    "monsterTypeText": "桜花絢爛",
+    "evolutionSource": "",
+    "attack": 60,
+    "hp": 150,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "エアリアルスラッシュ D50×2 C2",
+        "text": "2回攻撃する。別の対象を選択できる。"
+      },
+      {
+        "type": "P",
+        "name": "双風共鳴",
+        "text": "自分の場に「プロミネンス・プロミス」が居る時に発動できる。手札を1枚捨て、デッキからカード名に「変身」を含む魔法カードか、カード名に「夢桜学園」を含むモンスターを1枚手札に加える。このモンスターは20ダメージ受ける。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "yami",
+    "cardName": "ブラック・バレット",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "",
+    "monsterTypeText": "桜花絢爛",
+    "evolutionSource": "",
+    "attack": 50,
+    "hp": 190,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "静寂を切り裂く弾丸 D110 C4",
+        "text": "このアタックスキルは場に出ているモンスターなら控えゾーンにいても、自分の場でも対象にできる。"
+      },
+      {
+        "type": "P",
+        "name": "トリガーコード",
+        "text": "このターン、このモンスターの攻撃ダメージを20増やす。自分以外のタイプ:桜花絢爛モンスターが自分のバトルゾーンに存在する時、10ダメージを受ける。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "ti",
+    "cardName": "クリスタル・ガーディアン",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "",
+    "monsterTypeText": "桜花絢爛",
+    "evolutionSource": "",
+    "attack": 40,
+    "hp": 230,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "フォートレスチャージ D50 C2",
+        "text": "自分のHPを30回復する。"
+      },
+      {
+        "type": "P",
+        "name": "不屈の闘志",
+        "text": "自分の場のモンスター1体のHPを20回復する。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "mizu",
+    "cardName": "サイレント・ウォーター",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "",
+    "monsterTypeText": "桜花絢爛",
+    "evolutionSource": "",
+    "attack": 60,
+    "hp": 180,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "フロストピアース D70 C2",
+        "text": "相手の控えゾーンのモンスターも対象にできる。"
+      },
+      {
+        "type": "P",
+        "name": "武装破壊",
+        "text": "このターン、このモンスターが直接攻撃で減らす相手のシールドは2ポイントになる。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "ex",
+    "attribute": "hikari",
+    "cardName": "ヒーリング・ルミナス",
+    "cardRuby": "",
+    "monsterType": "EX",
+    "tribe": "",
+    "monsterTypeText": "桜花絢爛",
+    "evolutionSource": "",
+    "attack": 20,
+    "hp": 230,
+    "supplementText": "",
+    "skills": [
+      {
+        "type": "A",
+        "name": "ジャッジメントレイ D60 C2",
+        "text": "このアタックスキルの威力は自分の受けているダメージ分増える。"
+      },
+      {
+        "type": "P",
+        "name": "耀祈の恩恵",
+        "text": "このターン、自分の場のモンスターのHP回復量は20増える。"
+      }
+    ],
+    "contentText": ""
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "神秘の干渉",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 3,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "このターン、タイプ:桜花絢爛モンスター以外の場のモンスターのパッシブスキルは発動できない。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "マギア・デザイア",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 2,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の場のタイプ:桜花絢爛モンスターを1体選ぶ。このターン中、そのモンスターはHPが1以下にならない。"
+  },
+  {
+    "cardBase": "magic",
+    "attribute": "",
+    "cardName": "永遠の夢追い人",
+    "cardRuby": "",
+    "monsterType": "通常",
+    "tribe": "",
+    "monsterTypeText": "",
+    "evolutionSource": "",
+    "magicCost": 3,
+    "attack": 0,
+    "hp": 0,
+    "supplementText": "",
+    "skills": [],
+    "contentText": "自分の場と墓地に違うカード名のタイプ:桜花絢爛モンスターが存在する場合、墓地のタイプ:桜花絢爛モンスター、カード名に「変身」を含む魔法を1枚ずつそれぞれデッキに戻す。"
+  }
+]

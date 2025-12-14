@@ -1,1 +1,1009 @@
-<iframe src="https://claude.site/public/artifacts/1cce6256-5582-4daf-a159-7d31359c04c0/embed" title="Claude Artifact" width="100%" height="600" frameborder="0" allow="clipboard-write" allowfullscreen></iframe>
+import React, { useState } from 'react';
+import { Plus, Trash2, Download, Upload, ChevronDown, Eye, EyeOff } from 'lucide-react';
+
+export default function CardGameTool() {
+  const [mode, setMode] = useState('deck'); // 'deck' or 'game'
+  const [cardName, setCardName] = useState('');
+  const [cardText, setCardText] = useState('');
+  const [cards, setCards] = useState([]);
+  const [deck, setDeck] = useState([]);
+
+  // ゲーム用状態
+  const [gameState, setGameState] = useState({
+    library: [],
+    hand: [],
+    graveyard: [],
+    slots: [null, null, null, null, null, null], // 0-2: バトル(前), 3-5: 控え(後ろ)
+    counterCard: null,
+    p1Shield: 5,
+    p1HP: 5,
+    p2Shield: 5,
+    p2HP: 5,
+    p2Slots: [null, null, null, null, null, null], // 相手用
+    p2CounterCard: null,
+  });
+
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [showGraveyard, setShowGraveyard] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [expandedCard, setExpandedCard] = useState(null);
+
+  // ================== デッキ構築モード ==================
+
+  const addCard = () => {
+    if (cardName.trim()) {
+      const newCard = {
+        id: Date.now(),
+        name: cardName,
+        text: cardText,
+      };
+      setCards([...cards, newCard]);
+      setCardName('');
+      setCardText('');
+    }
+  };
+
+  const addCardToDeck = (card) => {
+    setDeck([...deck, { ...card, deckId: Date.now() + Math.random() }]);
+  };
+
+  const removeFromDeck = (deckId) => {
+    setDeck(deck.filter(c => c.deckId !== deckId));
+  };
+
+  const deleteCard = (id) => {
+    setCards(cards.filter(c => c.id !== id));
+  };
+
+  const saveDeck = () => {
+    const deckName = prompt('デッキ名を入力してください:') || 'deck';
+    const deckData = {
+      name: deckName,
+      cards: deck.map(({ id, name, text }) => ({ id, name, text })),
+    };
+    const json = JSON.stringify(deckData, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${deckName}.json`;
+    a.click();
+  };
+
+  const loadDeck = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const deckData = JSON.parse(event.target.result);
+          setDeck(deckData.cards.map(c => ({ ...c, deckId: Date.now() + Math.random() })));
+        } catch (err) {
+          alert('ファイルの読み込みに失敗しました');
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const startGame = () => {
+    const shuffled = [...deck].sort(() => Math.random() - 0.5);
+    setGameState(prev => ({
+      ...prev,
+      library: shuffled.map((c, i) => ({ ...c, gameId: Date.now() + i })),
+      hand: [],
+      graveyard: [],
+      counterZone: [],
+      battleZone: [],
+      controlZone: [],
+    }));
+    setMode('game');
+  };
+
+  // ================== ゲームモード ==================
+
+  const drawCard = () => {
+    if (gameState.library.length === 0) {
+      alert('山札がありません');
+      return;
+    }
+    const card = gameState.library[0];
+    setGameState(prev => ({
+      ...prev,
+      library: prev.library.slice(1),
+      hand: [...prev.hand, card],
+    }));
+  };
+
+  const shuffleLibrary = () => {
+    setGameState(prev => ({
+      ...prev,
+      library: [...prev.library].sort(() => Math.random() - 0.5),
+    }));
+  };
+
+  const moveToZone = (card, fromZone, toZone, slotIndex) => {
+    const newCard = { ...card, hp: card.hp || 0 };
+
+    setGameState(prev => {
+      const newState = { ...prev };
+      newState[fromZone] = prev[fromZone].filter(c => c && c.gameId !== card.gameId);
+      const zoneCards = [...newState[toZone]];
+      zoneCards[slotIndex] = newCard;
+      newState[toZone] = zoneCards;
+      return newState;
+    });
+  };
+
+  const setCardInSlot = (card, zone, slotIndex) => {
+    setGameState(prev => ({
+      ...prev,
+      [zone]: prev[zone].map((c, idx) => idx === slotIndex ? card : c),
+    }));
+  };
+
+  const clearSlot = (zone, slotIndex) => {
+    setGameState(prev => ({
+      ...prev,
+      [zone]: prev[zone].map((c, idx) => idx === slotIndex ? null : c),
+    }));
+  };
+
+  const removeCard = (card, zone, slotIndex) => {
+    if (Array.isArray(gameState[zone]) && gameState[zone][0] === null) {
+      // スロット型の場合
+      clearSlot(zone, slotIndex);
+    } else {
+      // リスト型の場合
+      setGameState(prev => ({
+        ...prev,
+        [zone]: prev[zone].filter(c => c && c.gameId !== card.gameId),
+      }));
+    }
+  };
+
+  const moveCardToGraveyard = (card, zone, slotIndex) => {
+    removeCard(card, zone, slotIndex);
+    setGameState(prev => ({
+      ...prev,
+      graveyard: [...prev.graveyard, card],
+    }));
+  };
+
+  const moveCardToLibrary = (card, zone, slotIndex) => {
+    removeCard(card, zone, slotIndex);
+    setGameState(prev => ({
+      ...prev,
+      library: [...prev.library, card],
+    }));
+  };
+
+  const moveCardToHand = (card, zone, slotIndex) => {
+    removeCard(card, zone, slotIndex);
+    setGameState(prev => ({
+      ...prev,
+      hand: [...prev.hand, card],
+    }));
+  };
+
+  const updateCardHP = (card, zone, newHP) => {
+    setGameState(prev => ({
+      ...prev,
+      [zone]: prev[zone].map(c =>
+        c.gameId === card.gameId ? { ...c, hp: Math.max(0, newHP) } : c
+      ),
+    }));
+  };
+
+  const CardSlot = ({ card, zone, slotIndex, canSetHP = false, canPlaceCard = false }) => {
+    if (!card) {
+      return (
+        <div className="bg-gray-700 p-3 rounded border-2 border-dashed border-gray-600 min-h-24 flex items-center justify-center">
+          <span className="text-gray-500 text-sm">スロット {slotIndex + 1}</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="bg-gray-700 p-2 rounded text-xs relative group">
+        <p className="font-semibold truncate">{card.name}</p>
+        <p className="text-gray-300 line-clamp-2 text-xs">{card.text}</p>
+        {canSetHP && (
+          <div className="mt-1 flex items-center gap-1">
+            <span className="text-red-400">HP:</span>
+            <input
+              type="number"
+              value={card.hp || 0}
+              onChange={(e) => setCardInSlot({ ...card, hp: Math.max(0, parseInt(e.target.value) || 0) }, zone, slotIndex)}
+              min="0"
+              max="500"
+              className="w-10 px-1 bg-gray-600 border border-gray-500 rounded text-white text-xs"
+            />
+          </div>
+        )}
+        <div className="mt-1 flex gap-1 text-xs opacity-0 group-hover:opacity-100 transition">
+          <button onClick={() => moveCardToGraveyard(card, zone, slotIndex)} className="flex-1 bg-red-600 hover:bg-red-700 px-1 py-0.5 rounded">墓地</button>
+          <button onClick={() => moveCardToLibrary(card, zone, slotIndex)} className="flex-1 bg-blue-600 hover:bg-blue-700 px-1 py-0.5 rounded">山札</button>
+          <button onClick={() => moveCardToHand(card, zone, slotIndex)} className="flex-1 bg-green-600 hover:bg-green-700 px-1 py-0.5 rounded">手札</button>
+          <button onClick={() => clearSlot(zone, slotIndex)} className="flex-1 bg-gray-600 hover:bg-gray-500 px-1 py-0.5 rounded">削除</button>
+        </div>
+      </div>
+    );
+  };
+
+  if (mode === 'deck') {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-4xl font-bold mb-8">カードゲーム テストツール</div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* カード管理 */}
+            <div className="lg:col-span-1 bg-gray-800 p-6 rounded-lg">
+              <h2 className="text-2xl font-bold mb-4">カード管理</h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-semibold mb-2">カード名</label>
+                  <input
+                    type="text"
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addCard()}
+                    placeholder="例: ファイアボール"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">テキスト</label>
+                  <textarea
+                    value={cardText}
+                    onChange={(e) => setCardText(e.target.value)}
+                    placeholder="カードの効果など"
+                    rows="4"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  />
+                </div>
+                <button
+                  onClick={addCard}
+                  className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded font-semibold flex items-center justify-center gap-2"
+                >
+                  <Plus size={20} /> カードを追加
+                </button>
+              </div>
+
+              <h3 className="text-lg font-bold mb-3">カードリスト（{cards.length}枚）</h3>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {cards.map(card => (
+                  <div
+                    key={card.id}
+                    className="bg-gray-700 p-3 rounded cursor-pointer hover:bg-gray-600 transition flex justify-between items-start group"
+                  >
+                    <div onClick={() => addCardToDeck(card)} className="flex-1">
+                      <p className="font-semibold text-sm">{card.name}</p>
+                      <p className="text-xs text-gray-300 line-clamp-2">{card.text}</p>
+                    </div>
+                    <button
+                      onClick={() => deleteCard(card.id)}
+                      className="ml-2 text-red-400 hover:text-red-300 opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* デッキ構築 */}
+            <div className="lg:col-span-2 bg-gray-800 p-6 rounded-lg">
+              <h2 className="text-2xl font-bold mb-4">デッキ（{deck.length}枚）</h2>
+
+              <div className="flex gap-2 mb-6 flex-wrap">
+                <button
+                  onClick={saveDeck}
+                  disabled={deck.length === 0}
+                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-4 py-2 rounded font-semibold flex items-center gap-2"
+                >
+                  <Download size={20} /> 保存
+                </button>
+                <label className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded font-semibold flex items-center gap-2 cursor-pointer">
+                  <Upload size={20} /> 読み込み
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={loadDeck}
+                    className="hidden"
+                  />
+                </label>
+                <button
+                  onClick={() => setDeck([])}
+                  disabled={deck.length === 0}
+                  className="bg-red-600 hover:bg-red-700 disabled:bg-gray-600 px-4 py-2 rounded font-semibold flex items-center gap-2 ml-auto"
+                >
+                  <Trash2 size={20} /> リセット
+                </button>
+                <button
+                  onClick={startGame}
+                  disabled={deck.length === 0}
+                  className="bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 px-4 py-2 rounded font-semibold"
+                >
+                  ゲーム開始
+                </button>
+              </div>
+
+              <div className="bg-gray-700 p-4 rounded max-h-96 overflow-y-auto">
+                {deck.length === 0 ? (
+                  <p className="text-gray-400 text-center py-8">左のカードをクリックして追加</p>
+                ) : (
+                  <div className="space-y-2">
+                    {deck.map((card, idx) => (
+                      <div
+                        key={card.deckId}
+                        className="bg-gray-600 p-3 rounded flex justify-between items-start hover:bg-gray-500 group"
+                      >
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm">{idx + 1}. {card.name}</p>
+                          <p className="text-xs text-gray-300">{card.text}</p>
+                        </div>
+                        <button
+                          onClick={() => removeFromDeck(card.deckId)}
+                          className="ml-2 text-red-400 hover:text-red-300"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ================== ゲーム盤面 ==================
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <div className="text-3xl font-bold">ゲーム盤面</div>
+          <button
+            onClick={() => setMode('deck')}
+            className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded"
+          >
+            デッキに戻る
+          </button>
+        </div>
+
+        {/* 相手の場 */}
+        <div className="bg-gray-800 p-4 rounded-lg mb-6">
+          <h2 className="text-xl font-bold mb-3">相手の場</h2>
+          <div className="flex gap-4 items-start">
+            {/* 左側：カウンター＆墓場 */}
+            <div className="flex flex-col gap-4">
+              {/* カウンター */}
+              <div className="w-32 h-24 bg-blue-900 border-2 border-gray-600 rounded p-2 flex flex-col justify-between">
+                <p className="text-xs font-semibold text-gray-300">カウンター</p>
+                {gameState.p2CounterCard ? (
+                  <>
+                    <p className="text-xs font-semibold truncate">{gameState.p2CounterCard.name}</p>
+                    <p className="text-xs text-gray-300 line-clamp-1">{gameState.p2CounterCard.text}</p>
+                    <div className="text-xs text-red-400">HP: {gameState.p2CounterCard.hp || 0}</div>
+                  </>
+                ) : (
+                  <span className="text-gray-500 text-xs">—</span>
+                )}
+              </div>
+
+              {/* 墓地 */}
+              <div className="bg-purple-900 border-2 border-gray-600 rounded p-3">
+                <div className="flex gap-2">
+                  <div>
+                    <p className="text-sm font-semibold">シールド</p>
+                    <p className="text-lg font-bold text-yellow-400">{gameState.p2Shield}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">HP</p>
+                    <p className="text-lg font-bold text-red-400">{gameState.p2HP}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 右側：バトル＆控え */}
+            <div className="flex flex-col gap-4">
+              {/* バトル（前）横に3つ */}
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold text-gray-400">バトル（前）</p>
+                <div className="flex gap-2">
+                  {[0, 1, 2].map(idx => (
+                    <div
+                      key={`p2-battle-${idx}`}
+                      className="w-28 h-24 bg-pink-900 border-2 border-gray-600 rounded p-2 flex flex-col justify-between"
+                    >
+                      {gameState.p2Slots[idx] ? (
+                        <>
+                          <p className="text-xs font-semibold truncate">{gameState.p2Slots[idx].name}</p>
+                          <p className="text-xs text-gray-300 line-clamp-1">{gameState.p2Slots[idx].text}</p>
+                          <div className="text-xs text-red-400">HP: {gameState.p2Slots[idx].hp || 0}</div>
+                        </>
+                      ) : (
+                        <span className="text-gray-500 text-xs">—</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 控え（後ろ）横に3つ */}
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold text-gray-400">控え（後ろ）</p>
+                <div className="flex gap-2">
+                  {[3, 4, 5].map(idx => (
+                    <div
+                      key={`p2-control-${idx}`}
+                      className="w-28 h-24 bg-green-900 border-2 border-gray-600 rounded p-2 flex flex-col justify-between"
+                    >
+                      {gameState.p2Slots[idx] ? (
+                        <>
+                          <p className="text-xs font-semibold truncate">{gameState.p2Slots[idx].name}</p>
+                          <p className="text-xs text-gray-300 line-clamp-1">{gameState.p2Slots[idx].text}</p>
+                          <div className="text-xs text-red-400">HP: {gameState.p2Slots[idx].hp || 0}</div>
+                        </>
+                      ) : (
+                        <span className="text-gray-500 text-xs">—</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 自分の場 */}
+        <div className="bg-gray-800 p-4 rounded-lg mb-6">
+          <h2 className="text-xl font-bold mb-3">自分の場</h2>
+          <div className="flex gap-4 items-start justify-end">
+            {/* 左側：バトル＆控え */}
+            <div className="flex flex-col gap-4">
+              {/* バトル（前）横に3つ */}
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold text-gray-400">バトル（前）</p>
+                <div className="flex gap-2">
+                  {[0, 1, 2].map(idx => (
+                    <div
+                      key={`p1-battle-${idx}`}
+                      className="w-28 h-24 bg-pink-900 border-2 border-gray-600 rounded p-2 flex flex-col justify-between group relative"
+                    >
+                      {gameState.slots[idx] ? (
+                        <>
+                          <p className="text-xs font-semibold truncate">{gameState.slots[idx].name}</p>
+                          <p className="text-xs text-gray-300 line-clamp-1">{gameState.slots[idx].text}</p>
+                          <div className="flex gap-1 text-xs mt-auto">
+                            <input
+                              type="number"
+                              value={gameState.slots[idx].hp || 0}
+                              onChange={(e) => setGameState(prev => ({
+                                ...prev,
+                                slots: prev.slots.map((c, i) => i === idx ? { ...c, hp: Math.max(0, parseInt(e.target.value) || 0) } : c)
+                              }))}
+                              min="0"
+                              max="500"
+                              className="w-12 px-1 bg-gray-700 border border-gray-500 rounded text-white text-xs"
+                            />
+                            <button
+                              onClick={() => setSelectedCard({ card: gameState.slots[idx], zone: 'slots', index: idx })}
+                              className="flex-1 bg-yellow-600 hover:bg-yellow-700 px-1 py-0.5 rounded text-xs"
+                            >
+                              移
+                            </button>
+                            <button
+                              onClick={() => moveCardToGraveyard(gameState.slots[idx], 'slots', idx)}
+                              className="flex-1 bg-red-600 hover:bg-red-700 px-1 py-0.5 rounded text-xs"
+                            >
+                              墓
+                            </button>
+                          </div>
+                          {selectedCard?.zone === 'slots' && selectedCard?.index === idx && (
+                            <div className="absolute top-0 right-0 bg-gray-900 border border-yellow-400 rounded p-1 text-xs space-y-1 z-10">
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 0 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-pink-600 hover:bg-pink-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                バトル1
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 1 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-pink-600 hover:bg-pink-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                バトル2
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 2 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-pink-600 hover:bg-pink-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                バトル3
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 3 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-green-600 hover:bg-green-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                控え1
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 4 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-green-600 hover:bg-green-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                控え2
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 5 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-green-600 hover:bg-green-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                控え3
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    hand: [...prev.hand, selectedCard.card],
+                                    slots: prev.slots.map((c, i) => i === idx ? null : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-blue-600 hover:bg-blue-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                手札へ
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    library: [...prev.library, selectedCard.card],
+                                    slots: prev.slots.map((c, i) => i === idx ? null : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-indigo-600 hover:bg-indigo-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                山札へ
+                              </button>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-gray-500 text-xs">—</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 控え（後ろ）横に3つ */}
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold text-gray-400">控え（後ろ）</p>
+                <div className="flex gap-2">
+                  {[3, 4, 5].map(idx => (
+                    <div
+                      key={`p1-control-${idx}`}
+                      className="w-28 h-24 bg-green-900 border-2 border-gray-600 rounded p-2 flex flex-col justify-between group relative"
+                    >
+                      {gameState.slots[idx] ? (
+                        <>
+                          <p className="text-xs font-semibold truncate">{gameState.slots[idx].name}</p>
+                          <p className="text-xs text-gray-300 line-clamp-1">{gameState.slots[idx].text}</p>
+                          <div className="flex gap-1 text-xs mt-auto">
+                            <input
+                              type="number"
+                              value={gameState.slots[idx].hp || 0}
+                              onChange={(e) => setGameState(prev => ({
+                                ...prev,
+                                slots: prev.slots.map((c, i) => i === idx ? { ...c, hp: Math.max(0, parseInt(e.target.value) || 0) } : c)
+                              }))}
+                              min="0"
+                              max="500"
+                              className="w-12 px-1 bg-gray-700 border border-gray-500 rounded text-white text-xs"
+                            />
+                            <button
+                              onClick={() => setSelectedCard({ card: gameState.slots[idx], zone: 'slots', index: idx })}
+                              className="flex-1 bg-yellow-600 hover:bg-yellow-700 px-1 py-0.5 rounded text-xs"
+                            >
+                              移
+                            </button>
+                            <button
+                              onClick={() => moveCardToGraveyard(gameState.slots[idx], 'slots', idx)}
+                              className="flex-1 bg-red-600 hover:bg-red-700 px-1 py-0.5 rounded text-xs"
+                            >
+                              墓
+                            </button>
+                          </div>
+                          {selectedCard?.zone === 'slots' && selectedCard?.index === idx && (
+                            <div className="absolute top-0 right-0 bg-gray-900 border border-yellow-400 rounded p-1 text-xs space-y-1 z-10">
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 0 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-pink-600 hover:bg-pink-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                バトル1
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 1 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-pink-600 hover:bg-pink-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                バトル2
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 2 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-pink-600 hover:bg-pink-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                バトル3
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 3 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-green-600 hover:bg-green-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                控え1
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 4 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-green-600 hover:bg-green-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                控え2
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    slots: prev.slots.map((c, i) => i === 5 ? { ...selectedCard.card, hp: selectedCard.card.hp || 0 } : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-green-600 hover:bg-green-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                控え3
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    hand: [...prev.hand, selectedCard.card],
+                                    slots: prev.slots.map((c, i) => i === idx ? null : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-blue-600 hover:bg-blue-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                手札へ
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setGameState(prev => ({
+                                    ...prev,
+                                    library: [...prev.library, selectedCard.card],
+                                    slots: prev.slots.map((c, i) => i === idx ? null : c)
+                                  }));
+                                  setSelectedCard(null);
+                                }}
+                                className="block w-full text-left bg-indigo-600 hover:bg-indigo-700 px-2 py-0.5 rounded text-xs whitespace-nowrap"
+                              >
+                                山札へ
+                              </button>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-gray-500 text-xs">—</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 右側：ステータス＆カウンター */}
+            <div className="flex flex-col gap-4">
+              {/* ステータス */}
+              <div className="bg-purple-900 border-2 border-gray-600 rounded p-3">
+                <div className="flex gap-4">
+                  <div>
+                    <p className="text-sm font-semibold">シールド</p>
+                    <input
+                      type="number"
+                      value={gameState.p1Shield}
+                      onChange={(e) => setGameState(prev => ({ ...prev, p1Shield: Math.max(0, parseInt(e.target.value) || 0) }))}
+                      min="0"
+                      max="5"
+                      className="w-12 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">プレイヤーHP</p>
+                    <input
+                      type="number"
+                      value={gameState.p1HP}
+                      onChange={(e) => setGameState(prev => ({ ...prev, p1HP: Math.max(0, parseInt(e.target.value) || 0) }))}
+                      min="0"
+                      max="5"
+                      className="w-12 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* カウンター */}
+              <div className="w-32 h-24 bg-blue-900 border-2 border-gray-600 rounded p-2 flex flex-col justify-between">
+                <p className="text-xs font-semibold text-gray-300">カウンター</p>
+                {gameState.counterCard ? (
+                  <>
+                    <p className="text-xs font-semibold truncate">{gameState.counterCard.name}</p>
+                    <p className="text-xs text-gray-300 line-clamp-1">{gameState.counterCard.text}</p>
+                    <div className="flex gap-1 text-xs mt-auto">
+                      <input
+                        type="number"
+                        value={gameState.counterCard.hp || 0}
+                        onChange={(e) => setGameState(prev => ({
+                          ...prev,
+                          counterCard: { ...prev.counterCard, hp: Math.max(0, parseInt(e.target.value) || 0) }
+                        }))}
+                        min="0"
+                        max="500"
+                        className="w-12 px-1 bg-gray-700 border border-gray-500 rounded text-white text-xs"
+                      />
+                      <button
+                        onClick={() => {
+                          setGameState(prev => ({ ...prev, graveyard: [...prev.graveyard, prev.counterCard], counterCard: null }));
+                        }}
+                        className="flex-1 bg-red-600 hover:bg-red-700 px-1 py-0.5 rounded text-xs"
+                      >
+                        墓
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-gray-500 text-xs">—</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 山札・墓地・手札 */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          {/* 山札 */}
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-lg font-bold">山札 ({gameState.library.length})</h3>
+              <button
+                onClick={shuffleLibrary}
+                className="bg-blue-600 hover:bg-blue-700 px-2 py-1 text-sm rounded"
+              >
+                シャッフル
+              </button>
+            </div>
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={drawCard}
+                className="flex-1 bg-green-600 hover:bg-green-700 px-3 py-2 rounded font-semibold"
+              >
+                引く
+              </button>
+              <button
+                onClick={() => setShowLibrary(!showLibrary)}
+                className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded"
+              >
+                {showLibrary ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {showLibrary && (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {gameState.library.map((card, idx) => (
+                  <div key={card.gameId} className="bg-gray-700 p-2 rounded text-xs">
+                    <p className="font-semibold">{idx + 1}. {card.name}</p>
+                    <p className="text-gray-300 line-clamp-2">{card.text}</p>
+                    <div className="mt-1 flex gap-1 text-xs">
+                      <button onClick={() => moveCardToGraveyard(card, 'library')} className="flex-1 bg-red-600 hover:bg-red-700 px-1 py-0.5 rounded">墓地</button>
+                      <button onClick={() => moveCardToHand(card, 'library')} className="flex-1 bg-green-600 hover:bg-green-700 px-1 py-0.5 rounded">手札</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 墓地 */}
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-lg font-bold">墓地 ({gameState.graveyard.length})</h3>
+              <button
+                onClick={() => setShowGraveyard(!showGraveyard)}
+                className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded"
+              >
+                {showGraveyard ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {showGraveyard && (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {gameState.graveyard.map((card, idx) => (
+                  <div key={card.gameId} className="bg-gray-700 p-2 rounded text-xs">
+                    <p className="font-semibold">{idx + 1}. {card.name}</p>
+                    <p className="text-gray-300 line-clamp-2">{card.text}</p>
+                    <div className="mt-1 flex gap-1 text-xs">
+                      <button onClick={() => moveCardToLibrary(card, 'graveyard')} className="flex-1 bg-blue-600 hover:bg-blue-700 px-1 py-0.5 rounded">山札</button>
+                      <button onClick={() => moveCardToHand(card, 'graveyard')} className="flex-1 bg-green-600 hover:bg-green-700 px-1 py-0.5 rounded">手札</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 手札 */}
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <h3 className="text-lg font-bold mb-3">手札 ({gameState.hand.length})</h3>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {gameState.hand.map((card, idx) => (
+                <div key={card.gameId} className="bg-gray-700 p-2 rounded text-xs group relative">
+                  <div className="flex justify-between items-start gap-1">
+                    <div className="flex-1">
+                      <p className="font-semibold">{idx + 1}. {card.name}</p>
+                      <p className="text-gray-300 line-clamp-2">{card.text}</p>
+                    </div>
+                    <button
+                      onClick={() => setExpandedCard(expandedCard === card.gameId ? null : card.gameId)}
+                      className="text-blue-400 hover:text-blue-300 flex-shrink-0"
+                      title="詳細表示"
+                    >
+                      📖
+                    </button>
+                  </div>
+
+                  {expandedCard === card.gameId && (
+                    <div className="mt-2 p-2 bg-gray-800 border border-blue-500 rounded text-xs whitespace-pre-wrap text-gray-200">
+                      {card.text}
+                    </div>
+                  )}
+
+                  <div className="mt-1 grid grid-cols-3 gap-1 text-xs">
+                    {/* バトルスロット */}
+                    <div className="space-y-1">
+                      <p className="text-pink-300 font-semibold text-xs">バトル</p>
+                      <div className="flex gap-0.5">
+                        {[0, 1, 2].map(i => (
+                          <button
+                            key={i}
+                            onClick={() => setGameState(prev => ({
+                              ...prev,
+                              slots: prev.slots.map((c, idx) => idx === i ? { ...card, gameId: card.gameId, hp: card.hp || 0 } : c),
+                              hand: prev.hand.filter(c => c.gameId !== card.gameId)
+                            }))}
+                            className="flex-1 bg-pink-600 hover:bg-pink-700 px-0.5 py-0.5 rounded text-xs"
+                          >
+                            {i+1}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 控えスロット */}
+                    <div className="space-y-1">
+                      <p className="text-green-300 font-semibold text-xs">控え</p>
+                      <div className="flex gap-0.5">
+                        {[3, 4, 5].map(i => (
+                          <button
+                            key={i}
+                            onClick={() => setGameState(prev => ({
+                              ...prev,
+                              slots: prev.slots.map((c, idx) => idx === i ? { ...card, gameId: card.gameId, hp: card.hp || 0 } : c),
+                              hand: prev.hand.filter(c => c.gameId !== card.gameId)
+                            }))}
+                            className="flex-1 bg-green-600 hover:bg-green-700 px-0.5 py-0.5 rounded text-xs"
+                          >
+                            {i-2}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* カウンター */}
+                    <button
+                      onClick={() => setGameState(prev => ({
+                        ...prev,
+                        counterCard: { ...card, gameId: card.gameId, hp: card.hp || 0 },
+                        hand: prev.hand.filter(c => c.gameId !== card.gameId)
+                      }))}
+                      className="bg-blue-600 hover:bg-blue-700 px-1 py-1 rounded text-xs"
+                    >
+                      カウンター
+                    </button>
+                  </div>
+
+                  <div className="mt-1 flex gap-1 text-xs">
+                    <button
+                      onClick={() => setGameState(prev => ({
+                        ...prev,
+                        graveyard: [...prev.graveyard, card],
+                        hand: prev.hand.filter(c => c.gameId !== card.gameId)
+                      }))}
+                      className="flex-1 bg-red-600 hover:bg-red-700 px-1 py-0.5 rounded"
+                    >
+                      墓地へ
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
