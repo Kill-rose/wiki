@@ -823,6 +823,9 @@
         function setCardsFromData(data) {
             allCards = Array.isArray(data) ? data : [data];
             updateTribeOptions();
++           updateTribeVisibility();
+            // 初回ロード時など、選択中の種別に合わせてソートを更新
+            updateSortOptions(currentFilter);
             filteredCards = [...allCards];
             document.getElementById('uploadSection').classList.add('hidden');
             document.getElementById('contentSection').classList.remove('hidden');
@@ -846,6 +849,18 @@
             tribeSelect.value = tribes.includes(prev) ? prev : 'all';
         }
 
+        // 種別が magic または supporter のときに「族」フィルタを非表示にする
+        function updateTribeVisibility() {
+            const group = tribeSelect ? tribeSelect.parentElement : null;
+            if (!group) return;
+            if (currentFilter === 'magic' || currentFilter === 'supporter') {
+                group.style.display = 'none';
+                tribeSelect.value = 'all';
+            } else {
+                group.style.display = 'flex';
+            }
+        }
+
         function autoLoadLocalJson() {
             fetch('card.json', { cache: 'no-cache' })
                 .then(resp => {
@@ -863,6 +878,10 @@
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentFilter = btn.dataset.filter;
+                // 選択中のカード種別に応じてソートを更新
+                updateSortOptions(currentFilter);
++               // 「族」プルダウンの表示切替
++               updateTribeVisibility();
                 applyFilters();
             });
         });
@@ -881,6 +900,26 @@
                 renderCards();
             });
         });
+
+        // 種別に応じたソート選択肢の切り替え
+        function updateSortOptions(filter) {
+            const sel = document.getElementById('sortSelect');
+            if (!sel) return;
+            const prev = sel.value;
+            if (filter === 'magic') {
+                sel.innerHTML = '<option value="name">名前</option><option value="cost">コスト</option>';
+                sel.value = prev === 'cost' || prev === 'name' ? prev : 'cost';
+            } else if (filter === 'supporter') {
+                sel.innerHTML = '<option value="name">名前</option>';
+                sel.value = 'name';
+            } else if (filter === 'all') {
+                sel.innerHTML = '<option value="name">名前</option><option value="type">種類</option>';
+                sel.value = ['name','type'].includes(prev) ? prev : 'name';
+            } else {
+                sel.innerHTML = '<option value="name">名前</option><option value="type">種類</option><option value="atk">ATK</option><option value="hp">HP</option>';
+                sel.value = ['name','type','atk','hp'].includes(prev) ? prev : 'name';
+            }
+        }
 
         function applyFilters() {
             const search = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -936,6 +975,7 @@
                     case 'type': return a.cardBase.localeCompare(b.cardBase);
                     case 'atk': return (b.attack || 0) - (a.attack || 0);
                     case 'hp': return (b.hp || 0) - (a.hp || 0);
+                    case 'cost': return ( (a.magicCost||0) - (b.magicCost||0) ); // 魔法: コスト昇順
                     default: return 0;
                 }
             });
