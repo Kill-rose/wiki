@@ -3,22 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カード一覧</title>
+    <title>カード一覧 - 時のアマリス</title>
     <link rel="stylesheet" href="../css/default.css">
     <style>
-        body {
-            padding: 2rem;
+        * { box-sizing: border-box; }
+        body { padding: 0; margin: 0; display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 60px;
+            background: var(--callout-bg);
+            border-right: 1px solid var(--callout-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 0.5rem;
+            flex-shrink: 0;
         }
-
+        .sidebar-item {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+        .sidebar-item:hover {
+            background: rgba(139, 158, 125, 0.2);
+            border-color: var(--accent-color);
+        }
+        .sidebar-item.active {
+            background: var(--accent-color);
+            color: white;
+        }
+        .sidebar-divider {
+            width: 80%;
+            height: 1px;
+            background: var(--border-color);
+            margin: 0.5rem 0;
+        }
+        
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        .cards-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+        .main-container.deck-mode .cards-area {
+            max-width: 600px;
+        }
+        
+        .deck-area {
+            width: 0;
+            overflow: hidden;
+            background: var(--callout-bg);
+            border-left: 1px solid var(--callout-border);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-container.deck-mode .deck-area {
+            width: 400px;
+        }
+        .deck-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--callout-border);
+        }
+        .deck-header h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.3rem;
+            color: var(--text-color);
+        }
+        .deck-count {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .deck-count.error {
+            color: #ef4444;
+        }
+        .deck-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .deck-tab {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(139, 158, 125, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-family: 'MainFont', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+        .deck-tab:hover {
+            background: rgba(139, 158, 125, 0.2);
+        }
+        .deck-tab.active {
+            background: var(--accent-color);
+            border-color: var(--accent-green);
+            color: white;
+        }
+        .deck-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .deck-card-item {
+            background: rgba(139, 158, 125, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .deck-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .deck-card-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .deck-card-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+        .deck-card-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .deck-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(139, 158, 125, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+        .deck-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        .deck-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .deck-btn:disabled:hover {
+            background: rgba(139, 158, 125, 0.2);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        .deck-count-num {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            min-width: 20px;
+            text-align: center;
+        }
+        .deck-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--callout-border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .deck-action-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'MainFont', sans-serif;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .deck-action-btn.primary {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-green);
+        }
+        .deck-action-btn.primary:hover {
+            background: var(--accent-green);
+        }
+        .deck-action-btn.primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .deck-action-btn.secondary {
+            background: rgba(139, 158, 125, 0.1);
+            color: var(--text-color);
+        }
+        .deck-action-btn.secondary:hover {
+            background: rgba(139, 158, 125, 0.2);
+        }
+        .deck-action-btn.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+        .deck-action-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        .deck-empty {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-muted);
+        }
+        
+        .card-controls {
+            display: none;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .main-container.deck-mode .card-controls {
+            display: flex;
+        }
+        
         .main-content {
             max-width: 1000px;
             margin: 0 auto;
+            width: 100%;
         }
-
         h1 {
             margin-bottom: 1.5rem;
         }
-
         .upload-section {
             background: var(--callout-bg);
             border: 1px solid var(--callout-border);
@@ -27,7 +266,6 @@
             margin-bottom: 2rem;
             text-align: center;
         }
-
         .upload-area {
             border: 2px dashed var(--border-color);
             border-radius: 8px;
@@ -36,33 +274,27 @@
             transition: all 0.3s;
             background: rgba(139, 158, 125, 0.05);
         }
-
         .upload-area:hover {
             border-color: var(--accent-color);
             background: rgba(139, 158, 125, 0.1);
         }
-
         .upload-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
         }
-
         .upload-text {
             font-size: 1.2rem;
             font-weight: 600;
             color: var(--text-color);
             margin-bottom: 0.5rem;
         }
-
         .upload-hint {
             color: var(--text-muted);
             font-size: 0.9rem;
         }
-
         input[type="file"] {
             display: none;
         }
-
         .toolbar {
             background: var(--callout-bg);
             border: 1px solid var(--callout-border);
@@ -74,13 +306,11 @@
             flex-wrap: wrap;
             align-items: center;
         }
-
         .filter-group {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
         }
-
         .filter-btn {
             padding: 0.5rem 1rem;
             border: 1px solid var(--border-color);
@@ -92,18 +322,15 @@
             font-family: 'MainFont', sans-serif;
             font-size: 0.9rem;
         }
-
         .filter-btn:hover {
             background: rgba(139, 158, 125, 0.2);
             border-color: var(--accent-color);
         }
-
         .filter-btn.active {
             background: var(--accent-color);
             border-color: var(--accent-green);
             color: white;
         }
-
         .search-container {
             flex: 1;
             min-width: 250px;
@@ -111,13 +338,11 @@
             flex-direction: column;
             gap: 0.5rem;
         }
-
         .search-box {
             display: flex;
             gap: 0.5rem;
             align-items: center;
         }
-
         .search-box input {
             flex: 1;
             padding: 0.5rem;
@@ -127,23 +352,19 @@
             border-radius: 4px;
             font-family: 'MainFont', sans-serif;
         }
-
         .search-box input:focus {
             outline: none;
             border-color: var(--accent-color);
         }
-
         .search-box input::placeholder {
             color: var(--text-muted);
         }
-
         .search-options {
             display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
             font-size: 0.85rem;
         }
-
         .search-checkbox {
             display: flex;
             align-items: center;
@@ -151,29 +372,24 @@
             color: var(--text-secondary);
             cursor: pointer;
         }
-
         .search-checkbox input[type="checkbox"] {
             cursor: pointer;
         }
-
         .controls-row {
             display: flex;
             gap: 1rem;
             align-items: center;
         }
-
         .control-group {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-
         .control-label {
             font-size: 0.9rem;
             color: var(--text-secondary);
             white-space: nowrap;
         }
-
         select {
             padding: 0.5rem;
             border: 1px solid var(--border-color);
@@ -183,12 +399,10 @@
             font-family: 'MainFont', sans-serif;
             cursor: pointer;
         }
-
         select:focus {
             outline: none;
             border-color: var(--accent-color);
         }
-
         .stats {
             background: var(--callout-bg);
             border: 1px solid var(--callout-border);
@@ -199,62 +413,55 @@
             gap: 2rem;
             flex-wrap: wrap;
         }
-
         .stat-item {
             display: flex;
             flex-direction: column;
             gap: 0.1rem;
         }
-
         .stat-label {
             color: var(--text-muted);
             font-size: 0.7rem;
             text-transform: uppercase;
         }
-
         .stat-value {
             color: var(--accent-color);
             font-size: 1.3rem;
             font-weight: bold;
         }
-
         .card-list {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
             margin-bottom: 2rem;
         }
-
         .card-list.simple-mode {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 0.75rem;
         }
-
+        .main-container.deck-mode .card-list.simple-mode {
+            grid-template-columns: 1fr;
+        }
         .card-item {
             background: var(--callout-bg);
             border: 1px solid var(--callout-border);
             border-radius: 8px;
-            /* 少し小さくして全体のサイズを抑える */
-            padding: 0.5rem 0.8rem;
+            padding: 0.75rem 1rem;
             transition: all 0.2s;
-            cursor: pointer;
         }
-
         .card-item:hover {
             border-color: var(--accent-color);
             background: rgba(139, 158, 125, 0.15);
         }
-
-        /* シンプルモード */
         .card-item.simple {
-            padding: 0.4rem 0.8rem;
+            padding: 0.5rem 1rem;
         }
-        /* 詳細モードは少し小さいフォントに */
-        .card-item.detail {
-            font-size: 0.95rem;
+        .card-item.simple .card-header {
+            margin-bottom: 0;
         }
-
+        .card-item.simple .card-body {
+            display: none;
+        }
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -262,8 +469,8 @@
             gap: 1rem;
             flex-wrap: wrap;
             margin-bottom: 0.75rem;
+            cursor: pointer;
         }
-
         .card-title-section {
             display: flex;
             align-items: baseline;
@@ -271,25 +478,21 @@
             flex: 1;
             min-width: 200px;
         }
-
         .card-name {
             font-size: 1.1rem;
             font-weight: bold;
             color: var(--text-color);
         }
-
         .card-ruby {
             font-size: 0.8rem;
             color: var(--text-muted);
         }
-
         .card-meta {
             display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
             align-items: center;
         }
-
         .card-type {
             display: inline-block;
             padding: 0.25rem 0.65rem;
@@ -298,7 +501,6 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-
         .type-monster { 
             background: rgba(218, 165, 32, 0.3);
             color: #daa520;
@@ -319,7 +521,6 @@
             color: #db7093;
             border: 1px solid rgba(219, 112, 147, 0.5);
         }
-
         .card-stats {
             display: flex;
             gap: 0.75rem;
@@ -327,57 +528,27 @@
             color: var(--text-secondary);
             flex-wrap: wrap;
         }
-
         .card-body {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
             font-size: 0.85rem;
         }
-        /* 詳細モードで画像を表示 */
-        .card-item.detail .card-body {
-            flex-direction: row;
-            gap: 1rem;
-            align-items: flex-start;
-        }
-        .card-item.detail .card-image {
-            /* 自動調整: 最小140px、最大200px、幅はおよそ 18% を目安に */
-            width: clamp(140px, 18%, 200px);
-            flex: 0 0 clamp(140px, 18%, 200px);
-            max-width: 200px;
-        }
-        .card-item.detail .card-image img {
-            width: 100%;
-            height: auto;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            display: block;
-            /* 余白を抑えた見た目に */
-            box-shadow: none;
-        }
-        .card-item.detail .card-details {
-            flex: 1;
-            min-width: 0;
-        }
-
         .card-info-row {
             display: flex;
             gap: 1.5rem;
             flex-wrap: wrap;
         }
-
         .card-section {
             display: flex;
             gap: 0.5rem;
             align-items: baseline;
         }
-
         .card-section.full-width {
             width: 100%;
             flex-direction: column;
             align-items: flex-start;
         }
-
         .section-label {
             font-size: 0.7rem;
             font-weight: bold;
@@ -385,57 +556,48 @@
             text-transform: uppercase;
             flex-shrink: 0;
         }
-
         .section-content {
             line-height: 1.5;
             color: var(--text-secondary);
         }
-
         .card-section.full-width .section-label {
             margin-bottom: 0.2rem;
         }
-
         .skill-list {
             display: flex;
             flex-direction: column;
             gap: 0.4rem;
         }
-
         .skill-item {
             background: rgba(139, 158, 125, 0.1);
             padding: 0.4rem 0.6rem;
             border-radius: 4px;
             border: 1px solid var(--border-color);
         }
-
         .skill-header {
             font-weight: bold;
             color: var(--accent-color);
             margin-bottom: 0.15rem;
             font-size: 0.85rem;
         }
-
         .skill-text {
             color: var(--text-secondary);
             font-size: 0.8rem;
             line-height: 1.4;
         }
-
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
             color: var(--text-muted);
         }
-
         .empty-state-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
         }
-
         .hidden {
             display: none;
         }
-
+        
         /* モーダル */
         .modal {
             display: none;
@@ -449,47 +611,21 @@
             padding: 2rem;
             overflow-y: auto;
         }
-
         .modal.active {
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
         .modal-content {
             background: #1a1a1a;
             border: 1px solid var(--callout-border);
             border-radius: 8px;
             padding: 2rem;
-            /* 横幅を広げてゆったり表示（詳細モードで横並びが機能するように拡張） */
-            max-width: 1200px;
+            max-width: 700px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
         }
-        /* 左に大きめの画像、右に詳細を並べる */
-        .modal-body {
-            display: flex;
-            gap: 1.25rem;
-            align-items: flex-start;
-        }
-        .modal-image {
-            flex: 0 0 clamp(240px, 36%, 420px);
-            max-width: 420px;
-        }
-        .modal-image img {
-            width: 100%;
-            height: auto;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            display: block;
-            box-shadow: none;
-        }
-        .modal-details {
-            flex: 1;
-            min-width: 0;
-        }
-
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -499,23 +635,19 @@
             border-bottom: 2px solid var(--border-color);
             gap: 1rem;
         }
-
         .modal-title-section {
             flex: 1;
         }
-
         .modal-name {
             font-size: 1.8rem;
             font-weight: bold;
             color: var(--text-color);
             margin-bottom: 0.25rem;
         }
-
         .modal-ruby {
             font-size: 1rem;
             color: var(--text-muted);
         }
-
         .close-btn {
             background: var(--callout-bg);
             border: 1px solid var(--border-color);
@@ -528,23 +660,21 @@
             line-height: 1;
             flex-shrink: 0;
         }
-
         .close-btn:hover {
             background: var(--accent-color);
             color: white;
             border-color: var(--accent-color);
         }
-
-        /* NOTE: 上部で .modal-body を横並びに定義しているため、
-           ここでの強制的な縦並び定義を削除しました。
-           モバイルではメディアクエリ内で縦並びに戻ります。 */
-
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
         .modal-section {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
-
         .modal-section-label {
             font-size: 0.8rem;
             font-weight: bold;
@@ -552,641 +682,180 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-
         .modal-section-content {
             font-size: 1rem;
             line-height: 1.7;
             color: var(--text-secondary);
             white-space: pre-wrap;
         }
-
         .modal-info-row {
             display: flex;
             gap: 2rem;
             flex-wrap: wrap;
         }
-
         .modal-info-item {
             display: flex;
             gap: 0.5rem;
             align-items: baseline;
         }
-
         .modal-skills {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
         }
-
         .modal-skill-item {
             background: rgba(139, 158, 125, 0.15);
             padding: 1rem;
             border-radius: 6px;
             border: 1px solid var(--border-color);
         }
-
         .modal-skill-name {
             font-weight: bold;
             color: var(--accent-color);
             margin-bottom: 0.5rem;
             font-size: 1.05rem;
         }
-
         .modal-skill-text {
             color: var(--text-secondary);
             line-height: 1.6;
         }
-
-        /* 表示切替ボタン（セレクトの代替） */
-        .mode-btn {
-            padding: 0.45rem 0.85rem;
-            border: 1px solid var(--border-color);
-            background: rgba(139,158,125,0.08);
-            color: var(--text-color);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.15s;
-            font-family: 'MainFont', sans-serif;
-            font-size: 0.9rem;
-        }
-        .mode-btn:hover { background: rgba(139,158,125,0.14); }
-        .mode-btn.active { background: var(--accent-color); border-color: var(--accent-green); color: white; }
-
-        @media (max-width: 768px) {
-            .modal {
-                padding: 1rem;
-            }
-
-            .modal-content {
-                padding: 1.5rem;
-            }
-
-            .modal-name {
-                font-size: 1.4rem;
-            }
-            /* 小画面では縦並びに戻す */
-            .modal-body {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-group, .controls-row {
-                justify-content: center;
-            }
-
-            .stats {
-                gap: 1rem;
-            }
-
-            .card-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .card-body {
-                grid-template-columns: 1fr;
-            }
-
-            .card-list.simple-mode {
-                grid-template-columns: 1fr;
-            }
-            /* モバイル等では詳細モードは縦積みに戻す */
-            .card-item.detail .card-body {
-                flex-direction: column;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="main-content">
-        <h1>カード一覧</h1>
+    <div class="sidebar">
+        <div class="sidebar-item" title="ルール">📖</div>
+        <a href="cardview.html" class="sidebar-item active" title="カード一覧">🎴</a>
+        <div class="sidebar-item" title="実践">⚔️</div>
+        <div class="sidebar-item" title="印刷">🖨️</div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-item" id="deckModeToggle" title="デッキ作成">📋</div>
+    </div>
 
-        <div class="upload-section" id="uploadSection">
-            <label for="fileInput" class="upload-area">
-                <div class="upload-icon">🎴</div>
-                <div class="upload-text">JSONファイルをドロップ</div>
-                <div class="upload-hint">またはクリックしてファイルを選択</div>
-            </label>
-            <input type="file" id="fileInput" accept=".json">
-        </div>
+    <div class="main-container" id="mainContainer">
+        <div class="cards-area">
+            <div class="main-content">
+                <h1>時のアマリス カード一覧</h1>
 
-        <div id="contentSection" class="hidden">
-            <div class="toolbar">
-                <div class="filter-group">
-                    <button class="filter-btn active" data-filter="all">ALL</button>
-                    <button class="filter-btn" data-filter="monster">モンスター</button>
-                    <button class="filter-btn" data-filter="magic">魔法</button>
-                    <button class="filter-btn" data-filter="supporter">サポーター</button>
-                    <button class="filter-btn" data-filter="ex">EX</button>
+                <div class="upload-section" id="uploadSection">
+                    <label for="fileInput" class="upload-area">
+                        <div class="upload-icon">🎴</div>
+                        <div class="upload-text">JSONファイルをドロップ</div>
+                        <div class="upload-hint">またはクリックしてファイルを選択</div>
+                    </label>
+                    <input type="file" id="fileInput" accept=".json">
                 </div>
-                <div class="search-container">
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="検索...">
-                    </div>
-                    <div class="search-options">
-                        <label class="search-checkbox">
-                            <input type="checkbox" id="searchName" checked>
-                            <span>カード名</span>
-                        </label>
-                        <label class="search-checkbox">
-                            <input type="checkbox" id="searchType" checked>
-                            <span>タイプ</span>
-                        </label>
-                        <label class="search-checkbox">
-                            <input type="checkbox" id="searchContent" checked>
-                            <span>内容テキスト</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="controls-row">
-                    <div class="control-group">
-                        <label class="control-label">表示:</label>
-                        <div class="view-mode-group">
-                            <button class="mode-btn" data-view="simple">シンプル</button>
-                            <button class="mode-btn active" data-view="detail">詳細</button>
+
+                <div id="contentSection" class="hidden">
+                    <div class="toolbar">
+                        <div class="filter-group">
+                            <button class="filter-btn active" data-filter="all">ALL</button>
+                            <button class="filter-btn" data-filter="monster">モンスター</button>
+                            <button class="filter-btn" data-filter="magic">魔法</button>
+                            <button class="filter-btn" data-filter="supporter">サポーター</button>
+                            <button class="filter-btn" data-filter="ex">EX</button>
+                        </div>
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="searchInput" placeholder="検索...">
+                            </div>
+                            <div class="search-options">
+                                <label class="search-checkbox">
+                                    <input type="checkbox" id="searchName" checked>
+                                    <span>カード名</span>
+                                </label>
+                                <label class="search-checkbox">
+                                    <input type="checkbox" id="searchType" checked>
+                                    <span>タイプ</span>
+                                </label>
+                                <label class="search-checkbox">
+                                    <input type="checkbox" id="searchContent" checked>
+                                    <span>内容テキスト</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="controls-row">
+                            <div class="control-group">
+                                <label class="control-label">表示:</label>
+                                <select id="viewMode">
+                                    <option value="simple">シンプル</option>
+                                    <option value="detail">詳細</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">並び替え:</label>
+                                <select id="sortSelect">
+                                    <option value="name">名前</option>
+                                    <option value="type">種類</option>
+                                    <option value="atk">ATK</option>
+                                    <option value="hp">HP</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label">並び替え:</label>
-                        <select id="sortSelect">
-                            <option value="name">名前</option>
-                            <option value="type">種類</option>
-                            <option value="atk">ATK</option>
-                            <option value="hp">HP</option>
-                        </select>
+
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total</span>
+                            <span class="stat-value" id="totalCards">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">表示中</span>
+                            <span class="stat-value" id="displayCards">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">モンスター</span>
+                            <span class="stat-value" id="monsterCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">魔法</span>
+                            <span class="stat-value" id="magicCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">サポーター</span>
+                            <span class="stat-value" id="supporterCount">0</span>
+                        </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">族:</label>
-                        <select id="tribeSelect">
-                            <option value="all">すべて</option>
-                        </select>
-                   </div>
+                    <div class="card-list" id="cardContainer"></div>
                 </div>
             </div>
-
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-label">Total</span>
-                    <span class="stat-value" id="totalCards">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">表示中</span>
-                    <span class="stat-value" id="displayCards">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">モンスター</span>
-                    <span class="stat-value" id="monsterCount">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">魔法</span>
-                    <span class="stat-value" id="magicCount">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">サポーター</span>
-                    <span class="stat-value" id="supporterCount">0</span>
-                </div>
-            </div>
-
-            <div class="card-list" id="cardContainer"></div>
         </div>
 
-        <!-- 詳細モーダル -->
-        <div class="modal" id="detailModal" onclick="closeModal(event)">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <div class="modal-header">
-                    <div class="modal-title-section">
-                        <div class="modal-name" id="modalName"></div>
-                        <div class="modal-ruby" id="modalRuby"></div>
-                    </div>
-                    <button class="close-btn" onclick="closeModal()">✕</button>
+        <div class="deck-area" id="deckArea">
+            <div class="deck-header">
+                <h2>デッキ作成</h2>
+                <div class="deck-count" id="deckCount">
+                    通常: <span id="mainDeckCount">0</span>/40-60枚 | EX: <span id="exDeckCount">0</span>/15枚
                 </div>
-                <div class="modal-body" id="modalBody"></div>
+                <div class="deck-tabs">
+                    <button class="deck-tab active" data-deck="main">通常デッキ</button>
+                    <button class="deck-tab" data-deck="ex">EXデッキ</button>
+                </div>
+            </div>
+            <div class="deck-body" id="deckBody">
+                <div class="deck-empty">デッキにカードを追加してください</div>
+            </div>
+            <div class="deck-footer">
+                <button class="deck-action-btn primary" id="saveDeckBtn" disabled>💾 デッキを保存</button>
+                <button class="deck-action-btn secondary" id="exportDeckBtn">📤 JSONエクスポート</button>
+                <button class="deck-action-btn danger" id="clearDeckBtn">🗑️ 全消去</button>
             </div>
         </div>
     </div>
 
-    <script>
-        let allCards = [];
-        let filteredCards = [];
-        let currentFilter = 'all';
-        // デフォルトを詳細に変更
-        let viewMode = 'detail';
+    <div class="modal" id="detailModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <div class="modal-name" id="modalName"></div>
+                    <div class="modal-ruby" id="modalRuby"></div>
+                </div>
+                <button class="close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
 
-        const tribeSelect = document.getElementById('tribeSelect');
-
-        const fileInput = document.getElementById('fileInput');
-        const uploadArea = document.querySelector('.upload-area');
-
-        // tribe dropdown change -> re-filter
-        if (tribeSelect) tribeSelect.addEventListener('change', applyFilters);
-
-        fileInput.addEventListener('change', handleFileSelect);
-        uploadArea.addEventListener('click', () => fileInput.click());
-
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            if (file && file.type === 'application/json') {
-                loadJSON(file);
-            }
-        });
-
-        function handleFileSelect(e) {
-            const file = e.target.files[0];
-            if (file) loadJSON(file);
-        }
-
-        function loadJSON(file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    setCardsFromData(data);
-                } catch (error) {
-                    alert('JSONの読み込みに失敗しました: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function setCardsFromData(data) {
-            allCards = Array.isArray(data) ? data : [data];
-            updateTribeOptions();
-+           updateTribeVisibility();
-            // 初回ロード時など、選択中の種別に合わせてソートを更新
-            updateSortOptions(currentFilter);
-            filteredCards = [...allCards];
-            document.getElementById('uploadSection').classList.add('hidden');
-            document.getElementById('contentSection').classList.remove('hidden');
-            updateStats();
-            renderCards();
-        }
-
-        function updateTribeOptions() {
-            if (!tribeSelect) return;
-            const prev = tribeSelect.value || 'all';
-            // collect unique non-empty tribes
-            const tribes = Array.from(new Set(allCards.map(c => (c.tribe || '').trim()).filter(Boolean))).sort((a,b)=> a.localeCompare(b));
-            tribeSelect.innerHTML = '<option value="all">すべて</option>';
-            tribes.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t;
-                opt.textContent = t;
-                tribeSelect.appendChild(opt);
-            });
-            // restore previous selection if available
-            tribeSelect.value = tribes.includes(prev) ? prev : 'all';
-        }
-
-        // 種別が magic または supporter のときに「族」フィルタを非表示にする
-        function updateTribeVisibility() {
-            const group = tribeSelect ? tribeSelect.parentElement : null;
-            if (!group) return;
-            if (currentFilter === 'magic' || currentFilter === 'supporter') {
-                group.style.display = 'none';
-                tribeSelect.value = 'all';
-            } else {
-                group.style.display = 'flex';
-            }
-        }
-
-        function autoLoadLocalJson() {
-            fetch('card.json', { cache: 'no-cache' })
-                .then(resp => {
-                    if (!resp.ok) throw new Error('not found');
-                    return resp.json();
-                })
-                .then(json => {
-                    setCardsFromData(json);
-                })
-                .catch(() => {});
-        }
-
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentFilter = btn.dataset.filter;
-                // 選択中のカード種別に応じてソートを更新
-                updateSortOptions(currentFilter);
-+               // 「族」プルダウンの表示切替
-+               updateTribeVisibility();
-                applyFilters();
-            });
-        });
-
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('sortSelect').addEventListener('change', applyFilters);
-        document.getElementById('searchName').addEventListener('change', applyFilters);
-        document.getElementById('searchType').addEventListener('change', applyFilters);
-        document.getElementById('searchContent').addEventListener('change', applyFilters);
-        // view モードボタン（セレクトの代替）
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                viewMode = btn.dataset.view;
-                renderCards();
-            });
-        });
-
-        // 種別に応じたソート選択肢の切り替え
-        function updateSortOptions(filter) {
-            const sel = document.getElementById('sortSelect');
-            if (!sel) return;
-            const prev = sel.value;
-            if (filter === 'magic') {
-                sel.innerHTML = '<option value="name">名前</option><option value="cost">コスト</option>';
-                sel.value = prev === 'cost' || prev === 'name' ? prev : 'cost';
-            } else if (filter === 'supporter') {
-                sel.innerHTML = '<option value="name">名前</option>';
-                sel.value = 'name';
-            } else if (filter === 'all') {
-                sel.innerHTML = '<option value="name">名前</option><option value="type">種類</option>';
-                sel.value = ['name','type'].includes(prev) ? prev : 'name';
-            } else {
-                sel.innerHTML = '<option value="name">名前</option><option value="type">種類</option><option value="atk">ATK</option><option value="hp">HP</option>';
-                sel.value = ['name','type','atk','hp'].includes(prev) ? prev : 'name';
-            }
-        }
-
-        function applyFilters() {
-            const search = document.getElementById('searchInput').value.toLowerCase().trim();
-            const sort = document.getElementById('sortSelect').value;
-            const selectedTribe = (tribeSelect && tribeSelect.value) ? tribeSelect.value : 'all';
-            const searchName = document.getElementById('searchName').checked;
-            const searchType = document.getElementById('searchType').checked;
-            const searchContent = document.getElementById('searchContent').checked;
-
-            filteredCards = allCards.filter(card => {
-                const matchFilter = currentFilter === 'all' || card.cardBase === currentFilter;
-                const matchTribe = selectedTribe === 'all' || (card.tribe || '') === selectedTribe;
-                if (!search) return matchFilter && matchTribe;
-
-                let matchSearch = false;
-
-                if (searchName) {
-                    const name = (card.cardName || '').toLowerCase();
-                    const ruby = (card.cardRuby || '').toLowerCase();
-                    if (name.includes(search) || ruby.includes(search)) {
-                        matchSearch = true;
-                    }
-                }
-
-                if (searchType && !matchSearch) {
-                    const tribe = (card.tribe || '').toLowerCase();
-                    const monsterType = (card.monsterType || '').toLowerCase();
-                    const monsterTypeText = (card.monsterTypeText || '').toLowerCase();
-                    if (tribe.includes(search) || monsterType.includes(search) || monsterTypeText.includes(search)) {
-                        matchSearch = true;
-                    }
-                }
-
-                if (searchContent && !matchSearch) {
-                    const supplementText = (card.supplementText || '').toLowerCase();
-                    const contentText = (card.contentText || '').toLowerCase();
-                    
-                    const skillTexts = (card.skills || []).map(s => 
-                        ((s.name || '') + ' ' + (s.text || '')).toLowerCase()
-                    ).join(' ');
-
-                    if (supplementText.includes(search) || contentText.includes(search) || skillTexts.includes(search)) {
-                        matchSearch = true;
-                    }
-                }
-
-                return matchFilter && matchSearch;
-            });
-
-            filteredCards.sort((a, b) => {
-                switch(sort) {
-                    case 'name': return a.cardName.localeCompare(b.cardName);
-                    case 'type': return a.cardBase.localeCompare(b.cardBase);
-                    case 'atk': return (b.attack || 0) - (a.attack || 0);
-                    case 'hp': return (b.hp || 0) - (a.hp || 0);
-                    case 'cost': return ( (a.magicCost||0) - (b.magicCost||0) ); // 魔法: コスト昇順
-                    default: return 0;
-                }
-            });
-
-            updateStats();
-            document.getElementById('displayCards').textContent = filteredCards.length;
-            renderCards();
-        }
-
-        function updateStats() {
-            document.getElementById('totalCards').textContent = allCards.length;
-            document.getElementById('displayCards').textContent = filteredCards.length;
-            document.getElementById('monsterCount').textContent = allCards.filter(c => c.cardBase === 'monster' || c.cardBase === 'ex').length;
-            document.getElementById('magicCount').textContent = allCards.filter(c => c.cardBase === 'magic').length;
-            document.getElementById('supporterCount').textContent = allCards.filter(c => c.cardBase === 'supporter').length;
-        }
-
-        // ファイル名用の安全化（グローバル化）
-        function sanitizeFileName(name) {
-            if (!name) return '';
-            const s = String(name).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
-            return s.replace(/\s+/g, '_');
-        }
-
-        function renderCards() {
-            const container = document.getElementById('cardContainer');
- 
-            // シンプルモードの場合はクラスを追加
-            if (viewMode === 'simple') {
-                container.classList.add('simple-mode');
-            } else {
-                container.classList.remove('simple-mode');
-            }
- 
-            // sanitizeFileName はグローバル関数を使用
-             if (filteredCards.length === 0) {
-                 container.innerHTML = `
-                     <div class="empty-state">
-                         <div class="empty-state-icon">🔍</div>
-                         <h3>カードが見つかりません</h3>
-                         <p>フィルターを調整してください</p>
-                     </div>
-                 `;
-                 return;
-             }
- 
-             container.innerHTML = filteredCards.map(card => {
-                 const typeClass = `type-${card.cardBase}`;
-                 const typeName = {
-                     monster: 'モンスター',
-                     magic: '魔法',
-                     supporter: 'サポーター',
-                     ex: 'EX'
-                 }[card.cardBase];
- 
-                 // 詳細モードでは 'detail' クラスを付与してレイアウトを切り替え
-                 const modeClass = viewMode === 'simple' ? ' simple' : ' detail';
- 
-                 // 画像パス: cardimg/<sanitized cardName>.png（存在しなければ cardimg/sumple.png にフォールバック）
-                 const fileName = sanitizeFileName(card.cardName) || 'sumple';
-                 const imgPath = `cardimg/${fileName}.png`;
- 
-                 let html = `<div class="card-item${modeClass}">`
-                     + `<div class="card-header">
-                         <div class="card-title-section">
-                             <div class="card-name">${card.cardName || '名前なし'}</div>
-                             ${card.cardRuby && viewMode === 'detail' ? `<div class="card-ruby">${card.cardRuby}</div>` : ''}
-                         </div>
-                         <div class="card-meta">
-                             <span class="card-type ${typeClass}">${typeName}</span>`;
- 
-                 if (card.cardBase === 'monster' || card.cardBase === 'ex') {
-                     html += `<div class="card-stats">
-                         <span>⚔️${card.attack}</span>
-                         <span>❤️${card.hp}</span>
-                         ${card.tribe ? `<span>👥${card.tribe}</span>` : ''}
-                         ${card.monsterTypeText && viewMode === 'simple' ? `<span>🏷️${card.monsterTypeText}</span>` : ''}
-                     </div>`;
-                 } else if (card.cardBase === 'magic') {
-                     html += `<div class="card-stats"><span>💎${card.magicCost}</span></div>`;
-                 }
- 
-                 html += `</div></div>`;
- 
-                 if (viewMode === 'detail') {
-                     // 画像 + 詳細を左右並びで表示
-                     html += `<div class="card-body"><div class="card-image"><img src="${imgPath}" alt="card image" onerror="this.onerror=null;this.src='cardimg/sumple.png'"></div><div class="card-details">`;
- 
-                     if (card.cardBase === 'monster' || card.cardBase === 'ex') {
-                         // 短い情報は横並び
-                         html += `<div class="card-info-row">`;
-                         
-                         if (card.monsterType) {
-                             html += `<div class="card-section">
-                                 <div class="section-label">種別:</div>
-                                 <div class="section-content">${card.monsterType}モンスター</div>
-                             </div>`;
-                         }
- 
-                         if (card.tribe) {
-                             html += `<div class="card-section">
-                                 <div class="section-label">族:</div>
-                                 <div class="section-content">${card.tribe}</div>
-                             </div>`;
-                         }
- 
-                         if (card.monsterTypeText) {
-                             html += `<div class="card-section">
-                                 <div class="section-label">タイプ:</div>
-                                 <div class="section-content">${card.monsterTypeText}</div>
-                             </div>`;
-                         }
-                         
-                         html += `</div>`;
- 
-                         if (card.evolutionSource) {
-                             html += `<div class="card-section full-width">
-                                 <div class="section-label">進化元</div>
-                                 <div class="section-content">${card.evolutionSource}</div>
-                             </div>`;
-                         }
- 
-                         if (card.supplementText) {
-                             html += `<div class="card-section full-width">
-                                 <div class="section-label">補足</div>
-                                 <div class="section-content">${card.supplementText}</div>
-                             </div>`;
-                         }
- 
-                         if (card.skills && card.skills.length > 0) {
-                             html += `<div class="card-section full-width">
-                                 <div class="section-label">スキル</div>
-                                 <div class="skill-list">`;
-                             card.skills.forEach(skill => {
-                                 html += `<div class="skill-item">
-                                     <div class="skill-header">${skill.type}: ${skill.name}</div>
-                                     ${skill.text ? `<div class="skill-text">${skill.text}</div>` : ''}
-                                 </div>`;
-                             });
-                             html += `</div></div>`;
-                         }
-                     }
- 
-                     if (card.contentText) {
-                         html += `<div class="card-section full-width">
-                             <div class="section-label">効果</div>
-                             <div class="section-content">${card.contentText}</div>
-                         </div>`;
-                     }
- 
-                     html += `</div></div>`; // .card-details .card-body の閉じ
-                 }
- 
-                 html += `</div>`;
-                 return html;
-             }).join('');
-             // 表示されたカード要素にクリックハンドラを付与（インデックスは filteredCards 順）
-             container.querySelectorAll('.card-item').forEach((el, i) => {
-                 el.addEventListener('click', () => showModal(i));
-             });
-         }
-
-        function showModal(index) {
-            const card = filteredCards[index];
-            // タイトル設定
-            document.getElementById('modalName').textContent = card.cardName || '名前なし';
-            document.getElementById('modalRuby').textContent = card.cardRuby || '';
-            document.getElementById('modalRuby').style.display = card.cardRuby ? 'block' : 'none';
-
-            // 画像パス
-            const fileName = sanitizeFileName(card.cardName) || 'sumple';
-            const imgPath = `cardimg/${fileName}.png`;
-
-            // 詳細HTML（既存の bodyHTML を流用）
-            let bodyHTML = '';
-            const typeName = { monster: 'モンスター', magic: '魔法', supporter: 'サポーター', ex: 'EX' }[card.cardBase];
-            bodyHTML += `<div class="modal-section"><div class="modal-section-label">カードタイプ</div><div class="modal-section-content">${typeName}</div></div>`;
-
-            if (card.cardBase === 'monster' || card.cardBase === 'ex') {
-                bodyHTML += `<div class="modal-section"><div class="modal-section-label">ステータス</div><div class="modal-info-row"><div class="modal-info-item"><span class="modal-section-label">ATK:</span><span class="modal-section-content">${card.attack}</span></div><div class="modal-info-item"><span class="modal-section-label">HP:</span><span class="modal-section-content">${card.hp}</span></div></div></div>`;
-                if (card.monsterType || card.tribe || card.monsterTypeText) {
-                    bodyHTML += `<div class="modal-section"><div class="modal-section-label">分類</div><div class="modal-info-row">`;
-                    if (card.monsterType) bodyHTML += `<div class="modal-info-item"><span class="modal-section-label">種別:</span><span class="modal-section-content">${card.monsterType}モンスター</span></div>`;
-                    if (card.tribe) bodyHTML += `<div class="modal-info-item"><span class="modal-section-label">族:</span><span class="modal-section-content">${card.tribe}</span></div>`;
-                    if (card.monsterTypeText) bodyHTML += `<div class="modal-info-item"><span class="modal-section-label">タイプ:</span><span class="modal-section-content">${card.monsterTypeText}</span></div>`;
-                    bodyHTML += `</div></div>`;
-                }
-                if (card.evolutionSource) bodyHTML += `<div class="modal-section"><div class="modal-section-label">進化元</div><div class="modal-section-content">${card.evolutionSource}</div></div>`;
-                if (card.supplementText) bodyHTML += `<div class="modal-section"><div class="modal-section-label">補足テキスト</div><div class="modal-section-content">${card.supplementText}</div></div>`;
-                if (card.skills && card.skills.length > 0) {
-                    bodyHTML += `<div class="modal-section"><div class="modal-section-label">スキル</div><div class="modal-skills">`;
-                    card.skills.forEach(skill => {
-                        bodyHTML += `<div class="modal-skill-item"><div class="modal-skill-name">${skill.type}: ${skill.name}</div>${skill.text ? `<div class="modal-skill-text">${skill.text}</div>` : ''}</div>`;
-                    });
-                    bodyHTML += `</div></div>`;
-                }
-            }
-            if (card.cardBase === 'magic') bodyHTML += `<div class="modal-section"><div class="modal-section-label">コスト</div><div class="modal-section-content">💎 ${card.magicCost}</div></div>`;
-            if (card.contentText) bodyHTML += `<div class="modal-section"><div class="modal-section-label">効果</div><div class="modal-section-content">${card.contentText}</div></div>`;
-
-            const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = `<div class="modal-image"><img src="${imgPath}" alt="card image" onerror="this.onerror=null;this.src='cardimg/sumple.png'"></div><div class="modal-details">${bodyHTML}</div>`;
-            document.getElementById('detailModal').classList.add('active');
-        }
-
-        function closeModal(event) {
-            if (event && event.target !== event.currentTarget) return;
-            document.getElementById('detailModal').classList.remove('active');
-        }
-
-        autoLoadLocalJson();
-    </script>
+    <script src="cardview.js"></script>
 </body>
 </html>

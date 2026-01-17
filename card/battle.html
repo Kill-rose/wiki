@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>対戦 - 時のアマリス</title>
+    <link rel="stylesheet" href="../../css/default.css">
+    <link rel="stylesheet" href="battle.css">
+    <style>
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            align-items: center;
+            justify-content: center;
+        }
+        .image-modal.active {
+            display: flex;
+        }
+        .image-modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .target-selection-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        .target-selection-modal.active {
+            display: flex;
+        }
+        .target-selection-panel {
+            background: var(--callout-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            max-width: 500px;
+        }
+        .target-selection-title {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .target-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .target-cell {
+            background: rgba(139, 158, 125, 0.1);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .target-cell:hover:not(.disabled) {
+            background: rgba(139, 158, 125, 0.2);
+            border-color: var(--accent-color);
+        }
+        .target-cell.selected {
+            background: var(--accent-color);
+            border-color: var(--accent-green);
+            color: white;
+        }
+        .target-cell.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .target-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .target-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'MainFont', sans-serif;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .target-btn.confirm {
+            background: var(--accent-color);
+            color: white;
+        }
+        .target-btn.cancel {
+            background: rgba(139, 158, 125, 0.2);
+            color: var(--text-color);
+        }
+        .log-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 左パネル -->
+    <div class="left-panel" id="leftPanel">
+        <div class="card-detail">
+            <div class="card-detail-header">
+                <div class="card-image-container">
+                    <img id="cardDetailImage" src="img/monster.png" alt="カード画像">
+                </div>
+                <div class="card-basic-info">
+                    <div class="card-detail-name" id="cardDetailName">カード未選択</div>
+                    <div class="card-detail-stats" id="cardDetailStats">
+                        <span>種類: -</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-detail-body" id="cardDetailBody">
+                <div class="detail-section">
+                    <div class="detail-label">説明</div>
+                    <div class="detail-content">カードを選択すると詳細が表示されます</div>
+                </div>
+            </div>
+        </div>
+        <div class="card-action-panel" id="actionPanel">
+            <!-- 選択されたカードに応じてボタンが表示される -->
+        </div>
+    </div>
+
+    <!-- リサイザー -->
+    <div class="resizer" id="leftResizer"></div>
+
+    <!-- 中央パネル -->
+    <div class="center-panel">
+        <!-- 相手の場 -->
+        <div class="field-area opponent">
+            <div class="field-row hand-zone" id="handZoneOpp">
+                <!-- 相手フリーゾーン -->
+            </div>
+            <div class="field-row">
+                <!-- 相手の中段 -->
+            </div>
+            <div class="field-row">
+                <!-- 相手の上段 -->
+            </div>
+        </div>
+
+        <!-- 自分の場 -->
+        <div class="field-area">
+            <div class="field-row">
+                <!-- 自分の上段 -->
+                <div class="field-cell" data-zone="graveyard" data-pos="1-1">
+                    <img src="img/reverse.png" alt="墓地">
+                    <div class="field-cell-label">墓地</div>
+                </div>
+                <div class="field-cell" data-zone="battle" data-pos="2-1"></div>
+                <div class="field-cell" data-zone="battle" data-pos="3-1"></div>
+                <div class="field-cell" data-zone="battle" data-pos="4-1"></div>
+                <div class="field-cell" data-zone="counter" data-pos="5-1">
+                    <img src="img/reverse.png" alt="カウンター">
+                    <div class="field-cell-label">カウンター</div>
+                </div>
+            </div>
+            <div class="field-row">
+                <!-- 自分の中段 -->
+                <div class="field-cell" data-zone="ex" data-pos="1-2">
+                    <img src="img/reverse.png" alt="EXデッキ">
+                    <div class="field-cell-label">EX</div>
+                </div>
+                <div class="field-cell" data-zone="reserve" data-pos="2-2"></div>
+                <div class="field-cell" data-zone="reserve" data-pos="3-2"></div>
+                <div class="field-cell" data-zone="reserve" data-pos="4-2"></div>
+                <div class="field-cell" data-zone="deck" data-pos="5-2">
+                    <img src="img/reverse.png" alt="山札">
+                    <div class="field-cell-label">山札</div>
+                </div>
+            </div>
+            <div class="field-row hand-zone" id="handZone">
+                <!-- 手札/フリーゾーン/確認中 -->
+                <button class="zone-toggle-btn" id="zoneToggleBtn">手札</button>
+                <!-- カードがここに追加される -->
+            </div>
+        </div>
+
+        <!-- メニュートグルボタン -->
+        <button class="menu-toggle" id="menuToggle">⚙️</button>
+        <div class="menu-panel" id="menuPanel">
+            <button class="menu-btn" id="coinTossBtn">コイントス</button>
+            <button class="menu-btn" id="turnEndBtn">ターンエンド</button>
+            <button class="menu-btn" id="mulliganEndBtn">手札決定</button>
+            <button class="menu-btn" id="manaRecoverBtn">マナ回復</button>
+            <button class="menu-btn" id="loadDeckBtn">デッキ読み込み</button>
+            <button class="menu-btn">やめる</button>
+        </div>
+
+        <!-- 独立した場出しパネル -->
+        <div class="placement-panel" id="placementPanel">
+            <div class="placement-title">場に出す位置を選択</div>
+            <div class="placement-grid" id="placementGrid">
+                <div class="placement-cell" data-zone="battle" data-index="0">B1</div>
+                <div class="placement-cell" data-zone="battle" data-index="1">B2</div>
+                <div class="placement-cell" data-zone="battle" data-index="2">B3</div>
+                <div class="placement-cell" data-zone="reserve" data-index="0">R1</div>
+                <div class="placement-cell" data-zone="reserve" data-index="1">R2</div>
+                <div class="placement-cell" data-zone="reserve" data-index="2">R3</div>
+            </div>
+            <div class="placement-buttons">
+                <button class="placement-btn cancel" id="placementCancelBtn">キャンセル</button>
+                <button class="placement-btn" id="placementConfirmBtn" disabled>場に出す</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- リサイザー -->
+    <div class="resizer" id="rightResizer"></div>
+
+    <!-- 右パネル -->
+    <div class="right-panel" id="rightPanel">
+        <div class="status-area">
+            <div class="status-row">
+                <div class="status-item">
+                    <span class="status-label">2P HP:</span>
+                    <span class="status-value">5</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">シールド:</span>
+                    <span class="status-value">3</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">マナ:</span>
+                    <span class="status-value">0/0</span>
+                </div>
+            </div>
+            <div class="status-row">
+                <div class="status-item">
+                    <span class="status-label">1P HP:</span>
+                    <span class="status-value">5</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">シールド:</span>
+                    <span class="status-value">3</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">マナ:</span>
+                    <span class="status-value">0/0</span>
+                </div>
+            </div>
+            <div class="status-row">
+                <div class="status-item">
+                    <span class="status-label">経過ターン:</span>
+                    <span class="status-value" id="turnStatus">1 - あなたのターン</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="log-area">
+            <div class="log-display" id="logDisplay">
+                <div class="log-entry system">
+                    <span class="log-label">[システム]</span>
+                    <span>対戦を開始しました</span>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="チャットを入力...">
+            </div>
+        </div>
+
+        <div class="field-control">
+            <div class="field-grid" id="fieldGrid">
+                <div class="field-cell mini" data-pos="0"></div>
+                <div class="field-cell mini" data-pos="1"></div>
+                <div class="field-cell mini" data-pos="2"></div>
+                <div class="field-cell mini" data-pos="3"></div>
+                <div class="field-cell mini" data-pos="4"></div>
+                <div class="field-cell mini" data-pos="5"></div>
+            </div>
+            <div class="counter-control">
+                <div class="counter-display">
+                    <input type="number" id="counterValue" value="0">
+                </div>
+                <div class="counter-buttons">
+                    <button class="counter-btn" id="counterMinus">-10</button>
+                    <button class="counter-btn" id="counterPlus">+10</button>
+                </div>
+                <button class="counter-apply-btn" id="counterApplyBtn" disabled>決定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 画像拡大モーダル -->
+    <div class="image-modal" id="imageModal">
+        <span class="image-modal-close" id="imageModalClose">&times;</span>
+        <img class="image-modal-content" id="imageModalContent">
+    </div>
+
+    <!-- 対象選択モーダル -->
+    <div class="target-selection-modal" id="targetModal">
+        <div class="target-selection-panel">
+            <div class="target-selection-title" id="targetModalTitle">対象を選択</div>
+            <div class="target-grid" id="targetGrid"></div>
+            <div class="target-buttons">
+                <button class="target-btn cancel" id="targetCancelBtn">キャンセル</button>
+                <button class="target-btn confirm" id="targetConfirmBtn">決定</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="battle.js"></script>
+</body>
+</html>
