@@ -265,10 +265,12 @@
             <div class="filter-bar" id="filterBar">
                 <button class="filter-btn active" data-filter="all">すべて</button>
                 <!-- タグは自由に追加・変更してOK -->
-                <button class="filter-btn" data-filter="キャラ">キャラ</button>
-                <button class="filter-btn" data-filter="落書き">落書き</button>
-                <button class="filter-btn" data-filter="イルミナ">イルミナ</button>
-                <button class="filter-btn" data-filter="イレグナ">イレグナ</button>
+                <button class="filter-btn" data-filter="創作">創作</button>
+                <button class="filter-btn" data-filter="ASMRK">ASMRK</button>
+                <button class="filter-btn" data-filter="一枚絵">一枚絵</button>
+                <button class="filter-btn" data-filter="立ち絵">立ち絵</button>
+                <button class="filter-btn" data-filter="設定">設定</button>
+                <button class="filter-btn" data-filter="らくがき">らくがき（描きかけも）</button>
             </div>
 
             <!-- ===== ギャラリーグリッド =====
@@ -284,25 +286,43 @@
             -->
             <div class="gallery-grid" id="galleryGrid">
 
-                <!-- ↓ここから画像を追加していくよ↓ -->
-
-                <!-- サンプル：実際の画像パスに変えてね -->
-                <div class="gallery-item" data-tags="落書き" data-caption="らくがき01">
-                    <img src="img/rkgk/sample_01.png" alt="らくがき01" loading="lazy">
-                    <div class="gallery-caption">らくがき01</div>
+                <div class="gallery-item" data-tags="ASMRK 一枚絵" data-caption="きろさ（TKGのすがた）">
+                    <img src="img/rkgk/kiro.png" loading="lazy">
+                    <div class="gallery-caption">きろさ（TKGのすがた）</div>
                 </div>
 
-                <div class="gallery-item" data-tags="キャラ イルミナ" data-caption="オクルス">
-                    <img src="img/rkgk/sample_02.png" alt="オクルス" loading="lazy">
+                <div class="gallery-item" data-tags="創作 一枚絵 らくがき" data-caption="レン">
+                    <img src="img/rkgk/on.png" loading="lazy">
+                    <div class="gallery-caption">レン</div>
+                </div>
+
+
+                <div class="gallery-item" data-tags="創作 一枚絵" data-caption="おわたこ">
+                    <img src="img/rkgk/saba.png" loading="lazy">
+                    <div class="gallery-caption">おわたこ</div>
+                </div>
+
+                <div class="gallery-item" data-tags="創作 立ち絵" data-caption="オクルス">
+                    <img src="img/oculus_full.png" loading="lazy">
                     <div class="gallery-caption">オクルス</div>
                 </div>
 
-                <div class="gallery-item" data-tags="キャラ イレグナ" data-caption="イレグナキャラ">
-                    <img src="img/rkgk/sample_03.png" alt="イレグナキャラ" loading="lazy">
-                    <div class="gallery-caption">イレグナキャラ</div>
+                <div class="gallery-item" data-tags="一枚絵" data-caption="アルラウネ">
+                    <img src="img/rkgk/baraka.png" loading="lazy">
+                    <div class="gallery-caption">アルラウネ</div>
                 </div>
 
-                <!-- ↑ここまで。上の形式をコピーして増やしてね↑ -->
+                
+                <div class="gallery-item" data-tags="設定 創作" data-caption="きろさ（TKGのすがた）設定">
+                    <img src="img/rkgk/kirosatkgs.png"  loading="lazy">
+                    <div class="gallery-caption">きろさ（TKGのすがた）設定</div>
+                </div>
+
+                <div class="gallery-item" data-tags="設定 創作" data-caption="タヤマ">
+                    <img src="img/rkgk/tayama.png" loading="lazy">
+                    <div class="gallery-caption">タヤマ</div>
+                </div>
+
 
             </div>
             <!-- /#galleryGrid -->
