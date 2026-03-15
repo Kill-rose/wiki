@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="rkgk置き場 - 永キ創作wiki">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <title>rkgk置き場 | Lunetra wiki</title>
+    <!-- サイト共通CSSの読み込み -->
+    <link rel="stylesheet" href="css/default.css">
+    <style>
+        /* ===== rkgk置き場 専用スタイル ===== */
+
+        /* ---- グリッドレイアウト ---- */
+        .gallery-grid {
+            display: grid;
+            /* 最小200px・最大1frでレスポンシブなタイル並び */
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 1.5em;
+        }
+
+        /* ---- 各イラストカード ---- */
+        .gallery-item {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: var(--callout-bg);
+            cursor: pointer;
+            /* ホバー時にふわっと浮き上がるトランジション */
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            aspect-ratio: 1 / 1; /* 正方形に統一 */
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border-color: var(--accent-color);
+        }
+
+        /* ---- サムネイル画像 ---- */
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* はみ出す部分はトリミング */
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05); /* ホバーで少し拡大 */
+        }
+
+        /* ---- カード下部のキャプション ---- */
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            /* 文字が読めるよう下部をグラデーションで暗くする */
+            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+            color: #fff;
+            font-size: 0.78em;
+            padding: 1.5em 0.6em 0.5em;
+            /* 普段は非表示・ホバーで出現 */
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            opacity: 1;
+        }
+
+        /* ---- フィルターボタン（タグ絞り込み） ---- */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5em;
+            margin-bottom: 1.2em;
+        }
+
+        .filter-btn {
+            background: var(--callout-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 20px;
+            padding: 0.3em 0.9em;
+            font-size: 0.85em;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--text-color);
+        }
+
+        /* アクティブ状態のボタン */
+        .filter-btn.active {
+            background: rgba(139, 158, 125, 0.35);
+            border-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        /* ---- 画像が0件のときの表示 ---- */
+        .gallery-empty {
+            grid-column: 1 / -1; /* グリッド全幅を使う */
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3em 0;
+            font-size: 0.95em;
+        }
+
+        /* ---- モーダルオーバーレイ ---- */
+        .modal-overlay {
+            display: none; /* JSで表示切替 */
+            position: fixed;
+            inset: 0; /* top/right/bottom/left: 0 の一括指定 */
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            /* フレックスで中央寄せ */
+            align-items: center;
+            justify-content: center;
+            padding: 1em;
+            cursor: zoom-out;
+        }
+
+        /* 表示中はflexで中央に */
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        /* ---- モーダル内コンテンツ ---- */
+        .modal-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            cursor: default; /* 画像自体はデフォルトカーソル */
+            animation: modal-in 0.2s ease; /* 開くときのアニメ */
+        }
+
+        /* モーダルを開くアニメーション */
+        @keyframes modal-in {
+            from { opacity: 0; transform: scale(0.93); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* ---- モーダル内の画像 ---- */
+        .modal-content img {
+            max-width: 90vw;
+            max-height: 85vh;
+            object-fit: contain;
+            display: block;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+
+        /* ---- モーダル内キャプション ---- */
+        .modal-caption {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            text-align: center;
+            margin-top: 0.6em;
+        }
+
+        /* ---- モーダルを閉じるボタン ---- */
+        .modal-close {
+            position: absolute;
+            top: -0.8em;
+            right: -0.8em;
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 2em;
+            height: 2em;
+            font-size: 1.1em;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+            font-family: inherit;
+        }
+
+        .modal-close:hover {
+            background: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        /* ---- 前後ナビボタン ---- */
+        .modal-prev,
+        .modal-next {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 50%;
+            width: 2.5em;
+            height: 2.5em;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+
+        .modal-prev { left: 1em; }
+        .modal-next { right: 1em; }
+
+        .modal-prev:hover,
+        .modal-next:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* ---- レスポンシブ（スマホ対応） ---- */
+        @media (max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 8px;
+            }
+
+            .modal-prev { left: 0.3em; }
+            .modal-next { right: 0.3em; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== ヘッダー（index.htmlと同じ構造） ===== -->
+    <header class="header-image" id="header">
+        <button class="toggle-btn" id="toggleBtn" aria-label="ヘッダーを閉じる">▲</button>
+    </header>
+
+    <div class="container">
+
+        <!-- サイドバーを外部ファイルから読み込むためのコンテナ -->
+        <div id="sidebar"></div>
+
+        <div class="main-content">
+
+            <!-- ページタイトル（index.htmlと同じcalloutスタイル） -->
+            <div class="callout main-header">
+                <span class="icon">
+                    <!-- アイコン画像はサイトに合わせて変更してね -->
+                    <img src="img/icon/book.png" alt="">
+                </span>
+                <strong>rkgk置き場</strong>
+            </div>
+
+            <p>落書きとか絵とかをぽいぽい置いていくよ。</p>
+
+            <hr>
+
+            <!-- ===== フィルターボタン =====
+                 data-filter属性が "all" なら全表示、
+                 それ以外はギャラリーアイテムのdata-tags属性と照合して絞り込む -->
+            <div class="filter-bar" id="filterBar">
+                <button class="filter-btn active" data-filter="all">すべて</button>
+                <!-- タグは自由に追加・変更してOK -->
+                <button class="filter-btn" data-filter="キャラ">キャラ</button>
+                <button class="filter-btn" data-filter="落書き">落書き</button>
+                <button class="filter-btn" data-filter="イルミナ">イルミナ</button>
+                <button class="filter-btn" data-filter="イレグナ">イレグナ</button>
+            </div>
+
+            <!-- ===== ギャラリーグリッド =====
+                 画像を追加するときは .gallery-item を複製してね。
+                 data-tags: スペース区切りで複数タグ付与可
+                 data-caption: モーダルに表示するキャプション（省略可）
+
+                 例:
+                 <div class="gallery-item" data-tags="キャラ イルミナ" data-caption="オクルスのらくがき">
+                     <img src="img/rkgk/oc_001.png" alt="オクルスのらくがき">
+                     <div class="gallery-caption">オクルスのらくがき</div>
+                 </div>
+            -->
+            <div class="gallery-grid" id="galleryGrid">
+
+                <!-- ↓ここから画像を追加していくよ↓ -->
+
+                <!-- サンプル：実際の画像パスに変えてね -->
+                <div class="gallery-item" data-tags="落書き" data-caption="らくがき01">
+                    <img src="img/rkgk/sample_01.png" alt="らくがき01" loading="lazy">
+                    <div class="gallery-caption">らくがき01</div>
+                </div>
+
+                <div class="gallery-item" data-tags="キャラ イルミナ" data-caption="オクルス">
+                    <img src="img/rkgk/sample_02.png" alt="オクルス" loading="lazy">
+                    <div class="gallery-caption">オクルス</div>
+                </div>
+
+                <div class="gallery-item" data-tags="キャラ イレグナ" data-caption="イレグナキャラ">
+                    <img src="img/rkgk/sample_03.png" alt="イレグナキャラ" loading="lazy">
+                    <div class="gallery-caption">イレグナキャラ</div>
+                </div>
+
+                <!-- ↑ここまで。上の形式をコピーして増やしてね↑ -->
+
+            </div>
+            <!-- /#galleryGrid -->
+
+        </div>
+        <!-- /.main-content -->
+    </div>
+    <!-- /.container -->
+
+
+    <!-- ===== モーダルオーバーレイ =====
+         JS で .active クラスを付与/除去して表示切替する -->
+    <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="画像拡大表示">
+        <!-- 前の画像へ -->
+        <button class="modal-prev" id="modalPrev" aria-label="前の画像">&#8249;</button>
+
+        <div class="modal-content" id="modalContent">
+            <!-- 閉じるボタン -->
+            <button class="modal-close" id="modalClose" aria-label="閉じる">✕</button>
+            <!-- 拡大表示する画像（JSで差し替える） -->
+            <img id="modalImg" src="" alt="">
+            <!-- キャプション（JSで差し替える） -->
+            <div class="modal-caption" id="modalCaption"></div>
+        </div>
+
+        <!-- 次の画像へ -->
+        <button class="modal-next" id="modalNext" aria-label="次の画像">&#8250;</button>
+    </div>
+
+
+    <!-- ===== JS: サイドバー読み込み・ヘッダートグル（index.htmlと共通） ===== -->
+    <script src="js/load_sidebar.js"></script>
+    <script src="js/header_toggle.js"></script>
+
+    <script>
+    /* ===== ギャラリー全体の処理 ===== */
+    (function () {
+
+        /* ---- 要素の取得 ---- */
+        const grid       = document.getElementById('galleryGrid');
+        const filterBar  = document.getElementById('filterBar');
+        const overlay    = document.getElementById('modalOverlay');
+        const modalImg   = document.getElementById('modalImg');
+        const modalCap   = document.getElementById('modalCaption');
+        const btnClose   = document.getElementById('modalClose');
+        const btnPrev    = document.getElementById('modalPrev');
+        const btnNext    = document.getElementById('modalNext');
+
+        /* 現在表示中のアイテム一覧・インデックスを管理 */
+        let visibleItems = [];  // フィルター後に表示されているアイテムの配列
+        let currentIdx   = 0;  // 現在モーダルで表示しているアイテムのインデックス
+
+        /* ---- フィルター処理 ---- */
+        filterBar.addEventListener('click', function (e) {
+            const btn = e.target.closest('.filter-btn');
+            if (!btn) return;
+
+            /* ボタンのアクティブ状態を切り替え */
+            filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const filterValue = btn.dataset.filter;
+            const allItems    = grid.querySelectorAll('.gallery-item');
+
+            allItems.forEach(function (item) {
+                /* タグが "all" または item の data-tags に filterValue が含まれるなら表示 */
+                const tags = item.dataset.tags || '';
+                if (filterValue === 'all' || tags.split(' ').includes(filterValue)) {
+                    item.style.display = '';   // 表示
+                } else {
+                    item.style.display = 'none'; // 非表示
+                }
+            });
+
+            /* フィルター後に表示アイテム一覧を更新 */
+            updateVisibleItems();
+        });
+
+        /* ---- 表示中アイテムのリストを更新する関数 ---- */
+        function updateVisibleItems() {
+            visibleItems = Array.from(grid.querySelectorAll('.gallery-item'))
+                .filter(function (item) { return item.style.display !== 'none'; });
+        }
+
+        /* 初期化（全表示状態でリストを作成） */
+        updateVisibleItems();
+
+        /* ---- モーダルを開く ---- */
+        grid.addEventListener('click', function (e) {
+            const item = e.target.closest('.gallery-item');
+            if (!item) return;
+
+            /* クリックしたアイテムが visibleItems の何番目かを取得 */
+            currentIdx = visibleItems.indexOf(item);
+            showModal(currentIdx);
+        });
+
+        /* ---- モーダルにアイテムを表示する関数 ---- */
+        function showModal(idx) {
+            if (idx < 0 || idx >= visibleItems.length) return;
+
+            const item = visibleItems[idx];
+            const img  = item.querySelector('img');
+
+            /* 画像・キャプションをモーダルにセット */
+            modalImg.src = img.src;
+            modalImg.alt = img.alt;
+            modalCap.textContent = item.dataset.caption || img.alt || '';
+
+            /* 前後ボタンの表示切替（端のアイテムはボタンを隠す） */
+            btnPrev.style.visibility = (idx > 0)                       ? 'visible' : 'hidden';
+            btnNext.style.visibility = (idx < visibleItems.length - 1) ? 'visible' : 'hidden';
+
+            /* オーバーレイを表示 */
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // スクロール防止
+        }
+
+        /* ---- モーダルを閉じる関数 ---- */
+        function closeModal() {
+            overlay.classList.remove('active');
+            document.body.style.overflow = ''; // スクロール復元
+        }
+
+        /* 閉じるボタン */
+        btnClose.addEventListener('click', closeModal);
+
+        /* オーバーレイ背景クリックでも閉じる */
+        overlay.addEventListener('click', function (e) {
+            /* モーダル内コンテンツ・ナビボタン以外がクリックされた場合に閉じる */
+            if (e.target === overlay) closeModal();
+        });
+
+        /* ---- 前の画像へ ---- */
+        btnPrev.addEventListener('click', function (e) {
+            e.stopPropagation(); // オーバーレイへのイベント伝播を止める
+            if (currentIdx > 0) {
+                currentIdx--;
+                showModal(currentIdx);
+            }
+        });
+
+        /* ---- 次の画像へ ---- */
+        btnNext.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (currentIdx < visibleItems.length - 1) {
+                currentIdx++;
+                showModal(currentIdx);
+            }
+        });
+
+        /* ---- キーボード操作対応 ---- */
+        document.addEventListener('keydown', function (e) {
+            if (!overlay.classList.contains('active')) return;
+
+            if (e.key === 'Escape')      closeModal();          // Escで閉じる
+            if (e.key === 'ArrowLeft')   btnPrev.click();       // ←で前へ
+            if (e.key === 'ArrowRight')  btnNext.click();       // →で次へ
+        });
+
+    })();
+    </script>
+
+</body>
+</html>
