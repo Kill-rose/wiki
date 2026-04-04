@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCGカードデータベース作成ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 1.5rem;
+        }
+
+        .panel {
+            background: #475569;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .card-list {
+            background: #334155;
+            border-radius: 0.375rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .card-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-item:hover {
+            background: #475569;
+        }
+
+        .card-item.active {
+            background: #3b82f6;
+        }
+
+        .card-item-name {
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .card-item-type {
+            color: #cbd5e1;
+            font-size: 0.75rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            background: #334155;
+            color: white;
+            border: 1px solid #475569;
+            font-family: Arial, sans-serif;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: #1e293b;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .toggle-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .toggle-btn {
+            padding: 0.5rem;
+            border: 2px solid #64748b;
+            background: #334155;
+            color: #cbd5e1;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .toggle-btn:hover {
+            background: #475569;
+        }
+
+        .toggle-btn.active {
+            background: #3b82f6;
+            border-color: #60a5fa;
+            color: white;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .skill-item {
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-type-badge {
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .stats-display {
+            background: #1e293b;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            color: white;
+            margin-top: 1rem;
+        }
+
+        .stats-display h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .stats-display p {
+            color: #cbd5e1;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 TCGカードデータベース作成ツール</h1>
+
+        <div class="main-grid">
+            <!-- サイドバー -->
+            <div class="panel">
+                <div class="section">
+                    <div class="section-title">カード一覧 (<span id="cardCount">0</span>枚)</div>
+                    <div class="card-list" id="cardList"></div>
+                </div>
+
+                <div class="section">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="addNewCard()">➕ 新規カード追加</button>
+                        <button class="btn btn-success" onclick="duplicateCard()">📋 複製</button>
+                        <button class="btn btn-danger" onclick="deleteCard()">🗑️ 削除</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="button-group">
+                        <button class="btn btn-success" onclick="exportJson()">💾 JSON出力</button>
+                        <label class="btn btn-secondary" style="text-align: center; margin: 0;">
+                            📂 JSON読み込み
+                            <input type="file" id="jsonInput" accept=".json" style="display: none;">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="stats-display">
+                    <h3>統計情報</h3>
+                    <p>モンスター: <span id="statMonster">0</span>枚</p>
+                    <p>魔法: <span id="statMagic">0</span>枚</p>
+                    <p>EX: <span id="statEx">0</span>枚</p>
+                    <p>サポーター: <span id="statSupporter">0</span>枚</p>
+                </div>
+            </div>
+
+            <!-- メインエディタ -->
+            <div class="panel" style="max-height: 90vh; overflow-y: auto;">
+                <div id="editorContent">
+                    <div style="text-align: center; padding: 3rem; color: #cbd5e1;">
+                        <p>左側の「新規カード追加」ボタンをクリックして開始</p>
+                    </div>
+                </div>
+
+                <div id="editorForm" style="display: none;">
+                    <div class="form-grid">
+                        <!-- 基本情報 -->
+                        <div class="form-group full-width">
+                            <label>カード下地</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" data-field="cardBase" data-value="monster">モンスター</button>
+                                <button class="toggle-btn" data-field="cardBase" data-value="magic">魔法</button>
+                                <button class="toggle-btn" data-field="cardBase" data-value="ex">EX</button>
+                                <button class="toggle-btn" data-field="cardBase" data-value="supporter">サポーター</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="attributeGroup">
+                            <label>属性</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" data-field="attribute" data-value="hi">火</button>
+                                <button class="toggle-btn" data-field="attribute" data-value="mizu">水</button>
+                                <button class="toggle-btn" data-field="attribute" data-value="kaze">風</button>
+                                <button class="toggle-btn" data-field="attribute" data-value="yami">闇</button>
+                                <button class="toggle-btn" data-field="attribute" data-value="hikari">光</button>
+                                <button class="toggle-btn" data-field="attribute" data-value="ti">地</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="monsterTypeGroup">
+                            <label>モンスター種別</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" data-field="monsterType" data-value="通常">通常</button>
+                                <button class="toggle-btn" data-field="monsterType" data-value="EX">EX</button>
+                                <button class="toggle-btn" data-field="monsterType" data-value="特殊進化">特殊進化</button>
+                                <button class="toggle-btn" data-field="monsterType" data-value="進化">進化</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>カード名</label>
+                            <input type="text" id="cardName" placeholder="カード名を入力">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>カード名ルビ</label>
+                            <input type="text" id="cardRuby" placeholder="ルビを入力（カタカナ推奨）">
+                        </div>
+
+                        <!-- モンスター用フィールド -->
+                        <div class="form-group" id="attackGroup">
+                            <label>ATK</label>
+                            <input type="number" id="attack" min="0" value="100">
+                        </div>
+
+                        <div class="form-group" id="hpGroup">
+                            <label>HP</label>
+                            <input type="number" id="hp" min="0" value="100">
+                        </div>
+
+                        <div class="form-group" id="tribeGroup">
+                            <label>族</label>
+                            <select id="tribe">
+                                <option value="">なし</option>
+                                <option value="あやし族">あやし族</option>
+                                <option value="さばる族">さばる族</option>
+                                <option value="ろきさ族">ろきさ族</option>
+                                <option value="みかん族">みかん族</option>
+                                <option value="こぶえもん族">こぶえもん族</option>
+                                <option value="とやま族">とやま族</option>
+                                <option value="なし族">なし族</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="monsterTypeTextGroup">
+                            <label>タイプ</label>
+                            <input type="text" id="monsterTypeText" placeholder="例: 獣/野生など">
+                        </div>
+
+                        <div class="form-group full-width" id="evolutionSourceGroup" style="display: none;">
+                            <label>進化元</label>
+                            <input type="text" id="evolutionSource" placeholder="進化元カード名を入力">
+                        </div>
+
+                        <!-- 魔法用フィールド -->
+                        <div class="form-group" id="magicCostGroup" style="display: none;">
+                            <label>コスト</label>
+                            <input type="number" id="magicCost" min="0" value="1">
+                        </div>
+
+                        <!-- テキストエリア -->
+                        <div class="form-group full-width" id="supplementTextGroup">
+                            <label>補足テキスト</label>
+                            <textarea id="supplementText" placeholder="補足テキストを入力"></textarea>
+                        </div>
+
+                        <div class="form-group full-width" id="contentTextGroup" style="display: none;">
+                            <label>内容テキスト</label>
+                            <textarea id="contentText" placeholder="内容テキストを入力"></textarea>
+                        </div>
+
+                        <!-- スキル管理 -->
+                        <div class="form-group full-width" id="skillSection">
+                            <label>スキル</label>
+                            <div class="skill-list" id="skillList"></div>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <button class="btn btn-success" style="flex: 1;" onclick="addSkill('A')">Aスキル追加</button>
+                                <button class="btn btn-success" style="flex: 1;" onclick="addSkill('P')">Pスキル追加</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cards = [];
+        let currentCardIndex = -1;
+
+        const defaultCard = {
+            cardBase: 'monster',
+            attribute: 'hi',
+            cardName: '',
+            cardRuby: '',
+            monsterType: '通常',
+            tribe: '',
+            monsterTypeText: '',
+            evolutionSource: '',
+            magicCost: 1,
+            attack: 100,
+            hp: 100,
+            supplementText: '',
+            skills: [],
+            contentText: '',
+            flavorText: ''
+        };
+
+        // トグルボタンのイベント設定
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('toggle-btn')) {
+                const field = e.target.dataset.field;
+                const value = e.target.dataset.value;
+                
+                document.querySelectorAll(`[data-field="${field}"]`).forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+                
+                if (currentCardIndex >= 0) {
+                    cards[currentCardIndex][field] = value;
+                    updateVisibility();
+                    updateCardList();
+                }
+            }
+        });
+
+        // 入力フィールドのイベント設定
+        ['cardName', 'cardRuby', 'tribe', 'monsterTypeText', 'evolutionSource', 
+         'magicCost', 'attack', 'hp', 'supplementText', 'contentText'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => {
+                    if (currentCardIndex >= 0) {
+                        cards[currentCardIndex][id] = el.value;
+                        updateCardList();
+                    }
+                });
+            }
+        });
+
+        function addNewCard() {
+            const newCard = JSON.parse(JSON.stringify(defaultCard));
+            newCard.cardName = `新規カード${cards.length + 1}`;
+            cards.push(newCard);
+            currentCardIndex = cards.length - 1;
+            updateCardList();
+            loadCard(currentCardIndex);
+        }
+
+        function duplicateCard() {
+            if (currentCardIndex < 0) return;
+            const newCard = JSON.parse(JSON.stringify(cards[currentCardIndex]));
+            newCard.cardName += ' (コピー)';
+            cards.push(newCard);
+            currentCardIndex = cards.length - 1;
+            updateCardList();
+            loadCard(currentCardIndex);
+        }
+
+        function deleteCard() {
+            if (currentCardIndex < 0) return;
+            if (!confirm('このカードを削除しますか?')) return;
+            cards.splice(currentCardIndex, 1);
+            currentCardIndex = cards.length > 0 ? Math.max(0, currentCardIndex - 1) : -1;
+            updateCardList();
+            if (currentCardIndex >= 0) {
+                loadCard(currentCardIndex);
+            } else {
+                document.getElementById('editorForm').style.display = 'none';
+                document.getElementById('editorContent').style.display = 'block';
+            }
+        }
+
+        function updateCardList() {
+            const list = document.getElementById('cardList');
+            list.innerHTML = '';
+            
+            cards.forEach((card, index) => {
+                const item = document.createElement('div');
+                item.className = 'card-item' + (index === currentCardIndex ? ' active' : '');
+                item.onclick = () => loadCard(index);
+                
+                item.innerHTML = `
+                    <div>
+                        <div class="card-item-name">${card.cardName || '名前なし'}</div>
+                        <div class="card-item-type">${card.cardBase} / ${card.attribute || '-'}</div>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+            document.getElementById('cardCount').textContent = cards.length;
+            updateStats();
+        }
+
+        function updateStats() {
+            const stats = {
+                monster: cards.filter(c => c.cardBase === 'monster').length,
+                magic: cards.filter(c => c.cardBase === 'magic').length,
+                ex: cards.filter(c => c.cardBase === 'ex').length,
+                supporter: cards.filter(c => c.cardBase === 'supporter').length
+            };
+            
+            document.getElementById('statMonster').textContent = stats.monster;
+            document.getElementById('statMagic').textContent = stats.magic;
+            document.getElementById('statEx').textContent = stats.ex;
+            document.getElementById('statSupporter').textContent = stats.supporter;
+        }
+
+        function loadCard(index) {
+            if (index < 0 || index >= cards.length) return;
+            
+            currentCardIndex = index;
+            const card = cards[index];
+            
+            document.getElementById('editorContent').style.display = 'none';
+            document.getElementById('editorForm').style.display = 'block';
+            
+            // フォームに値を設定
+            document.getElementById('cardName').value = card.cardName || '';
+            document.getElementById('cardRuby').value = card.cardRuby || '';
+            document.getElementById('tribe').value = card.tribe || '';
+            document.getElementById('monsterTypeText').value = card.monsterTypeText || '';
+            document.getElementById('evolutionSource').value = card.evolutionSource || '';
+            document.getElementById('magicCost').value = card.magicCost || 1;
+            document.getElementById('attack').value = card.attack || 100;
+            document.getElementById('hp').value = card.hp || 100;
+            document.getElementById('supplementText').value = card.supplementText || '';
+            document.getElementById('contentText').value = card.contentText || '';
+            
+            // トグルボタンを更新
+            document.querySelectorAll('[data-field="cardBase"]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === card.cardBase);
+            });
+            document.querySelectorAll('[data-field="attribute"]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === card.attribute);
+            });
+            document.querySelectorAll('[data-field="monsterType"]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === card.monsterType);
+            });
+            
+            renderSkills();
+            updateVisibility();
+            updateCardList();
+        }
+
+        function updateVisibility() {
+            if (currentCardIndex < 0) return;
+            const card = cards[currentCardIndex];
+            
+            const isMonster = card.cardBase === 'monster' || card.cardBase === 'ex';
+            const isMagic = card.cardBase === 'magic';
+            const isEvolution = card.monsterType === '進化' || card.monsterType === '特殊進化';
+            
+            document.getElementById('attributeGroup').style.display = isMonster ? 'block' : 'none';
+            document.getElementById('monsterTypeGroup').style.display = isMonster ? 'block' : 'none';
+            document.getElementById('attackGroup').style.display = isMonster ? 'block' : 'none';
+            document.getElementById('hpGroup').style.display = isMonster ? 'block' : 'none';
+            document.getElementById('tribeGroup').style.display = isMonster ? 'block' : 'none';
+            document.getElementById('monsterTypeTextGroup').style.display = isMonster ? 'block' : 'none';
+            document.getElementById('evolutionSourceGroup').style.display = isMonster && isEvolution ? 'block' : 'none';
+            document.getElementById('supplementTextGroup').style.display = isMonster ? 'block' : 'none';
+            document.getElementById('skillSection').style.display = isMonster ? 'block' : 'none';
+            
+            document.getElementById('magicCostGroup').style.display = isMagic ? 'block' : 'none';
+            document.getElementById('contentTextGroup').style.display = !isMonster ? 'block' : 'none';
+        }
+
+        function addSkill(type) {
+            if (currentCardIndex < 0) return;
+            cards[currentCardIndex].skills.push({ type, name: '', text: '' });
+            renderSkills();
+        }
+
+        function removeSkill(index) {
+            if (currentCardIndex < 0) return;
+            cards[currentCardIndex].skills.splice(index, 1);
+            renderSkills();
+        }
+
+        function updateSkill(index, field, value) {
+            if (currentCardIndex < 0) return;
+            cards[currentCardIndex].skills[index][field] = value;
+        }
+
+        function renderSkills() {
+            if (currentCardIndex < 0) return;
+            const list = document.getElementById('skillList');
+            const skills = cards[currentCardIndex].skills;
+            
+            list.innerHTML = '';
+            skills.forEach((skill, index) => {
+                const item = document.createElement('div');
+                item.className = 'skill-item';
+                item.innerHTML = `
+                    <div class="skill-header">
+                        <span class="skill-type-badge">${skill.type}スキル</span>
+                        <button class="btn btn-danger btn-small" onclick="removeSkill(${index})">削除</button>
+                    </div>
+                    <input type="text" placeholder="スキル名" value="${skill.name}" 
+                           onchange="updateSkill(${index}, 'name', this.value)" style="margin-bottom: 0.5rem;">
+                    <textarea placeholder="追加テキスト" 
+                              onchange="updateSkill(${index}, 'text', this.value)">${skill.text}</textarea>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function exportJson() {
+            if (cards.length === 0) {
+                alert('カードが1枚もありません');
+                return;
+            }
+            
+            const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tcg-database-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('jsonInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (Array.isArray(data)) {
+                        cards = data;
+                        currentCardIndex = cards.length > 0 ? 0 : -1;
+                        updateCardList();
+                        if (currentCardIndex >= 0) {
+                            loadCard(currentCardIndex);
+                        }
+                        alert(`${cards.length}枚のカードを読み込みました！`);
+                    } else {
+                        alert('配列形式のJSONファイルを選択してください');
+                    }
+                } catch (error) {
+                    alert('JSON読み込みエラー: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        // 初期化
+        updateCardList();
+    </script>
+</body>
+</html>

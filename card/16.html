@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画像グリッド合成ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom right, #f0f9ff, #e0e7ff);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+
+        .specs {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #4338ca;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #15803d;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #b91c1c;
+        }
+
+        .btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-item {
+            position: relative;
+            background: #e5e7eb;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            aspect-ratio: 723 / 1023;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .grid-item-number {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .grid-item .remove-btn {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: none;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .grid-item:hover .remove-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .grid-item .remove-btn:hover {
+            background: #b91c1c;
+        }
+
+        .spec-box {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .success-box {
+            margin-top: 2rem;
+            background: #dcfce7;
+            border-left: 4px solid #16a34a;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            color: #166534;
+            font-weight: 600;
+            display: none;
+        }
+
+        .success-box.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>画像グリッド合成ツール</h1>
+        <p class="subtitle">16枚の画像を4×4のグリッドに組み合わせます</p>
+        <p class="specs">各画像: 723×1023px → 出力: 2892×4092px</p>
+
+        <div class="card">
+            <div class="controls">
+                <button class="btn btn-primary" id="uploadBtn">
+                    📁 画像を選択 (<span id="imageCount">0</span>/16)
+                </button>
+                <button class="btn btn-success" id="downloadBtn" disabled>
+                    💾 ダウンロード
+                </button>
+                <button class="btn btn-danger" id="clearBtn" disabled>
+                    🗑 クリア
+                </button>
+                <input type="file" id="fileInput" multiple accept="image/*">
+            </div>
+
+            <div class="grid-container" id="gridContainer">
+                <!-- グリッドアイテムが動的に生成されます -->
+            </div>
+
+            <div class="spec-box">
+                <strong>出力サイズ:</strong> 2892×4092px
+            </div>
+        </div>
+
+        <div class="success-box" id="successBox">
+            ✓ 16枚すべて揃いました。ダウンロードボタンをクリックして合成画像を保存できます。
+        </div>
+    </div>
+
+    <script>
+        const IMAGE_WIDTH = 723;
+        const IMAGE_HEIGHT = 1023;
+        const TOTAL_IMAGES = 16;
+        const GRID_COLS = 4;
+        const GRID_ROWS = 4;
+
+        let images = [];
+
+        const uploadBtn = document.getElementById('uploadBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const fileInput = document.getElementById('fileInput');
+        const gridContainer = document.getElementById('gridContainer');
+        const imageCount = document.getElementById('imageCount');
+        const successBox = document.getElementById('successBox');
+
+        // 初期グリッド表示
+        initializeGrid();
+
+        uploadBtn.addEventListener('click', () => fileInput.click());
+        downloadBtn.addEventListener('click', combineImages);
+        clearBtn.addEventListener('click', clearAll);
+        fileInput.addEventListener('change', handleFileUpload);
+
+        function initializeGrid() {
+            gridContainer.innerHTML = '';
+            for (let i = 0; i < TOTAL_IMAGES; i++) {
+                const item = document.createElement('div');
+                item.className = 'grid-item';
+                item.id = `grid-${i}`;
+                item.innerHTML = `
+                    <span class="grid-item-number">${i + 1}</span>
+                    <button class="remove-btn" data-index="${i}">×</button>
+                `;
+                gridContainer.appendChild(item);
+            }
+        }
+
+        function handleFileUpload(e) {
+            const files = Array.from(e.target.files);
+            let loadedCount = 0;
+
+            files.forEach(file => {
+                if (images.length >= TOTAL_IMAGES) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        images.push({ src: event.target.result, name: file.name });
+                        updateGrid();
+                        loadedCount++;
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            fileInput.value = '';
+        }
+
+        function updateGrid() {
+            imageCount.textContent = images.length;
+            downloadBtn.disabled = images.length !== TOTAL_IMAGES;
+            clearBtn.disabled = images.length === 0;
+            successBox.classList.toggle('show', images.length === TOTAL_IMAGES);
+
+            for (let i = 0; i < TOTAL_IMAGES; i++) {
+                const item = document.getElementById(`grid-${i}`);
+                item.innerHTML = '';
+
+                if (images[i]) {
+                    const img = document.createElement('img');
+                    img.src = images[i].src;
+                    item.appendChild(img);
+                }
+
+                const btn = document.createElement('button');
+                btn.className = 'remove-btn';
+                btn.textContent = '×';
+                btn.dataset.index = i;
+                btn.addEventListener('click', () => removeImage(i));
+                item.appendChild(btn);
+
+                if (!images[i]) {
+                    const num = document.createElement('span');
+                    num.className = 'grid-item-number';
+                    num.textContent = i + 1;
+                    item.appendChild(num);
+                }
+            }
+        }
+
+        function removeImage(index) {
+            images.splice(index, 1);
+            updateGrid();
+        }
+
+        function clearAll() {
+            images = [];
+            updateGrid();
+        }
+
+        async function combineImages() {
+            if (images.length !== TOTAL_IMAGES) {
+                alert('16枚の画像を選択してください');
+                return;
+            }
+
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = '⏳ 処理中...';
+
+            const canvas = document.createElement('canvas');
+            canvas.width = IMAGE_WIDTH * GRID_COLS;
+            canvas.height = IMAGE_HEIGHT * GRID_ROWS;
+            const ctx = canvas.getContext('2d');
+
+            try {
+                for (let i = 0; i < TOTAL_IMAGES; i++) {
+                    const row = Math.floor(i / GRID_COLS);
+                    const col = i % GRID_COLS;
+                    const x = col * IMAGE_WIDTH;
+                    const y = row * IMAGE_HEIGHT;
+
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+
+                    await new Promise((resolve, reject) => {
+                        img.onload = () => {
+                            ctx.drawImage(img, x, y, IMAGE_WIDTH, IMAGE_HEIGHT);
+                            resolve();
+                        };
+                        img.onerror = reject;
+                        img.src = images[i].src;
+                    });
+                }
+
+                canvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'grid_image_4x4.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    downloadBtn.disabled = false;
+                    downloadBtn.textContent = '💾 ダウンロード';
+                });
+            } catch (error) {
+                console.error('合成エラー:', error);
+                alert('画像の合成に失敗しました');
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '💾 ダウンロード';
+            }
+        }
+    </script>
+</body>
+</html>

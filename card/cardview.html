@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カード一覧 - 時のアマリス</title>
+    <link rel="stylesheet" href="../css/default.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { padding: 0; margin: 0; display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 60px;
+            background: var(--callout-bg);
+            border-right: 1px solid var(--callout-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .sidebar-item {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+        .sidebar-item:hover {
+            background: rgba(139, 158, 125, 0.2);
+            border-color: var(--accent-color);
+        }
+        .sidebar-item.active {
+            background: var(--accent-color);
+            color: white;
+        }
+        .sidebar-divider {
+            width: 80%;
+            height: 1px;
+            background: var(--border-color);
+            margin: 0.5rem 0;
+        }
+        
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        .cards-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+        .main-container.deck-mode .cards-area {
+            max-width: 600px;
+        }
+        
+        .deck-area {
+            width: 0;
+            overflow: hidden;
+            background: var(--callout-bg);
+            border-left: 1px solid var(--callout-border);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-container.deck-mode .deck-area {
+            width: 400px;
+        }
+        .deck-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--callout-border);
+        }
+        .deck-header h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.3rem;
+            color: var(--text-color);
+        }
+        .deck-count {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .deck-count.error {
+            color: #ef4444;
+        }
+        .deck-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .deck-tab {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(139, 158, 125, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-family: 'MainFont', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+        .deck-tab:hover {
+            background: rgba(139, 158, 125, 0.2);
+        }
+        .deck-tab.active {
+            background: var(--accent-color);
+            border-color: var(--accent-green);
+            color: white;
+        }
+        .deck-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .deck-card-item {
+            background: rgba(139, 158, 125, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .deck-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .deck-card-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .deck-card-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+        .deck-card-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .deck-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(139, 158, 125, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+        .deck-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        .deck-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .deck-btn:disabled:hover {
+            background: rgba(139, 158, 125, 0.2);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        .deck-count-num {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            min-width: 20px;
+            text-align: center;
+        }
+        .deck-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--callout-border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .deck-action-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'MainFont', sans-serif;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .deck-action-btn.primary {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-green);
+        }
+        .deck-action-btn.primary:hover {
+            background: var(--accent-green);
+        }
+        .deck-action-btn.primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .deck-action-btn.secondary {
+            background: rgba(139, 158, 125, 0.1);
+            color: var(--text-color);
+        }
+        .deck-action-btn.secondary:hover {
+            background: rgba(139, 158, 125, 0.2);
+        }
+        .deck-action-btn.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+        .deck-action-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        .deck-empty {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-muted);
+        }
+        
+        .card-controls {
+            display: none;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .main-container.deck-mode .card-controls {
+            display: flex;
+        }
+        
+        .main-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        h1 {
+            margin-bottom: 1.5rem;
+        }
+        .upload-section {
+            background: var(--callout-bg);
+            border: 1px solid var(--callout-border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(139, 158, 125, 0.05);
+        }
+        .upload-area:hover {
+            border-color: var(--accent-color);
+            background: rgba(139, 158, 125, 0.1);
+        }
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .upload-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .toolbar {
+            background: var(--callout-bg);
+            border: 1px solid var(--callout-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: rgba(139, 158, 125, 0.1);
+            color: var(--text-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'MainFont', sans-serif;
+            font-size: 0.9rem;
+        }
+        .filter-btn:hover {
+            background: rgba(139, 158, 125, 0.2);
+            border-color: var(--accent-color);
+        }
+        .filter-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-green);
+            color: white;
+        }
+        .search-container {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
+            border-radius: 4px;
+            font-family: 'MainFont', sans-serif;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        .search-box input::placeholder {
+            color: var(--text-muted);
+        }
+        .search-options {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+        }
+        .search-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .search-checkbox input[type="checkbox"] {
+            cursor: pointer;
+        }
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .control-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
+            border-radius: 4px;
+            font-family: 'MainFont', sans-serif;
+            cursor: pointer;
+        }
+        select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        .stats {
+            background: var(--callout-bg);
+            border: 1px solid var(--callout-border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+        }
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            color: var(--accent-color);
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        .card-list.simple-mode {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+        .main-container.deck-mode .card-list.simple-mode {
+            grid-template-columns: 1fr;
+        }
+        .card-item {
+            background: var(--callout-bg);
+            border: 1px solid var(--callout-border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s;
+        }
+        .card-item:hover {
+            border-color: var(--accent-color);
+            background: rgba(139, 158, 125, 0.15);
+        }
+        .card-item.simple {
+            padding: 0.5rem 1rem;
+        }
+        .card-item.simple .card-header {
+            margin-bottom: 0;
+        }
+        .card-item.simple .card-body {
+            display: none;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+        }
+        .card-title-section {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+            flex: 1;
+            min-width: 200px;
+        }
+        .card-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        .card-ruby {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .card-meta {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .card-type {
+            display: inline-block;
+            padding: 0.25rem 0.65rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .type-monster { 
+            background: rgba(218, 165, 32, 0.3);
+            color: #daa520;
+            border: 1px solid rgba(218, 165, 32, 0.5);
+        }
+        .type-magic { 
+            background: rgba(100, 149, 237, 0.3);
+            color: #6495ed;
+            border: 1px solid rgba(100, 149, 237, 0.5);
+        }
+        .type-supporter { 
+            background: rgba(144, 238, 144, 0.3);
+            color: #90ee90;
+            border: 1px solid rgba(144, 238, 144, 0.5);
+        }
+        .type-ex { 
+            background: rgba(219, 112, 147, 0.3);
+            color: #db7093;
+            border: 1px solid rgba(219, 112, 147, 0.5);
+        }
+        .card-stats {
+            display: flex;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .card-info-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .card-section {
+            display: flex;
+            gap: 0.5rem;
+            align-items: baseline;
+        }
+        .card-section.full-width {
+            width: 100%;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .section-content {
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+        .card-section.full-width .section-label {
+            margin-bottom: 0.2rem;
+        }
+        .skill-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .skill-item {
+            background: rgba(139, 158, 125, 0.1);
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        .skill-header {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 0.15rem;
+            font-size: 0.85rem;
+        }
+        .skill-text {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .hidden {
+            display: none;
+        }
+        
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid var(--callout-border);
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            gap: 1rem;
+        }
+        .modal-title-section {
+            flex: 1;
+        }
+        .modal-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 0.25rem;
+        }
+        .modal-ruby {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+        .close-btn {
+            background: var(--callout-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 1.2rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .close-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .modal-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .modal-section-label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .modal-section-content {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+        }
+        .modal-info-row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .modal-info-item {
+            display: flex;
+            gap: 0.5rem;
+            align-items: baseline;
+        }
+        .modal-skills {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .modal-skill-item {
+            background: rgba(139, 158, 125, 0.15);
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        .modal-skill-name {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+        }
+        .modal-skill-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-item" title="ルール">📖</div>
+        <a href="cardview.html" class="sidebar-item active" title="カード一覧">🎴</a>
+        <div class="sidebar-item" title="実践">⚔️</div>
+        <div class="sidebar-item" title="印刷">🖨️</div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-item" id="deckModeToggle" title="デッキ作成">📋</div>
+    </div>
+
+    <div class="main-container" id="mainContainer">
+        <div class="cards-area">
+            <div class="main-content">
+                <h1>時のアマリス カード一覧</h1>
+
+                <div class="upload-section" id="uploadSection">
+                    <label for="fileInput" class="upload-area">
+                        <div class="upload-icon">🎴</div>
+                        <div class="upload-text">JSONファイルをドロップ</div>
+                        <div class="upload-hint">またはクリックしてファイルを選択</div>
+                    </label>
+                    <input type="file" id="fileInput" accept=".json">
+                </div>
+
+                <div id="contentSection" class="hidden">
+                    <div class="toolbar">
+                        <div class="filter-group">
+                            <button class="filter-btn active" data-filter="all">ALL</button>
+                            <button class="filter-btn" data-filter="monster">モンスター</button>
+                            <button class="filter-btn" data-filter="magic">魔法</button>
+                            <button class="filter-btn" data-filter="supporter">サポーター</button>
+                            <button class="filter-btn" data-filter="ex">EX</button>
+                        </div>
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="searchInput" placeholder="検索...">
+                            </div>
+                            <div class="search-options">
+                                <label class="search-checkbox">
+                                    <input type="checkbox" id="searchName" checked>
+                                    <span>カード名</span>
+                                </label>
+                                <label class="search-checkbox">
+                                    <input type="checkbox" id="searchType" checked>
+                                    <span>タイプ</span>
+                                </label>
+                                <label class="search-checkbox">
+                                    <input type="checkbox" id="searchContent" checked>
+                                    <span>内容テキスト</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="controls-row">
+                            <div class="control-group">
+                                <label class="control-label">表示:</label>
+                                <select id="viewMode">
+                                    <option value="simple">シンプル</option>
+                                    <option value="detail">詳細</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">並び替え:</label>
+                                <select id="sortSelect">
+                                    <option value="name">名前</option>
+                                    <option value="type">種類</option>
+                                    <option value="atk">ATK</option>
+                                    <option value="hp">HP</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total</span>
+                            <span class="stat-value" id="totalCards">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">表示中</span>
+                            <span class="stat-value" id="displayCards">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">モンスター</span>
+                            <span class="stat-value" id="monsterCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">魔法</span>
+                            <span class="stat-value" id="magicCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">サポーター</span>
+                            <span class="stat-value" id="supporterCount">0</span>
+                        </div>
+                    </div>
+
+                    <div class="card-list" id="cardContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="deck-area" id="deckArea">
+            <div class="deck-header">
+                <h2>デッキ作成</h2>
+                <div class="deck-count" id="deckCount">
+                    通常: <span id="mainDeckCount">0</span>/40-60枚 | EX: <span id="exDeckCount">0</span>/15枚
+                </div>
+                <div class="deck-tabs">
+                    <button class="deck-tab active" data-deck="main">通常デッキ</button>
+                    <button class="deck-tab" data-deck="ex">EXデッキ</button>
+                </div>
+            </div>
+            <div class="deck-body" id="deckBody">
+                <div class="deck-empty">デッキにカードを追加してください</div>
+            </div>
+            <div class="deck-footer">
+                <button class="deck-action-btn primary" id="saveDeckBtn" disabled>💾 デッキを保存</button>
+                <button class="deck-action-btn secondary" id="exportDeckBtn">📤 JSONエクスポート</button>
+                <button class="deck-action-btn danger" id="clearDeckBtn">🗑️ 全消去</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="detailModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <div class="modal-name" id="modalName"></div>
+                    <div class="modal-ruby" id="modalRuby"></div>
+                </div>
+                <button class="close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="cardview.js"></script>
+</body>
+</html>
