@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="まなづるの個人サイト">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="../apple-touch-icon-180x180.png" sizes="180x180">
+	<link rel="icon" type="image/png" href="../android-chrome-192x192.png" sizes="192x192">
+    <title>春雨さらだ - ORIGINAL</title>
+    <link rel="stylesheet" href="../css/stylesheet.css">
+    <style>
+		body {
+  			padding: 15px;
+		}		
+		h2 {
+			font-size: 2rem;
+			margin-bottom: 10px;
+			color: var(--accent-color);
+			text-shadow: 2px 2px 0px rgba(58, 43, 22, 0.1);
+			letter-spacing: 2px;
+			position: relative;
+			display: inline-block;
+		}
+
+		h2::before {
+			content: "◆";
+			font-size: 1rem;
+			color: var(--highlight-color);
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		h2::before {
+			left: -30px;
+		}
+
+		h2::after {
+			right: -30px;
+		}
+
+		h3 {
+			font-size: 1.5rem;
+			margin-bottom: 7px;
+			color: var(--accent-color);
+			text-shadow: 2px 2px 0px rgba(58, 43, 22, 0.1);
+			letter-spacing: 2px;
+			position: relative;
+			display: inline-block;
+		}
+		h4 {
+			font-size: 16px;
+			color: var(--accent-color);
+			letter-spacing: 2px;
+			position: relative;
+			display: inline-block;
+			font-weight: normal;
+		}
+		p {
+			font-size: 16px;
+			color: var(--text-color);
+		}
+
+	</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ORIGINAL -一次創作</h1>
+        </header>
+
+        <nav class="nav-links">
+			<a href="index.html" class="nav-link">◇Top◇</a>
+            <a href="#Ilumina" class="nav-link">Ilumina</a>
+			<a href="#Iregna" class="nav-link">Iregna</a>
+        </nav>
+
+<button id="backToTopBtn">
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<polyline points="18 15 12 9 6 15"></polyline>
+	</svg>
+</button>
+<script>
+	// ボタンの表示・非表示を制御
+	window.addEventListener('scroll', function() {
+		const backToTopBtn = document.getElementById('backToTopBtn');
+		if (window.pageYOffset > 300) {
+			backToTopBtn.style.display = 'flex';
+		} else {
+			backToTopBtn.style.display = 'none';
+		}
+	});
+
+	// クリック時にページトップにスクロール
+	document.getElementById('backToTopBtn').addEventListener('click', function() {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
+	});
+</script>
+
+
+
+<p>今のところただの用語辞典。<br>
+順次追加。</p>
+
+<h2 id="Ilumina">Ilumina - さばもん／イルミナの世界</h2>
+<p>さばもん世界でおなじみ。</p>
+
+
+
+
+
+
+
+<h3 id="ローランド">魔術大国ローランド</h3>
+<p><a href="#ローランドの独自魔術">独自魔術</a>と魔道具の王国。<br>
+	王族に</p>
+
+
+
+<h3 id="魔術">魔術（概念）</h3>
+<p>なんかこう不思議なパワーを使って起こす物理的科学的でない現象。<br>
+	一般的には、このパワーを<a href="#魔素">魔素</a>と呼ぶ。</p>
+
+<h3 id="魔素">魔素</h3>
+<p><a href="#魔術">魔術</a>を引き起こすためのエネルギー。<br>
+	大きく分けて、空気中に含まれるものと生物の体内（血）に含まれるものに分けられる。<br>
+	生物は常に体内から魔素を放出しており（<a href="#魔力枯渇病">例外あり</a>）、
+	それが空気中に溜まったものが前者である。<br>
+	後者は体内魔素または<a href="#魔力">魔力</a>と呼ばれる。<br>
+	生物の遺伝子情報に大きく左右され、
+	<a href="#ローランド">ローランド</a>周辺以外の人間のほとんどが認識・行使できるほどの量を持たない。<br>
+	しかし、短期間の休憩で自然回復し、質（密度）が空気中の魔素の数倍高いため、
+	十分な<a href="#魔力">魔力容量</a>を持っていれば、<a href="#魔術（一般）">空気中の魔素を利用した魔術</a>とは比べ物にならない。<br>
+	また、魔素は物質を保存しようとする力を持っていて、魔素の量が多い空間、生物は風化・老化しにくいという特徴がある。</p>
+
+<h3 id="魔術（一般）">魔術（一般）</h3>
+<p><a href="#ローランド">ローランド</a>周辺以外での<a href="#魔術">魔術</a>の認識。<br>
+	主に空気中の魔素を使って<a href="#魔術">魔術</a>を行使する。</p>
+
+<h3 id="ローランドの独自魔術">ローランドの独自魔術</h3>
+<p>一般的に<a href="#イリア">イリア帝国</a>などで使われている<a href="#魔術">魔術</a>（<a href="#魔術（一般）">こちら</a>）と違い、
+	自身の体内にある<a href="#魔素">魔素</a>を消費する。<br>
+	当該国ではこれを<a href="#魔力">魔力</a>と呼び、魔術を行使するための力は体内に宿るとされているため、<br>
+	<a href="#魔素">魔素</a>という言葉は存在せず、空気中に魔力があると主張すれば鼻で笑われる。<br>
+	魔力量、コストに対して一般的な魔術の数倍もの威力を持つが、
+	体内魔力のほとんどは血筋によって左右され、
+	基本的に<a href="#ローランド">ローランド</a>の国民以外は実用に至るほどの魔力を持たない。<br>
+	国民であれば、平民でも日常生活に利用できる程度の魔力と習熟度を持つ。<br>
+	なお、例外として<a href="#魔力枯渇病">魔力枯渇病</a>の存在が挙げられる。</p>
+
+<h3 id="魔力">魔力（体内魔素）</h3>
+<p>主に<a href="#ローランド">ローランド王国</a>周辺で使用される用語。<br>
+	当該国では、魔術を引き起こすためのエネルギーである<a href="#魔素">魔素</a>は生物の体内にしか宿らないと考えられており、<br>
+	その、体内の血に含まれる<a href="#魔素">魔素</a>のことを魔力と呼称している。<br>
+	当該国周辺以外では、常識的に体内の<a href="#魔素">魔素</a>の存在が認められていないため、概念自体が存在しない。<br>
+
+<h3 id="魔力容量">魔力容量（体内魔素容量）</h3>
+<p>その生物が生まれながらに持つ<a href="#魔力">魔力</a>の量と、<a href="#魔力">魔力</a>が自然回復する上限は等しく、
+	これを魔力容量、ひいては体内魔素容量と呼ぶ。</p>
+
+<h3 id="魔力枯渇病">魔力枯渇病</h3>
+<p><a href="#ローランド">ローランド王国</a>で提唱されている病気。<br>
+	とある理由から体内と体外の魔素が相容れなくなることによって、<a href="#魔素放出活動">魔素放出活動</a>が停止し、
+	体内から魔力を一切取り出せなくなる状態となるため、100％で遺伝するかつ魔力が本人の価値に直結しやすい当該国周辺では、
+	差別が横行している。</p>
+
+<h3 id="魔素放出活動">魔素放出活動</h3>
+<p>この世界の生物のすべては、<a href="#魔力">魔力容量</a>に比例した、微々たる量の<a href="#魔力">体内の魔素（魔力）</a>を、
+	常に表皮を通して体外に放出している。<br>
+	ただしごく稀に、その活動を一切行わない個体が発生する場合がある。<br>
+	これを原因として、体内から放出される魔素が完全に０になる現象が発生する。<br>
+	理由によっては、体内から魔素を一切取り出せなくなる状態となるため、
+	<a href="#魔力">魔力</a>の取り出しが不可能になる。<br>
+	放出されなくなった魔力が体内に溜まって循環することで、<a href="#魔素">魔素の「物質を保存しようとする力」が強まり</a>、
+	これによって老化や生理的活動が抑えられる。<br>
+	そのため、老化の遅い生物は、<a href="#魔力容量">魔力容量</a>に対して放出する<a href="#魔素">魔素</a>の量が少ないことが多い。<br>
+	関連用語　<a href="#魔力枯渇病">魔力枯渇病</a></p>
+
+<h3 id="ノクシエル家">ノクシエル家</h3>
+<p>	<a href="#ローランド">ローランド王国</a>に存在する通称「聖女の家系」。<br>
+	男子は当主、女子は聖女として育つ。<br>
+	それ以外は養子に出される等。<br>
+	現聖女はセシリア・ノクシエル（13代目）。</p>
+
+
+<h3 id="神族">神族</h3>
+<p>	天界で生まれ主に天界で暮らす神の一族。<br>
+	それぞれが特殊能力として、神能を持っている。<br>
+	権力は最高神＞最高神補佐＞他八使天＞最高神補佐の家族＞その他。<br>
+	なお、神族の６割が生殖で生まれたものではなく、
+	「家族」には同じモデルから生成された神を含む。<br>
+	</p>
+
+<h3 id="八使天">八使天</h3>
+<p>	イルミナ周辺の天界のおえらいさんたち。四天王的な。<br>
+	とっても強い神能を持っている（第八使天は別格）。<br>
+	最高神が失踪しているため、６～７の座はそのまま。<br>
+	第一使天：クロス　第二使天：ミスト　第三使天：マロン　第四使天：コスモス<br>
+	第五使天：セレネ　第六使天：フィリス（失踪）　第七使天：シュリエ（失踪・立ち位置グレー）　第八使天：サキ（失踪）<br>
+	天界は結構平和なので、あんまし戦うことはない。<br>
+	力の均衡的なのは強いやつの常識によって守られている。</p>
+
+
+
+	
+
+<h2 id="Iregna">Iregna - イレグナの世界</h2>
+<p>ここは、イレグナの世界。<br>
+	人間を軸として、多種多様な生物が共存する世界です。<br>
+	世界では、世界を創造する力「光」と、この世界を滅ぼさんとする力「災厄」が対立しています。<br>
+	数百年以上前のこの世界は、災厄はなりを潜め、光が支配する、平和な世界でした。<br>
+	しかしそのバランスはいつまでも続くことはなく、
+	災厄の化身のひとり「ベート」が生み出す「モンスター」に、人間たちは対抗できませんでした。<br>
+	光によって作り出された、人間たち光の生き物は徐々に追いやられ衰退していき、
+	この世界は崩壊の危機に襲われました。<br>
+	そのとき、この世界と人間たちを作り出した光の化身「ティファナ」は、
+	人間たちに力を与えたのです。<br>
+	それは「光の加護」。世界を救わんと光の加護を得て戦った勇敢なる者たちによって、
+	モンスターたちに奪われた生活を、人間たちは取り戻しました。
+	光の加護。それは、モンスターと戦う使命。<br>
+	光の加護を受けた者は、定められた死を迎えたときまで
+	永久の眠りにつくことはできません。<br>
+	死ぬまで、いいえ死んでもモンスターと戦い続ける運命の代わりに、
+	モンスターに対抗できる強大な力、
+	そして定められた死を迎えるまで死なない、いわば不死の力を手に入れる。<br>
+	それが「光の加護」であり、「冒険者」なのです。</p>
+
+
+
+
+
+
+
+
+
+	<footer>
+		<div class="footer-content">
+			<img src="../img/banner.png" alt="サイトバナー">
+			<p>© 2025 まなづる</p>
+		</div>
+	</footer>
+</div>
+</body>
+</html>

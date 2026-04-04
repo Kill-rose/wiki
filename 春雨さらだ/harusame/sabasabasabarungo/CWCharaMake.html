@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="まなづるの個人サイト">
+	<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="../apple-touch-icon-180x180.png" sizes="180x180">
+	<link rel="icon" type="image/png" href="../android-chrome-192x192.png" sizes="192x192">
+    <title>CWキャラメイク資料</title>
+    <link rel="stylesheet" href="../css/stylesheet.css">
+	<style>
+		body {
+  			padding: 15px;
+		}		
+		h2 {
+			font-size: 2rem;
+			margin-bottom: 10px;
+			color: var(--accent-color);
+			text-shadow: 2px 2px 0px rgba(58, 43, 22, 0.1);
+			letter-spacing: 2px;
+			position: relative;
+			display: inline-block;
+		}
+
+		h2::before {
+			content: "◆";
+			font-size: 1rem;
+			color: var(--highlight-color);
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		h2::before {
+			left: -30px;
+		}
+
+		h2::after {
+			right: -30px;
+		}
+
+		h3 {
+			font-size: 1.5rem;
+			margin-bottom: 7px;
+			color: var(--accent-color);
+			text-shadow: 2px 2px 0px rgba(58, 43, 22, 0.1);
+			letter-spacing: 2px;
+			position: relative;
+			display: inline-block;
+		}
+		h4 {
+			font-size: 16px;
+			color: var(--accent-color);
+			letter-spacing: 2px;
+			position: relative;
+			display: inline-block;
+			font-weight: normal;
+		}
+		p {
+			font-size: 16px;
+			color: var(--text-color);
+			margin: 0;
+		}
+        ol {
+            counter-reset: counter;
+            list-style-type: none;
+        }
+
+	</style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>一次創作に狂った身内のための<br>CardWirthガイド</h1>
+        </header>
+
+        <nav class="nav-links">
+			<a href="index.html" class="nav-link">◇Top◇</a>
+            <a href="CWGuide.html" class="nav-link">◇Back◇</a>
+        </nav>
+
+<hr>
+
+<button id="backToTopBtn">
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<polyline points="18 15 12 9 6 15"></polyline>
+	</svg>
+</button>
+<script>
+	// ボタンの表示・非表示を制御
+	window.addEventListener('scroll', function() {
+		const backToTopBtn = document.getElementById('backToTopBtn');
+		if (window.pageYOffset > 300) {
+			backToTopBtn.style.display = 'flex';
+		} else {
+			backToTopBtn.style.display = 'none';
+		}
+	});
+
+	// クリック時にページトップにスクロール
+	document.getElementById('backToTopBtn').addEventListener('click', function() {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
+	});
+</script>
+
+<h2>キャラメイクのコントロール</h2>
+<ol>
+    <li><a href="#0">思い通りのキャラを作る流れ</a></li>
+    <li><a href="#1">思い通りのステータスのキャラを作るには</a></li>
+    <li><a href="#2">あとから初期クーポン（特性）を変えるには</a></li>
+    <li><a href="#3">あとからステータスを変えるには</a></li>
+</ol>
+
+
+<p>
+<br>
+※身内用のガイドです。誤った情報を提供している可能性があります。<br>
+また、ゲーム本来の楽しみ方を無視した内容となっています。<br>
+間違ってたどり着いた迷える子羊は即ブラウザバック。<br>
+<br>
+読みにくい→知らん
+<br>
+</p>
+
+<br>
+<h3 id="0">思い通りのキャラを作る流れ</h3>
+<p>
+    ・特性をガン無視し、ステータスを重視してキャラを作成する<br>
+    ・あとから初期クーポン（特性）を変更する
+</p>
+
+<br>
+<h3 id="1">思い通りのステータスのキャラを作るには</h3>
+<p>
+    ・<a href="https://irakat.bitbucket.io/tool/demons/" target="_blank" class="accent-border">Demon Simulator</a>を使用する
+</p>
+
+<br>
+<h3 id="2">あとから初期クーポン（特性）を変えるには</h3>
+<p>
+    ◆CWガイドから来た場合、先にゴブリンの洞窟をクリアしてこよう◆<br>
+    ・シナリオで変更する場合<br>
+    　・CW号・CW増刊号がオススメ<br>
+    <details><summary>【ネタバレ・できるなら自力で開放してほしい】CW号・CW増刊号の初期クーポン変更機能の開放</summary>
+        メイン画面を鑑定キーコード付き（盗賊の眼等）のスキルで調べまくる。もしくはゴシップに「クーポンマガジン解除」の追加</details>
+    <details><summary>【ネタバレ・できるなら自力で開放してほしい】CW増刊号の開放</summary>デバックモード（Ctrl+D）時、F3で開くデバッガで<br>赤ハンコマークから済印に「クーポンマガジン利用制限」、<br>盾マークからクーポンに「＿クーポンマガジン増刊号開通済み」を追加。</details>
+    ・デバッガから変更する場合<br>
+    　・デバックモード（Ctrl+D）時、F3で開くデバッガ→冒険者の情報を編集→<br>
+    　　変更したい冒険者を選択→選択情報から選択（<font color="red">生命点・能力値再設定のチェックを切り、初期クーポン再設定にチェックを入れる</font>）
+
+</p>
+
+<br>
+<h3 id="3">あとからステータスを変えるには</h3>
+<p>
+    ・上記Demon Simulator使用の推奨<br>
+    ・デバッガ（上記）→冒険者の情報を編集→変更したい冒険者を選択→<br>
+    　選択情報から選択（<font color="red">生命点・能力値再設定にチェックを入れ、初期クーポン再設定のチェックを切る</font>）
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<footer>
+<hr>
+<p><img src="../img/banner.png">
+(C)2025 まなづる</p>
+</footer>
+</div>
+</div>
+</body>
+</html>

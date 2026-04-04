@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="まなづるの個人サイト">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="../apple-touch-icon-180x180.png" sizes="180x180">
+	<link rel="icon" type="image/png" href="../android-chrome-192x192.png" sizes="192x192">
+    <title>春雨さらだ - TOP</title>
+    <link rel="stylesheet" href="../css/stylesheet.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css" rel="stylesheet">
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>春雨さらだ</h1>
+        </header>
+        
+        <nav class="nav-links">
+            <a href="#news" class="nav-link">News</a>
+            <a href="#about" class="nav-link">About</a>
+            <a href="game.html" class="nav-link">◇Game◇</a>
+            <a href="ssp.html" class="nav-link">◇GHOST◇</a>
+            <a href="original.html" class="nav-link">◇ORIGINAL◇</a>
+            <a href="#update" class="nav-link">Update</a>
+        </nav>
+
+        <section id="news" class="section">
+            <h2> News - お知らせ </h2>
+            <ul class="news-list">
+                <li>
+                    <span class="news-date">2025.03.15</span>
+                    <span class="news-content">サイトをリニューアル。</span>
+                </li>
+                <li>
+                    <span class="news-date">2025.02.28</span>
+                    <span class="news-content">ORIGINALを更新。</span>
+                </li>
+                <li>
+                    <span class="news-date">2025.01.10</span>
+                    <span class="news-content">GAMEを更新。</span>
+                </li>
+            </ul>
+        </section>
+        
+        <div class="fantasy-divider">❖ ❖ ❖</div>
+        
+        <section id="about" class="section">
+            <h2> About - サイト概要 </h2>
+            <p><img src="../img/banner.png" alt="サイトバナー"><br>
+                個人の趣味サイト。</p>
+        </section>
+        
+        <div class="fantasy-divider">❖ ❖ ❖</div>
+        
+        <section class="section">
+            <h2> Game - 自作ゲーム</h2>
+            <p>自作フリーゲームの配布・公開。ブラウザゲームかPCゲーム。（今はデバッグ用に置いてるだけ）<br>
+                詳しい内容は<a href="game.html" class="accent-border">コチラ</a>。</p>
+        </section>
+        
+        <div class="fantasy-divider">❖ ❖ ❖</div>
+        
+        <section class="section">
+            <h2> GHOST - SSPゴースト </h2>
+            <p>伺か（SSP）用のゴーストを配布。（未設置）<br>
+                詳しい内容は<a href="ssp.html" class="accent-border">コチラ</a>。</p>
+        </section>
+        
+        <div class="fantasy-divider">❖ ❖ ❖</div>
+        
+        <section class="section">
+            <h2> Original - 一次創作 </h2>
+            <p>ゲーム等に登場するキャラクターや世界観設定のかきだめ。<br>
+                詳しい内容は<a href="original.html" class="accent-border">コチラ</a>。</p>
+        </section>
+        
+        <div class="fantasy-divider">❖ ❖ ❖</div>
+        
+        <section id="update" class="section">
+            <h2> 更新情報 - Update </h2>
+            <ul class="update-list">
+                <li>
+                    <span class="update-date">2025.03.18</span>
+                    <span class="update-content">サイトをリニューアル。</span>
+                </li>
+                <li>
+                    <span class="update-date">2025.03.15</span>
+                    <span class="update-content">Originalを更新。</span>
+                </li>
+                <li>
+                    <span class="update-date">2025.02.28</span>
+                    <span class="update-content">Gameを更新。</span>
+                </li>
+                <li>
+                    <span class="update-date">2025.02.10</span>
+                    <span class="update-content">サイトを公開。</span>
+                </li>
+            </ul>
+        </section>
+        
+        <footer>
+            <div class="footer-content">
+                <img src="../img/banner.png" alt="サイトバナー">
+                <p>© 2025 まなづる</p>
+            </div>
+        </footer>
+    </div>
+
+
+    <button id="backToTopBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+    <script>
+        
+    // ボタンの表示・非表示を制御
+    window.addEventListener('scroll', function() {
+        const backToTopBtn = document.getElementById('backToTopBtn');
+        if (window.pageYOffset > 300) {
+            backToTopBtn.style.display = 'flex';
+        } else {
+            backToTopBtn.style.display = 'none';
+        }
+    });
+
+    // クリック時にページトップにスクロール
+    document.getElementById('backToTopBtn').addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+</script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js" type="text/javascript"></script>
+
+
+</body>
+</html>

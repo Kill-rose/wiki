@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunetra Wiki Mobile Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ヘッダー */
+        header {
+            background: #161b22;
+            padding: 12px 16px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            color: #8b949e;
+            margin-top: 2px;
+        }
+
+        /* タブ切り替え */
+        .tabs {
+            display: flex;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #58a6ff;
+            border-bottom-color: #58a6ff;
+        }
+
+        /* メインコンテンツエリア */
+        .content {
+            height: calc(100vh - 110px);
+            overflow-y: auto;
+        }
+
+        .view {
+            display: none;
+            height: 100%;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* ファイル一覧ビュー */
+        .file-list {
+            padding: 8px;
+        }
+
+        .file-item {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .file-item:active {
+            background: #1c2128;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .file-meta {
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .btn-icon:active {
+            color: #58a6ff;
+        }
+
+        /* エディタービュー */
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .current-file-info {
+            background: #161b22;
+            padding: 8px 12px;
+            border-bottom: 1px solid #30363d;
+            font-size: 13px;
+            color: #8b949e;
+        }
+
+        .current-file-name {
+            color: #c9d1d9;
+            font-weight: 500;
+        }
+
+        .editor-toolbar {
+            background: #161b22;
+            padding: 8px 12px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toolbar-btn:active {
+            background: #30363d;
+        }
+
+        .toolbar-btn.primary {
+            background: #238636;
+            border-color: #238636;
+        }
+
+        .toolbar-btn.primary:active {
+            background: #2ea043;
+        }
+
+        .toolbar-btn.warning {
+            background: #9e6a03;
+            border-color: #9e6a03;
+        }
+
+        textarea {
+            flex: 1;
+            background: #0d1117;
+            color: #c9d1d9;
+            border: none;
+            padding: 16px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+
+        /* プレビュービュー */
+        .preview-container {
+            height: 100%;
+            background: white;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 新規ファイルフォーム */
+        .new-file-form {
+            padding: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .btn-full {
+            width: 100%;
+            background: #238636;
+            border: 1px solid #238636;
+            color: white;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .btn-full:active {
+            background: #2ea043;
+        }
+
+        /* 空状態 */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #8b949e;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        /* FAB (新規作成ボタン) */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: #238636;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: flex-end;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #161b22;
+            border-radius: 12px 12px 0 0;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        /* テンプレート選択 */
+        .template-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .template-card {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .template-card:hover {
+            background: #2d333b;
+        }
+
+        .template-card.selected {
+            background: #1f6feb;
+            border-color: #1f6feb;
+        }
+
+        .template-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .template-desc {
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        /* 通知 */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #238636;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header>
+        <div>
+            <h1>📱 Lunetra Wiki Editor</h1>
+            <div class="header-subtitle">スマホ最適化版</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn-icon" id="server-status-btn" onclick="showServerSettings()" title="サーバー設定">⚙️</button>
+            <button class="btn-icon" onclick="downloadAllFiles()">💾</button>
+        </div>
+    </header>
+
+    <!-- タブ -->
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('files')">ファイル</button>
+        <button class="tab" onclick="switchTab('editor')">エディタ</button>
+        <button class="tab" onclick="switchTab('preview')">プレビュー</button>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="content">
+        <!-- ファイル一覧ビュー -->
+        <div class="view active" id="files-view">
+            <div class="file-list" id="file-list"></div>
+        </div>
+
+        <!-- エディタービュー -->
+        <div class="view" id="editor-view">
+            <div class="editor-container">
+                <div class="current-file-info">
+                    編集中: <span class="current-file-name" id="current-file-display">ファイルが選択されていません</span>
+                </div>
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn primary" onclick="saveFile()">💾 保存</button>
+                    <button class="toolbar-btn" onclick="reloadFile()">🔄 再読み込み</button>
+                    <button class="toolbar-btn warning" onclick="updateSidebarDate()">📅 更新日を追加</button>
+                    <button class="toolbar-btn" onclick="gitPush()">📤 Git Push</button>
+                    <button class="toolbar-btn" onclick="insertTag('<h2 class=&quot;styled-heading&quot;>', '</h2>')">見出し</button>
+                    <button class="toolbar-btn" onclick="insertChatBox()">💬 チャット</button>
+                    <button class="toolbar-btn" onclick="insertTag('<p>', '</p>')">段落</button>
+                    <button class="toolbar-btn" onclick="insertTag('<a href=&quot;&quot;>', '</a>')">Link</button>
+                </div>
+                <textarea id="editor" placeholder="HTMLコードをここに入力..."></textarea>
+            </div>
+        </div>
+
+        <!-- プレビュービュー -->
+        <div class="view" id="preview-view">
+            <div class="preview-container">
+                <iframe id="preview-frame"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新規ファイル作成FAB -->
+    <button class="fab" onclick="showNewFileModal()">+</button>
+
+    <!-- 新規ファイル作成モーダル -->
+    <div class="modal" id="new-file-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">新規ファイル</h2>
+                <button class="btn-close" onclick="closeNewFileModal()">×</button>
+            </div>
+            <form onsubmit="createNewFile(event)">
+                <div class="form-group">
+                    <label for="file-name-input">ファイル名</label>
+                    <input type="text" id="file-name-input" placeholder="newpage.html" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>テンプレート</label>
+                    <div class="template-grid">
+                        <div class="template-card selected" onclick="selectTemplate('basic')" data-template="basic">
+                            <div class="template-name">基本ページ</div>
+                            <div class="template-desc">サイドバー付きの標準ページ</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate('blank')" data-template="blank">
+                            <div class="template-name">空白ページ</div>
+                            <div class="template-desc">最小限の構造のみ</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-full">作成</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- サーバー設定モーダル -->
+    <div class="modal" id="server-settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">サーバー設定</h2>
+                <button class="btn-close" onclick="closeServerSettings()">×</button>
+            </div>
+            <div class="form-group">
+                <label for="api-url-input">API URL</label>
+                <input type="text" id="api-url-input" placeholder="http://localhost:3000/api">
+                <div style="font-size: 12px; color: #8b949e; margin-top: 4px;">
+                    デフォルト: http://localhost:3000/api
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="api-token-input">API トークン</label>
+                <input type="password" id="api-token-input" placeholder="your-secret-token">
+                <div style="font-size: 12px; color: #8b949e; margin-top: 4px;">
+                    サーバーの設定と一致させてください
+                </div>
+            </div>
+            <div class="form-group">
+                <label>接続テスト</label>
+                <button type="button" class="toolbar-btn" style="width: 100%;" onclick="testServerConnection()">🔗 接続テスト</button>
+            </div>
+            <div style="margin-top: 16px; padding: 12px; background: #0d1117; border-radius: 6px;">
+                <div style="font-size: 13px; color: #8b949e;">
+                    <strong>📱 スマホからアクセスする場合:</strong><br>
+                    1. PCで <code style="background: #1c2128; padding: 2px 4px; border-radius: 3px;">npm start</code> でサーバー起動<br>
+                    2. PCのIPアドレスを確認: <code style="background: #1c2128; padding: 2px 4px; border-radius: 3px;">ipconfig</code><br>
+                    3. スマホのブラウザで: <code style="background: #1c2128; padding: 2px 4px; border-radius: 3px;">http://&lt;IP&gt;:3000</code>
+                </div>
+            </div>
+            <button type="button" class="btn-full" onclick="saveServerSettings()">設定を保存</button>
+        </div>
+    </div>
+
+    <!-- トースト通知 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- エラー表示モーダル -->
+    <div class="modal" id="error-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">❌ エラーが発生しました</h2>
+                <button class="btn-close" onclick="closeErrorModal()">×</button>
+            </div>
+            <div style="background: #0d1117; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                <textarea id="error-message" style="width: 100%; height: 150px; background: #0d1117; color: #c9d1d9; border: 1px solid #30363d; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 12px; resize: none;" readonly></textarea>
+            </div>
+            <button class="btn-full" onclick="copyErrorMessage()" style="background: #1f6feb;">📋 エラーをコピー</button>
+            <button class="btn-full" onclick="closeErrorModal()" style="background: #21262d; color: #c9d1d9; margin-top: 8px;">閉じる</button>
+        </div>
+    </div>
+
+    <script>
+        // アプリケーション設定
+        let API_URL = localStorage.getItem('wiki-api-url') || 'http://localhost:3000/api';
+        let API_TOKEN = localStorage.getItem('wiki-api-token') || 'your-secret-token-change-me';
+        
+        // アプリケーション状態
+        let files = [];
+        let currentFile = null;
+        let currentFileContent = '';
+        let selectedTemplate = 'basic';
+
+        // テンプレート定義
+        const templates = {
+            basic: `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="永キ創作wiki">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="apple-touch-icon-180x180.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="android-chrome-192x192.png" sizes="192x192">
+    <title>新規ページ - Lunetra wiki</title>
+    <link rel="stylesheet" href="css/default.css">
+</head>
+<body>
+    <header class="header-image" id="header">
+        <button class="toggle-btn" id="toggleBtn" aria-label="ヘッダーを閉じる">▲</button>
+    </header>
+
+    <div class="container">
+        <div id="sidebar"></div>
+        
+        <div class="main-content">
+            <div class="callout main-header">
+                <strong>新規ページ</strong>
+            </div>
+            
+            <h2 class="styled-heading">見出し</h2>
+            <p>ここに内容を書いてください。</p>
+        </div>
+    </div>
+
+    <script src="js/load_sidebar.js"><\/script>
+    <script src="js/header_toggle.js"><\/script>
+</body>
+</html>`,
+            blank: `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新規ページ</title>
+</head>
+<body>
+    <h1>新規ページ</h1>
+</body>
+</html>`
+        };
+
+        // チャットボックステンプレート
+        const chatBoxTemplate = `
+            <div class="chat-box">
+                <div class="chat-message">
+                    <div class="chat-avatar-square">
+                        <img src="img/face/oc/＾＾.png" class="avatar-image-img">
+                    </div>
+                    <div class="chat-text">
+                        <div class="chat-name">キャラクター名</div>
+                        <div class="chat-dialogue">「セリフをここに入力」</div>
+                    </div>
+                </div>
+            </div>`;
+
+        // 初期化
+        async function init() {
+            // サーバーに接続可能か確認
+            const isConnected = await checkServerConnection();
+            if (isConnected) {
+                await loadFilesFromServer();
+            } else {
+                showToast('⚠️ サーバーに接続できません。ローカルストレージを使用します', 'error');
+                loadFilesFromLocalStorage();
+            }
+            renderFileList();
+        }
+
+        // サーバー接続確認
+        async function checkServerConnection() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // サーバーからファイルを読み込み
+        async function loadFilesFromServer() {
+            try {
+                const response = await fetch(`${API_URL}/files?token=${encodeURIComponent(API_TOKEN)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                files = await response.json();
+            } catch (error) {
+                console.error('ファイル読込エラー:', error);
+                showToast('⚠️ ファイル一覧の読込に失敗しました', 'error');
+            }
+        }
+
+        // ローカルストレージからファイル読み込み（フォールバック）
+        function loadFilesFromLocalStorage() {
+            const stored = localStorage.getItem('lunetra-wiki-files');
+            if (stored) {
+                files = JSON.parse(stored);
+            } else {
+                files = [];
+            }
+        }
+
+        // サーバーに保存（サーバー接続時）
+        async function saveToServer(filename, content) {
+            try {
+                const response = await fetch(`${API_URL}/files/${encodeURIComponent(filename)}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-Token': API_TOKEN,
+                        'Content-Type': 'text/plain'
+                    },
+                    body: content
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || `HTTP ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('サーバー保存エラー:', error);
+                throw error;
+            }
+        }
+
+        // ローカルストレージに保存（フォールバック）
+        function saveToLocalStorage() {
+            localStorage.setItem('lunetra-wiki-files', JSON.stringify(files));
+        }
+
+        // ファイル一覧を描画
+        function renderFileList() {
+            const listContainer = document.getElementById('file-list');
+            
+            if (files.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                            <polyline points="13 2 13 9 20 9"/>
+                        </svg>
+                        <p>ファイルがありません</p>
+                        <p style="font-size: 13px; margin-top: 8px;">右下の + ボタンから新規作成</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listContainer.innerHTML = files.map((file, index) => `
+                <div class="file-item" onclick="openFile(${index})">
+                    <div class="file-info">
+                        <div class="file-name">📄 ${file.name}</div>
+                        <div class="file-meta">更新: ${new Date(file.modifiedAt).toLocaleString('ja-JP')}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn-icon" onclick="deleteFile(${index}, event)" title="削除">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ファイルを開く
+        async function openFile(index) {
+            currentFile = index;
+            const file = files[index];
+            
+            try {
+                // サーバーから内容を読み込み
+                const isConnected = await checkServerConnection();
+                
+                if (isConnected) {
+                    const response = await fetch(`${API_URL}/files/${encodeURIComponent(file.name)}?token=${encodeURIComponent(API_TOKEN)}`);
+                    
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || `HTTP ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    document.getElementById('editor').value = data.content;
+                    currentFileContent = data.content;
+                } else {
+                    // ローカルストレージから読み込み
+                    if (file.content) {
+                        document.getElementById('editor').value = file.content;
+                        currentFileContent = file.content;
+                    } else {
+                        document.getElementById('editor').value = '（コンテンツが利用できません）';
+                        currentFileContent = '';
+                    }
+                }
+            } catch (error) {
+                console.error('ファイル読込エラー:', error);
+                showToast(`ファイルの読込に失敗しました: ${error.message}`, 'error');
+                currentFileContent = '';
+            }
+            
+            document.getElementById('current-file-display').textContent = file.name;
+            switchTab('editor');
+            updatePreview();
+        }
+
+        // ファイルを保存
+        async function saveFile() {
+            if (currentFile === null) {
+                showToast('ファイルが選択されていません', 'error');
+                return;
+            }
+
+            const content = document.getElementById('editor').value;
+            const filename = files[currentFile].name;
+            
+            try {
+                // サーバーに接続可能か確認
+                const isConnected = await checkServerConnection();
+                
+                if (isConnected) {
+                    // サーバーに保存
+                    await saveToServer(filename, content);
+                } else {
+                    // ローカルストレージに保存
+                    files[currentFile].content = content;
+                    files[currentFile].modifiedAt = new Date().toISOString();
+                    saveToLocalStorage();
+                    currentFileContent = content;
+                    showToast('📋 ローカルストレージに保存しました', 'success');
+                    return;
+                }
+                
+                // ファイル情報を更新
+                files[currentFile].modifiedAt = new Date().toISOString();
+                currentFileContent = content;
+                renderFileList();
+                updatePreview();
+                
+                showToast('✅ 保存しました');
+            } catch (error) {
+                console.error('保存エラー:', error);
+                showToast(`保存に失敗しました: ${error.message}`, 'error');
+            }
+        }
+
+        async function reloadFile() {
+            if (currentFile === null) {
+                showToast('ファイルが選択されていません', 'error');
+                return;
+            }
+
+            const currentText = document.getElementById('editor').value;
+            if (currentText !== currentFileContent) {
+                const confirmReload = confirm('保存していない変更は破棄されます。本当に再読み込みしますか？');
+                if (!confirmReload) {
+                    return;
+                }
+            }
+
+            try {
+                const file = files[currentFile];
+                const isConnected = await checkServerConnection();
+                
+                if (isConnected) {
+                    const response = await fetch(`${API_URL}/files/${encodeURIComponent(file.name)}?token=${encodeURIComponent(API_TOKEN)}`);
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || `HTTP ${response.status}`);
+                    }
+                    const data = await response.json();
+                    document.getElementById('editor').value = data.content;
+                    currentFileContent = data.content;
+                } else {
+                    if (file.content) {
+                        document.getElementById('editor').value = file.content;
+                        currentFileContent = file.content;
+                    } else {
+                        throw new Error('ローカルのファイル内容が利用できません');
+                    }
+                }
+                showToast('✅ 再読み込みしました');
+            } catch (error) {
+                console.error('再読み込みエラー:', error);
+                showToast(`再読み込みに失敗しました: ${error.message}`, 'error');
+            }
+        }
+
+        async function gitPush() {
+            try {
+                const confirmPush = confirm('Git push を実行します。よろしいですか？');
+                if (!confirmPush) {
+                    return;
+                }
+
+                const commitMessage = prompt('コミットメッセージを入力してください', 'Wiki update via editor');
+                if (commitMessage === null) {
+                    return;
+                }
+
+                const response = await fetch(`${API_URL}/git-push`, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-Token': API_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: commitMessage })
+                });
+
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (parseError) {
+                    throw new Error(`非JSONレスポンス:\n${text}`);
+                }
+
+                if (!response.ok) {
+                    throw new Error(result.error || `HTTP ${response.status}`);
+                }
+
+                showToast(result.message);
+            } catch (error) {
+                console.error('Git push エラー:', error);
+                const message = error.message || 'Git push に失敗しました';
+                showErrorModal(message);
+            }
+        }
+
+        // ファイルを削除
+        async function deleteFile(index, event) {
+            event.stopPropagation();
+            
+            if (confirm(`${files[index].name} を削除しますか？`)) {
+                try {
+                    // サーバーに接続可能か確認
+                    const isConnected = await checkServerConnection();
+                    
+                    if (isConnected) {
+                        const response = await fetch(`${API_URL}/files/${encodeURIComponent(files[index].name)}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-API-Token': API_TOKEN
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || `HTTP ${response.status}`);
+                        }
+                    }
+                    
+                    files.splice(index, 1);
+                    saveToLocalStorage();
+                    renderFileList();
+                    
+                    // 削除したファイルが開かれていた場合
+                    if (currentFile === index) {
+                        currentFile = null;
+                        document.getElementById('editor').value = '';
+                        document.getElementById('current-file-display').textContent = 'ファイルが選択されていません';
+                    } else if (currentFile > index) {
+                        currentFile--;
+                    }
+                    
+                    showToast('ファイルを削除しました');
+                } catch (error) {
+                    console.error('削除エラー:', error);
+                    showToast(`削除に失敗しました: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // 新規ファイル作成モーダル表示
+        function showNewFileModal() {
+            document.getElementById('new-file-modal').classList.add('active');
+            document.getElementById('file-name-input').value = '';
+            selectedTemplate = 'basic';
+            // テンプレート選択をリセット
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector('[data-template="basic"]').classList.add('selected');
+        }
+
+        // 新規ファイル作成モーダル閉じる
+        function closeNewFileModal() {
+            document.getElementById('new-file-modal').classList.remove('active');
+        }
+
+        // テンプレート選択
+        function selectTemplate(templateName) {
+            selectedTemplate = templateName;
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.template-card').classList.add('selected');
+        }
+
+        // 新規ファイル作成
+        async function createNewFile(event) {
+            event.preventDefault();
+            
+            let fileName = document.getElementById('file-name-input').value.trim();
+            
+            // .html拡張子を自動追加
+            if (!fileName.endsWith('.html')) {
+                fileName += '.html';
+            }
+            
+            // 重複チェック
+            if (files.some(f => f.name === fileName)) {
+                showToast('同じ名前のファイルが既に存在します', 'error');
+                return;
+            }
+
+            try {
+                // サーバーに接続可能か確認
+                const isConnected = await checkServerConnection();
+                
+                if (isConnected) {
+                    // サーバーに作成
+                    const response = await fetch(`${API_URL}/create`, {
+                        method: 'POST',
+                        headers: {
+                            'X-API-Token': API_TOKEN,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            filename: fileName,
+                            content: templates[selectedTemplate]
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || `HTTP ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    files.push({
+                        name: fileName,
+                        modifiedAt: result.modifiedAt
+                    });
+                } else {
+                    // ローカルストレージに作成
+                    files.push({
+                        name: fileName,
+                        content: templates[selectedTemplate],
+                        modifiedAt: new Date().toISOString()
+                    });
+                }
+                
+                saveToLocalStorage();
+                renderFileList();
+                closeNewFileModal();
+                
+                // 新規作成したファイルを開く
+                openFile(files.length - 1);
+                showToast('ファイルを作成しました');
+            } catch (error) {
+                console.error('作成エラー:', error);
+                showToast(`作成に失敗しました: ${error.message}`, 'error');
+            }
+        }
+
+        // HTMLタグを挿入
+        function insertTag(openTag, closeTag = '') {
+            const editor = document.getElementById('editor');
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const selectedText = editor.value.substring(start, end);
+            const beforeText = editor.value.substring(0, start);
+            const afterText = editor.value.substring(end);
+
+            // タグを挿入
+            editor.value = beforeText + openTag + selectedText + closeTag + afterText;
+
+            // カーソル位置を調整
+            if (closeTag) {
+                editor.selectionStart = editor.selectionEnd = start + openTag.length + selectedText.length;
+            } else {
+                editor.selectionStart = editor.selectionEnd = start + openTag.length;
+            }
+
+            editor.focus();
+        }
+
+        // チャットボックスを挿入
+        function insertChatBox() {
+            const editor = document.getElementById('editor');
+            const start = editor.selectionStart;
+            const beforeText = editor.value.substring(0, start);
+            const afterText = editor.value.substring(start);
+
+            editor.value = beforeText + chatBoxTemplate + afterText;
+            editor.selectionStart = editor.selectionEnd = start + chatBoxTemplate.length;
+            editor.focus();
+        }
+
+        // サイドバーに更新日を追加する関数
+        async function updateSidebarDate() {
+            if (currentFile === null) {
+                showToast('ファイルが選択されていません', 'error');
+                return;
+            }
+
+            const filename = files[currentFile].name;
+            const title = filename.replace('.html', ''); // ファイル名から拡張子を除いたものをタイトルに
+            
+            try {
+                // サーバーに接続可能か確認
+                const isConnected = await checkServerConnection();
+                
+                if (!isConnected) {
+                    showToast('サーバーに接続できません', 'error');
+                    return;
+                }
+                
+                // APIを呼び出してサイドバーを更新
+                const response = await fetch(`${API_URL}/update-sidebar`, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-Token': API_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: filename,
+                        title: title
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || `HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                showToast(`✅ サイドバーを更新しました！\n📅 ${result.date} - ${result.title}`);
+            } catch (error) {
+                console.error('サイドバー更新エラー:', error);
+                showToast(`サイドバー更新に失敗しました: ${error.message}`, 'error');
+            }
+        }
+
+        // プレビュー更新
+        function updatePreview() {
+            const content = document.getElementById('editor').value;
+            const iframe = document.getElementById('preview-frame');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            const baseUrl = `${window.location.origin}/wiki/`;
+
+            // ベース URL を挿入して、wiki フォルダ内の相対パスを正しく解決する
+            let processedContent = content;
+            if (processedContent.includes('<head')) {
+                processedContent = processedContent.replace(/<head(.*?)>/i, `<head$1><base href="${baseUrl}">`);
+            } else {
+                processedContent = `<base href="${baseUrl}">` + processedContent;
+            }
+
+            iframeDoc.open();
+            iframeDoc.write(processedContent);
+            iframeDoc.close();
+        }
+
+        // タブ切り替え
+        function switchTab(tabName) {
+            // タブボタンのアクティブ状態を更新
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // ビューの表示切り替え
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-view`).classList.add('active');
+
+            // プレビュータブに切り替えた時はプレビューを更新
+            if (tabName === 'preview') {
+                updatePreview();
+            }
+        }
+
+        // 全ファイルをダウンロード（JSON形式）
+        async function downloadAllFiles() {
+            if (files.length === 0) {
+                showToast('ダウンロードするファイルがありません', 'error');
+                return;
+            }
+
+            try {
+                // サーバーに接続している場合、各ファイルの内容を取得
+                const isConnected = await checkServerConnection();
+                let downloadData = files;
+                
+                if (isConnected) {
+                    downloadData = await Promise.all(files.map(async (file) => {
+                        try {
+                            const response = await fetch(`${API_URL}/files/${encodeURIComponent(file.name)}?token=${encodeURIComponent(API_TOKEN)}`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                return { ...file, content: data.content };
+                            }
+                        } catch (e) {
+                            console.error(`Failed to fetch ${file.name}:`, e);
+                        }
+                        return file;
+                    }));
+                }
+                
+                const dataStr = JSON.stringify(downloadData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `lunetra-wiki-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                showToast('バックアップをダウンロードしました');
+            } catch (error) {
+                console.error('ダウンロードエラー:', error);
+                showToast(`ダウンロードに失敗しました: ${error.message}`, 'error');
+            }
+        }
+
+        // トースト通知を表示
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === 'error' ? '#da3633' : '#238636';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, type === 'error' ? 6000 : 3000);
+        }
+
+        // サーバー設定モーダルを表示
+        function showServerSettings() {
+            document.getElementById('api-url-input').value = localStorage.getItem('wiki-api-url') || API_URL;
+            document.getElementById('api-token-input').value = API_TOKEN;
+            document.getElementById('server-settings-modal').classList.add('active');
+        }
+
+        // サーバー設定モーダルを閉じる
+        function closeServerSettings() {
+            document.getElementById('server-settings-modal').classList.remove('active');
+        }
+
+        // サーバー接続テスト
+        async function testServerConnection() {
+            const apiUrl = document.getElementById('api-url-input').value;
+            const apiToken = document.getElementById('api-token-input').value;
+            
+            try {
+                const response = await fetch(`${apiUrl.replace('/api', '')}/api/health?token=${encodeURIComponent(apiToken)}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showToast(`✅ 接続成功！\nWikiフォルダ: ${data.wikiFolder}`);
+                } else {
+                    showToast('❌ 接続失敗: トークンが正しくない可能性があります', 'error');
+                }
+            } catch (error) {
+                showToast(`❌ 接続失敗: ${error.message}`, 'error');
+            }
+        }
+
+        // サーバー設定を保存
+        function saveServerSettings() {
+            const apiUrl = document.getElementById('api-url-input').value || 'http://localhost:3000/api';
+            const apiToken = document.getElementById('api-token-input').value;
+            
+            localStorage.setItem('wiki-api-url', apiUrl);
+            localStorage.setItem('wiki-api-token', apiToken);
+            
+            API_URL = apiUrl;
+            API_TOKEN = apiToken;
+            
+            showToast('⚙️ 設定を保存しました');
+            closeServerSettings();
+            
+            // ページをリロード
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        }
+
+        // アプリケーション起動
+        init();
+
+        // エラーモーダル関数
+        function showErrorModal(message) {
+            document.getElementById('error-message').value = message;
+            document.getElementById('error-modal').classList.add('active');
+        }
+
+        function closeErrorModal() {
+            document.getElementById('error-modal').classList.remove('active');
+        }
+
+        function copyErrorMessage() {
+            const errorText = document.getElementById('error-message');
+            errorText.select();
+            document.execCommand('copy');
+            showToast('📋 エラーをコピーしました');
+        }
+    </script>
+</body>
+</html>

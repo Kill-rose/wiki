@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="まなづるの個人サイト">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="../apple-touch-icon-180x180.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="../android-chrome-192x192.png" sizes="192x192">
+    <title>春雨さらだ - TOP</title>
+    <link rel="stylesheet" href="../css/test.css">
+</head>
+
+<body>
+
+<!-- 固定ヘッダー -->
+<header class="header">
+    <div class="logo">
+        <img src="../img/banner.png" alt="サイトバナー">
+    </div>
+    <nav class="nav">
+        <a href="#news">News</a>
+        <a href="#game">Game</a>
+        <a href="#ghost">Ghost</a>
+        <a href="#original">Original</a>
+    </nav>
+</header>
+
+<!-- メインコンテンツ -->
+<main>
+    <section id="news">
+        <h1>News</h1>
+        <p>更新情報などを表示</p>
+    </section>
+
+    <section id="game">
+        <h1>Game</h1>
+        <p>自作ゲームの配布</p>
+    </section>
+
+    <section id="ghost">
+        <h1>Ghost</h1>
+        <p>自作伺かSSPゴーストの配布</p>
+    </section>
+
+    <section id="original">
+        <h1>Original</h1>
+        <p>一次創作の書きだめ</p>
+    </section>
+</main>
+
+<!-- ページトップボタン -->
+<button id="topBtn" onclick="scrollToTop()">
+    <img src="../img/button.png" alt="トップへ">
+</button>
+
+<footer>
+    <p>© 2025 まなづる</p>
+</footer>
+
+<script>
+    // ページトップに戻る機能
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ホバー時に画像を変更
+    const btn = document.getElementById('topBtn');
+    btn.addEventListener('mouseover', () => {
+        btn.firstElementChild.src = '../img/button_hover.png';
+    });
+    btn.addEventListener('mouseout', () => {
+        btn.firstElementChild.src = '../img/button.png';
+    });
+</script>
+
+</body>
+</html>
