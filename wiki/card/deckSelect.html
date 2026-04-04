@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>デッキ選択 - 時のアマリス</title>
+    <link rel="stylesheet" href="../css/default.css">
+    <style>
+        body {
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .select-container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--callout-bg);
+            border: 1px solid var(--callout-border);
+            border-radius: 8px;
+            padding: 2rem;
+        }
+
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .upload-section {
+            background: rgba(139, 158, 125, 0.1);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-section:hover {
+            border-color: var(--accent-color);
+            background: rgba(139, 158, 125, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .deck-info {
+            background: rgba(139, 158, 125, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .deck-info.active {
+            display: block;
+        }
+
+        .deck-info h3 {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .deck-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .deck-stat {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .deck-stat strong {
+            color: var(--accent-color);
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'MainFont', sans-serif;
+        }
+
+        .start-btn:hover {
+            background: var(--accent-green);
+        }
+
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="select-container">
+        <h1>デッキ選択</h1>
+
+        <label for="deckInput" class="upload-section">
+            <div class="upload-icon">🎴</div>
+            <div class="upload-text">デッキJSONを読み込む</div>
+            <div class="upload-hint">クリックしてファイルを選択</div>
+        </label>
+        <input type="file" id="deckInput" accept=".json">
+
+        <div class="deck-info" id="deckInfo">
+            <h3>読み込まれたデッキ</h3>
+            <div class="deck-stats">
+                <div class="deck-stat">通常デッキ: <strong id="mainCount">0</strong>枚</div>
+                <div class="deck-stat">EXデッキ: <strong id="exCount">0</strong>枚</div>
+            </div>
+        </div>
+
+        <button class="start-btn" id="startBtn" disabled>対戦開始</button>
+    </div>
+
+    <script>
+        let deckData = null;
+
+        document.getElementById('deckInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    deckData = JSON.parse(event.target.result);
+                    
+                    // デッキ情報を表示
+                    const mainCount = deckData.main ? deckData.main.reduce((sum, item) => sum + item.count, 0) : 0;
+                    const exCount = deckData.ex ? deckData.ex.reduce((sum, item) => sum + item.count, 0) : 0;
+                    
+                    document.getElementById('mainCount').textContent = mainCount;
+                    document.getElementById('exCount').textContent = exCount;
+                    document.getElementById('deckInfo').classList.add('active');
+                    document.getElementById('startBtn').disabled = false;
+                } catch (error) {
+                    alert('デッキの読み込みに失敗しました: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            if (!deckData) return;
+            
+            // デッキデータをlocalStorageに保存
+            localStorage.setItem('battleDeck', JSON.stringify(deckData));
+            
+            // バトル画面に遷移
+            window.location.href = 'battle.html';
+        });
+    </script>
+</body>
+</html>
