@@ -1,0 +1,12 @@
+{
+  "deckName": "サバルンゴ・サンプルデッキ",
+  "main": [
+    { "cardName": "チアさばーる", "count": 4 },
+    { "cardName": "サバデュオ", "count": 4 },
+    { "cardName": "ハロー、ハッピーサバールド！", "count": 4 },
+    { "cardName": "原宿(日本の中心)", "count": 2 }
+  ],
+  "ex": [
+    { "cardName": "創世剣 コスモ・ド・サバルンゴ", "count": 1 }
+  ]
+}

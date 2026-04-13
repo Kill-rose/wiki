@@ -12,6 +12,7 @@ const gameState = {
     selectedCard: null,
     selectedCardSource: null,
     handZoneMode: 'hand',
+    opponentHandView: false,
     mulliganPhase: true,
     mulliganSelected: [],
     selectedFieldCell: null,
@@ -44,34 +45,230 @@ const translations = {
     }
 };
 
+let cardDatabase = [];
+
+async function initializeCardDatabase() {
+    try {
+        const response = await fetch('card.json', { cache: 'no-cache' });
+        cardDatabase = await response.json();
+    } catch (error) {
+        console.error('カードデータの読み込みに失敗しました:', error);
+        cardDatabase = [];
+    }
+}
+
+function findCardData(reference) {
+    if (!reference) return null;
+    const key = typeof reference === 'string'
+        ? reference
+        : reference.cardId || reference.id || reference.cardName || (typeof reference.card === 'string' ? reference.card : null);
+
+    if (!key) return null;
+    return cardDatabase.find(card => card.cardName === key || card.cardId === key || card.id === key) || null;
+}
+
+function resolveDeckCard(item) {
+    if (!item) return null;
+    if (item.card && typeof item.card === 'object' && item.card.cardName) {
+        return item.card;
+    }
+    if (item.card && typeof item.card === 'string') {
+        return findCardData(item.card);
+    }
+    const key = item.cardName || item.cardId || item.id || (item.card && typeof item.card === 'string' ? item.card : null);
+    return findCardData(key) || null;
+}
+
 // 独立した場出しパネルの制御
 let placementPanelCardIndex = null;
+let placementPanelSource = 'hand';
+let placementPanelView = 'self';
+
+const networkState = {
+    connected: false,
+    socket: null,
+    roomId: null,
+    playerId: null,
+};
+
+const handledActionIds = new Set();
+
+function generateActionId() {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function updateOnlineStatus(text) {
+    const status = document.getElementById('onlineStatus');
+    if (status) {
+        status.textContent = text;
+    }
+}
+
+function sendOnlineMessage(payload) {
+    if (!networkState.connected || !networkState.socket) return;
+    try {
+        networkState.socket.send(JSON.stringify(payload));
+    } catch (error) {
+        console.error('WebSocket送信エラー:', error);
+    }
+}
+
+function connectOnline(roomId, playerId) {
+    const host = location.host || 'localhost:3000';
+    const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+    const url = `${protocol}://${host}/ws`;
+
+    networkState.roomId = roomId;
+    networkState.playerId = playerId;
+    networkState.connected = false;
+
+    updateOnlineStatus('接続中...');
+
+    const socket = new WebSocket(url);
+    networkState.socket = socket;
+
+    socket.addEventListener('open', () => {
+        networkState.connected = true;
+        sendOnlineMessage({ type: 'JOIN', roomId, playerId });
+        updateOnlineStatus(`接続済み (${playerId})`);
+    });
+
+    socket.addEventListener('message', event => {
+        receiveOnlineMessage(event);
+    });
+
+    socket.addEventListener('close', () => {
+        networkState.connected = false;
+        updateOnlineStatus('切断済み');
+    });
+
+    socket.addEventListener('error', () => {
+        networkState.connected = false;
+        updateOnlineStatus('接続エラー');
+    });
+}
+
+function receiveOnlineMessage(event) {
+    try {
+        const payload = JSON.parse(event.data);
+        if (payload.type === 'JOINED') {
+            updateOnlineStatus(`接続済み (${payload.playerId})`);
+            networkState.playerId = payload.playerId;
+        }
+        if (payload.type === 'PLAYER_LIST') {
+            console.log('オンラインプレイヤー一覧:', payload.players);
+        }
+        if (payload.type === 'PLAYER_ACTION' && payload.action) {
+            const action = payload.action;
+            if (!handledActionIds.has(action.id)) {
+                action.remote = true;
+                executeAction(action);
+            }
+        }
+        if (payload.type === 'GAME_STATE_SYNC' && payload.state) {
+            Object.assign(gameState, payload.state);
+            renderUI();
+        }
+        if (payload.type === 'ERROR') {
+            console.error('サーバーエラー:', payload.message);
+            updateOnlineStatus(`エラー: ${payload.message}`);
+        }
+    } catch (error) {
+        console.error('オンライン受信エラー', error);
+    }
+}
+
+function sendGameState() {
+    if (!networkState.connected || !networkState.socket) return;
+    const payload = {
+        type: 'GAME_STATE_SYNC',
+        state: gameState
+    };
+    sendOnlineMessage(payload);
+}
+
+function isAdjacentFieldPosition(currentPos, targetPos) {
+    if (!currentPos || !targetPos) return false;
+    const rowA = currentPos.zone === 'battle' ? 0 : 1;
+    const rowB = targetPos.zone === 'battle' ? 0 : 1;
+    const colA = currentPos.index;
+    const colB = targetPos.index;
+    const rowDiff = Math.abs(rowA - rowB);
+    const colDiff = Math.abs(colA - colB);
+    return (rowDiff <= 1 && colDiff <= 1) && !(rowDiff === 0 && colDiff === 0);
+}
+
+function updatePlacementPanelView() {
+    const isSelfView = placementPanelView === 'self';
+    const toggleBtn = document.getElementById('placementViewToggleBtn');
+    toggleBtn.textContent = isSelfView ? '相手ゾーンを表示' : '自分ゾーンを表示';
+
+    document.querySelectorAll('.placement-cell').forEach(cell => {
+        const player = cell.dataset.player;
+        const zone = cell.dataset.zone;
+        const index = parseInt(cell.dataset.index, 10);
+        const ownerLabel = player === '1' ? '自分' : '相手';
+        const visible = isSelfView ? player === '1' : player === '0';
+
+        cell.classList.toggle('hidden', !visible);
+        if (!visible) return;
+
+        if (zone === 'battle') {
+            cell.textContent = `${ownerLabel}バトル${index + 1}`;
+        } else if (zone === 'reserve') {
+            cell.textContent = `${ownerLabel}控え${index + 1}`;
+        }
+    });
+}
 
 // 独立パネルを表示
-function showPlacementPanel(cardIndex, card, isMoveMode = false) {
+function showPlacementPanel(cardIndex, card, isMoveMode = false, source = 'hand') {
     placementPanelCardIndex = cardIndex;
+    placementPanelSource = source;
+    placementPanelView = 'self';
     const panel = document.getElementById('placementPanel');
     const confirmBtn = document.getElementById('placementConfirmBtn');
     const title = document.querySelector('.placement-title');
+    const previewImage = document.getElementById('placementPreviewImage');
+    const previewName = document.getElementById('placementPreviewName');
     
     if (isMoveMode) {
-        title.textContent = '移動先を選択';
+        title.firstElementChild.textContent = '移動先を選択';
     } else {
-        title.textContent = '場に出す位置を選択';
+        title.firstElementChild.textContent = '場に出す位置を選択';
     }
     
     panel.classList.add('active');
     confirmBtn.disabled = true;
+
+    const viewToggleBtn = document.getElementById('placementViewToggleBtn');
+    viewToggleBtn.style.display = isMoveMode ? 'none' : '';
+
+    updatePlacementPanelView();
+
+    const imgData = getCardImagePath({ card });
+    previewImage.src = imgData.primary;
+    previewImage.onerror = () => {
+        previewImage.src = imgData.fallback;
+    };
+    previewName.textContent = card.cardName || 'カード';
     
     document.querySelectorAll('.placement-cell').forEach(cell => {
         const zone = cell.dataset.zone;
-        const index = parseInt(cell.dataset.index);
-        const monster = gameState.players[1].field[zone][index];
+        const playerIndex = parseInt(cell.dataset.player, 10);
+        const index = parseInt(cell.dataset.index, 10);
+        const fieldZone = gameState.players[playerIndex].field[zone];
+        const monster = fieldZone ? fieldZone[index] : null;
         
-        cell.classList.remove('selected', 'disabled');
+        cell.classList.remove('selected', 'disabled', 'hidden');
         
         if (isMoveMode) {
-            // 移動モード:すべてのセルが有効
+            const currentPos = gameState.selectedFieldPosition;
+            const targetPos = { zone, index };
+
+            if (playerIndex !== 1 || !isAdjacentFieldPosition(currentPos, targetPos)) {
+                cell.classList.add('disabled');
+            }
         } else {
             if (card.monsterType === '通常') {
                 if (monster !== null) {
@@ -84,6 +281,7 @@ function showPlacementPanel(cardIndex, card, isMoveMode = false) {
             }
         }
     });
+    updatePlacementPanelView();
 }
 
 function hidePlacementPanel() {
@@ -468,7 +666,7 @@ function renderField() {
                 }
             }
         } else if (zone === 'battle' || zone === 'reserve') {
-            const siblings = Array.from(document.querySelectorAll(`.field-area .field-cell[data-zone="${zone}"]`));
+            const siblings = Array.from(document.querySelectorAll(`.field-area:not(.opponent) .field-cell[data-zone="${zone}"]`));
             const idx = siblings.indexOf(cell);
             const monster = gameState.players[1].field[zone][idx];
 
@@ -522,24 +720,82 @@ function renderField() {
         opponentHandZone.style.paddingRight = '1rem';
         
         const handCount = gameState.players[0].hand.length;
-        const countDisplay = document.createElement('div');
-        countDisplay.style.display = 'flex';
-        countDisplay.style.alignItems = 'center';
-        countDisplay.style.gap = '0.5rem';
-        countDisplay.style.color = 'var(--text-color)';
-        countDisplay.style.fontSize = '0.9rem';
-        countDisplay.style.fontWeight = 'bold';
-        
-        const label = document.createElement('span');
-        label.textContent = '相手の手札:';
-        countDisplay.appendChild(label);
-        
-        const count = document.createElement('span');
-        count.textContent = `${handCount}枚`;
-        count.style.color = 'var(--accent-color)';
-        countDisplay.appendChild(count);
-        
-        opponentHandZone.appendChild(countDisplay);
+        if (gameState.opponentHandView) {
+            const handView = document.createElement('div');
+            handView.style.display = 'flex';
+            handView.style.alignItems = 'center';
+            handView.style.gap = '0.75rem';
+            
+            const cardStack = document.createElement('div');
+            cardStack.style.display = 'flex';
+            cardStack.style.alignItems = 'center';
+            cardStack.style.gap = '-18px';
+            cardStack.style.padding = '0.25rem';
+            
+            const visibleCount = Math.min(handCount, 7);
+            for (let i = 0; i < visibleCount; i++) {
+                const cardBack = document.createElement('div');
+                cardBack.style.width = '36px';
+                cardBack.style.height = '52px';
+                cardBack.style.border = '1px solid var(--border-color)';
+                cardBack.style.background = 'rgba(0,0,0,0.15)';
+                cardBack.style.borderRadius = '4px';
+                cardBack.style.boxShadow = '0 2px 4px rgba(0,0,0,0.15)';
+                cardBack.style.flexShrink = '0';
+                cardStack.appendChild(cardBack);
+            }
+            
+            const countDisplay = document.createElement('div');
+            countDisplay.style.display = 'flex';
+            countDisplay.style.flexDirection = 'column';
+            countDisplay.style.alignItems = 'flex-end';
+            countDisplay.style.justifyContent = 'center';
+            countDisplay.style.color = 'var(--text-color)';
+            countDisplay.style.fontSize = '0.85rem';
+            countDisplay.style.fontWeight = 'bold';
+            countDisplay.textContent = `${handCount}枚`;
+            
+            handView.appendChild(cardStack);
+            handView.appendChild(countDisplay);
+            opponentHandZone.appendChild(handView);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'action-btn';
+            closeBtn.textContent = '閉じる';
+            closeBtn.addEventListener('click', () => {
+                gameState.opponentHandView = false;
+                renderUI();
+            });
+            opponentHandZone.appendChild(closeBtn);
+        } else {
+            const countDisplay = document.createElement('div');
+            countDisplay.style.display = 'flex';
+            countDisplay.style.alignItems = 'center';
+            countDisplay.style.gap = '0.5rem';
+            countDisplay.style.color = 'var(--text-color)';
+            countDisplay.style.fontSize = '0.9rem';
+            countDisplay.style.fontWeight = 'bold';
+            
+            const label = document.createElement('span');
+            label.textContent = '相手の手札:';
+            countDisplay.appendChild(label);
+            
+            const count = document.createElement('span');
+            count.textContent = `${handCount}枚`;
+            count.style.color = 'var(--accent-color)';
+            countDisplay.appendChild(count);
+            opponentHandZone.appendChild(countDisplay);
+            
+            const viewBtn = document.createElement('button');
+            viewBtn.className = 'action-btn';
+            viewBtn.textContent = '手札を見る';
+            viewBtn.addEventListener('click', () => {
+                gameState.opponentHandView = true;
+                gameState.logs.push({ type: 'system', message: '1Pが相手の手札を確認しました', time: Date.now() });
+                renderUI();
+            });
+            opponentHandZone.appendChild(viewBtn);
+        }
     }
 }
 
@@ -728,30 +984,23 @@ document.querySelectorAll('.field-area:not(.opponent) .field-cell').forEach(cell
         const isMyTurn = gameState.currentPlayer === 1;
         const zone = cell.dataset.zone;
 
-        if (['graveyard', 'deck', 'ex'].includes(zone)) {
+        if (['graveyard', 'deck', 'ex', 'counter'].includes(zone)) {
             document.querySelectorAll('.field-area:not(.opponent) .field-cell')
                 .forEach(c => c.classList.remove('selected'));
             cell.classList.add('selected');
-            
+
             if (zone === 'counter') {
                 const counterCard = gameState.players[1].field.counter;
                 if (counterCard) {
                     displayCardDetail(counterCard, 'counter');
+                } else {
+                    displayCardDetail(null);
                 }
+            } else {
+                displayCardDetail(null);
             }
-            
-            updateActionPanel(zone);
-            return;
-        }
 
-        if (zone === 'counter') {
-            document.querySelectorAll('.field-area:not(.opponent) .field-cell')
-                .forEach(c => c.classList.remove('selected'));
-            cell.classList.add('selected');
-            const counterCard = gameState.players[1].field.counter;
-            if (counterCard) {
-                displayCardDetail(counterCard, 'counter');
-            }
+            updateActionPanel(zone);
             return;
         }
 
@@ -822,7 +1071,7 @@ document.querySelectorAll('.field-grid .field-cell').forEach(cell => {
         }
 
         document.querySelectorAll('.field-area .field-cell').forEach(c => c.classList.remove('selected'));
-        const mainCells = Array.from(document.querySelectorAll(`.field-area .field-cell[data-zone="${zone}"]`));
+        const mainCells = Array.from(document.querySelectorAll(`.field-area:not(.opponent) .field-cell[data-zone="${zone}"]`));
         const mainCell = mainCells[index];
         if (mainCell) mainCell.classList.add('selected');
         
@@ -887,6 +1136,13 @@ document.querySelectorAll('.placement-cell').forEach(cell => {
     });
 });
 
+document.getElementById('placementViewToggleBtn').addEventListener('click', () => {
+    placementPanelView = placementPanelView === 'self' ? 'opponent' : 'self';
+    updatePlacementPanelView();
+    document.querySelectorAll('.placement-cell').forEach(c => c.classList.remove('selected'));
+    document.getElementById('placementConfirmBtn').disabled = true;
+});
+
 // キャンセルボタン
 document.getElementById('placementCancelBtn').addEventListener('click', () => {
     hidePlacementPanel();
@@ -930,11 +1186,13 @@ document.getElementById('placementConfirmBtn').addEventListener('click', () => {
     }
     
     if (placementPanelCardIndex !== null) {
+        const targetPlayer = parseInt(selectedCell.dataset.player, 10);
         executeAction({
             type: 'PLACE_MONSTER',
-            source: 'hand',
+            source: placementPanelSource || 'hand',
             index: placementPanelCardIndex,
-            position: { zone: zone, index: index }
+            position: { zone: zone, index: index },
+            targetPlayer: Number.isInteger(targetPlayer) ? targetPlayer : 1
         });
         
         hidePlacementPanel();
@@ -959,6 +1217,16 @@ document.getElementById('targetCancelBtn').addEventListener('click', () => {
 
 // アクションを実行
 function executeAction(action) {
+    if (!action) return;
+    if (!action.id) action.id = generateActionId();
+    if (handledActionIds.has(action.id)) return;
+    handledActionIds.add(action.id);
+
+    if (!action.remote && networkState.connected) {
+        sendOnlineMessage({ type: 'PLAYER_ACTION', action });
+        sendGameState();
+    }
+
     const isMyTurn = gameState.currentPlayer === 1;
     
     switch(action.type) {
@@ -1056,60 +1324,78 @@ function executeAction(action) {
         
         case 'ADD_TO_HAND':
             if (action.source === 'deck' && action.index !== undefined) {
-                const card = gameState.players[1].deck.splice(action.index, 1)[0];
-                gameState.players[1].hand.push(card);
-                gameState.logs.push({ 
-                    type: 'system', 
-                    message: '1Pが山札からカードを手札に加えました', 
-                    time: Date.now() 
-                });
-                gameState.privateLogs.push({ 
-                    type: 'private', 
-                    message: `山札からカードを手札に加えました: ${card.card.cardName}`, 
-                    time: Date.now() 
-                });
+                const card = gameState.players[1].deck[action.index];
+                if (card) {
+                    gameState.players[1].hand.push(gameState.players[1].deck.splice(action.index, 1)[0]);
+                    gameState.logs.push({ 
+                        type: 'system', 
+                        message: '1Pが山札からカードを手札に加えました', 
+                        time: Date.now() 
+                    });
+                    gameState.privateLogs.push({ 
+                        type: 'private', 
+                        message: `山札からカードを手札に加えました: ${card.card.cardName}`, 
+                        time: Date.now() 
+                    });
+                }
             } else if (action.source === 'graveyard' && action.index !== undefined) {
-                const card = gameState.players[1].graveyard.splice(action.index, 1)[0];
-                gameState.players[1].hand.push(card);
-                gameState.logs.push({ 
-                    type: 'system', 
-                    message: '1Pが墓地からカードを手札に加えました', 
-                    time: Date.now() 
-                });
-                gameState.privateLogs.push({ 
-                    type: 'private', 
-                    message: `墓地からカードを手札に加えました: ${card.card.cardName}`, 
-                    time: Date.now() 
-                });
+                const card = gameState.players[1].graveyard[action.index];
+                if (card) {
+                    gameState.players[1].hand.push(gameState.players[1].graveyard.splice(action.index, 1)[0]);
+                    gameState.logs.push({ 
+                        type: 'system', 
+                        message: '1Pが墓地からカードを手札に加えました', 
+                        time: Date.now() 
+                    });
+                    gameState.privateLogs.push({ 
+                        type: 'private', 
+                        message: `墓地からカードを手札に加えました: ${card.card.cardName}`, 
+                        time: Date.now() 
+                    });
+                }
             } else if (action.source === 'ex' && action.index !== undefined) {
-                const card = gameState.players[1].ex.splice(action.index, 1)[0];
-                gameState.players[1].hand.push(card);
-                gameState.logs.push({ 
-                    type: 'system', 
-                    message: '1PがEXからカードを手札に加えました', 
-                    time: Date.now() 
-                });
-                gameState.privateLogs.push({ 
-                    type: 'private', 
-                    message: `EXからカードを手札に加えました: ${card.card.cardName}`, 
-                    time: Date.now() 
-                });
+                const card = gameState.players[1].ex[action.index];
+                if (card) {
+                    gameState.players[1].hand.push(gameState.players[1].ex.splice(action.index, 1)[0]);
+                    gameState.logs.push({ 
+                        type: 'system', 
+                        message: '1PがEXからカードを手札に加えました', 
+                        time: Date.now() 
+                    });
+                    gameState.privateLogs.push({ 
+                        type: 'private', 
+                        message: `EXからカードを手札に加えました: ${card.card.cardName}`, 
+                        time: Date.now() 
+                    });
+                }
             } else if (action.source === 'free' && action.index !== undefined) {
-                const card = gameState.players[1].free.splice(action.index, 1)[0];
-                gameState.players[1].hand.push(card);
-                gameState.logs.push({ 
-                    type: 'system', 
-                    message: '1Pがフリーゾーンからカードを手札に加えました', 
-                    time: Date.now() 
-                });
-                gameState.privateLogs.push({ 
-                    type: 'private', 
-                    message: `フリーゾーンからカードを手札に加えました: ${card.card.cardName}`, 
-                    time: Date.now() 
-                });
+                const card = gameState.players[1].free[action.index];
+                if (card) {
+                    gameState.players[1].hand.push(gameState.players[1].free.splice(action.index, 1)[0]);
+                    gameState.logs.push({ 
+                        type: 'system', 
+                        message: '1Pがフリーゾーンからカードを手札に加えました', 
+                        time: Date.now() 
+                    });
+                    gameState.privateLogs.push({ 
+                        type: 'private', 
+                        message: `フリーゾーンからカードを手札に加えました: ${card.card.cardName}`, 
+                        time: Date.now() 
+                    });
+                }
             }
             gameState.selectedCard = null;
             gameState.selectedCardSource = null;
+            break;
+        case 'VIEW_ZONE':
+            if (action.zone === 'deck') {
+                gameState.handZoneMode = 'deck';
+                gameState.logs.push({ type: 'system', message: '1Pが山札を確認しました', time: Date.now() });
+            } else if (action.zone === 'graveyard') {
+                gameState.handZoneMode = 'graveyard';
+            } else if (action.zone === 'ex') {
+                gameState.handZoneMode = 'ex';
+            }
             break;
         case 'RETURN_TO_DECK':
             if (action.source && action.index !== undefined) {
@@ -1143,6 +1429,8 @@ function executeAction(action) {
                     card = gameState.players[1].graveyard.splice(action.index, 1)[0];
                 } else if (action.source === 'ex') {
                     card = gameState.players[1].ex.splice(action.index, 1)[0];
+                } else if (action.source === 'deck') {
+                    card = gameState.players[1].deck.splice(action.index, 1)[0];
                 }
                 
                 if (card) {
@@ -1172,6 +1460,8 @@ function executeAction(action) {
                     card = gameState.players[1].hand.splice(action.index, 1)[0];
                 } else if (action.source === 'free') {
                     card = gameState.players[1].free.splice(action.index, 1)[0];
+                } else if (action.source === 'deck') {
+                    card = gameState.players[1].deck.splice(action.index, 1)[0];
                 }
                 
                 if (card) {
@@ -1184,16 +1474,43 @@ function executeAction(action) {
             break;
             
         case 'PLACE_MONSTER':
-            if (action.source === 'hand' && action.index !== undefined && action.position) {
-                const card = gameState.players[1].hand[action.index];
+            if (action.source && action.index !== undefined && action.position) {
+                let card;
+                const source = action.source;
+                        if (source === 'hand') {
+                    card = gameState.players[1].hand[action.index];
+                } else if (source === 'deck') {
+                    card = gameState.players[1].deck[action.index];
+                } else if (source === 'graveyard') {
+                    card = gameState.players[1].graveyard[action.index];
+                } else if (source === 'ex') {
+                    card = gameState.players[1].ex[action.index];
+                } else if (source === 'free') {
+                    card = gameState.players[1].free[action.index];
+                }
+                
+                if (!card) break;
+
                 const zone = action.position.zone;
                 const index = action.position.index;
-                const targetCell = gameState.players[1].field[zone][index];
+                const targetPlayer = action.targetPlayer !== undefined ? action.targetPlayer : 1;
+                const targetCell = gameState.players[targetPlayer].field[zone][index];
                 const zoneName = zone === 'battle' ? 'バトル' : '控え';
-                
+
                 if (card.card.monsterType === '通常' && targetCell === null) {
-                    const placedCard = gameState.players[1].hand.splice(action.index, 1)[0];
-                    gameState.players[1].field[zone][index] = placedCard;
+                    let placedCard;
+                    if (source === 'hand') {
+                        placedCard = gameState.players[1].hand.splice(action.index, 1)[0];
+                    } else if (source === 'deck') {
+                        placedCard = gameState.players[1].deck.splice(action.index, 1)[0];
+                    } else if (source === 'graveyard') {
+                        placedCard = gameState.players[1].graveyard.splice(action.index, 1)[0];
+                    } else if (source === 'ex') {
+                        placedCard = gameState.players[1].ex.splice(action.index, 1)[0];
+                    } else if (source === 'free') {
+                        placedCard = gameState.players[1].free.splice(action.index, 1)[0];
+                    }
+                    gameState.players[targetPlayer].field[zone][index] = placedCard;
                     gameState.logs.push({ 
                         type: 'system', 
                         message: `1Pが${zoneName}ゾーンにモンスターを出しました: ${placedCard.card.cardName}`,
@@ -1202,9 +1519,20 @@ function executeAction(action) {
                     gameState.selectedCard = null;
                     gameState.selectedCardSource = null;
                 } else if (card.card.monsterType === '特殊進化' && targetCell !== null) {
-                    const placedCard = gameState.players[1].hand.splice(action.index, 1)[0];
-                    const underCard = gameState.players[1].field[zone][index];
-                    gameState.players[1].field[zone][index] = placedCard;
+                    let placedCard;
+                    if (source === 'hand') {
+                        placedCard = gameState.players[1].hand.splice(action.index, 1)[0];
+                    } else if (source === 'deck') {
+                        placedCard = gameState.players[1].deck.splice(action.index, 1)[0];
+                    } else if (source === 'graveyard') {
+                        placedCard = gameState.players[1].graveyard.splice(action.index, 1)[0];
+                    } else if (source === 'ex') {
+                        placedCard = gameState.players[1].ex.splice(action.index, 1)[0];
+                    } else if (source === 'free') {
+                        placedCard = gameState.players[1].free.splice(action.index, 1)[0];
+                    }
+                    const underCard = gameState.players[targetPlayer].field[zone][index];
+                    gameState.players[targetPlayer].field[zone][index] = placedCard;
                     placedCard.underCard = underCard;
                     gameState.logs.push({ 
                         type: 'system', 
@@ -1461,6 +1789,7 @@ function initOpponentField() {
                     displayCardDetail(gameState.players[0].graveyard[gameState.players[0].graveyard.length - 1], 'opponent-graveyard');
                 } else if (zone === 'counter' && gameState.players[0].field.counter) {
                     displayCardDetail(gameState.players[0].field.counter, 'opponent-counter');
+                    gameState.logs.push({ type: 'system', message: '1Pが相手のカウンターを確認しました', time: Date.now() });
                 }
                 
                 updateActionPanel('opponent-' + zone);
@@ -1498,6 +1827,7 @@ function updateActionPanel(source) {
     actionPanel.innerHTML = '';
     
     const isMyTurn = gameState.currentPlayer === 1;
+    const isCardSelectionContext = gameState.selectedCard && gameState.selectedCardSource === source;
 
     // 操作後にパネルをクリアする関数
     function clearAfterAction() {
@@ -1585,6 +1915,7 @@ function updateActionPanel(source) {
             } else if (label === '確認') {
                 btn.addEventListener('click', () => {
                     gameState.handZoneMode = 'opponent-deck-view';
+                    gameState.logs.push({ type: 'system', message: '1Pが相手の山札を確認しました', time: Date.now() });
                     clearAfterAction();
                     renderUI();
                 });
@@ -1602,6 +1933,7 @@ function updateActionPanel(source) {
         btn.textContent = '確認';
         btn.addEventListener('click', () => {
             gameState.handZoneMode = 'opponent-ex-view';
+            gameState.logs.push({ type: 'system', message: '1Pが相手のEXを確認しました', time: Date.now() });
             clearAfterAction();
             renderUI();
         });
@@ -1618,9 +1950,19 @@ function updateActionPanel(source) {
         actionPanel.appendChild(info);
         return;
     }
+    
+    // 相手のカウンター
+    if (source === 'opponent-counter') {
+        const info = document.createElement('div');
+        info.className = 'action-btn full-width';
+        info.style.cursor = 'default';
+        info.textContent = gameState.players[0].field.counter ? '相手のカウンターを確認中です' : '相手のカウンターは空です';
+        actionPanel.appendChild(info);
+        return;
+    }
 
     // 自分の墓地
-    if (source === 'graveyard') {
+    if (source === 'graveyard' && !(gameState.selectedCard && gameState.selectedCardSource === 'graveyard')) {
         const buttons = ['確認', 'シャッフル'];
         buttons.forEach(label => {
             const btn = document.createElement('button');
@@ -1648,7 +1990,7 @@ function updateActionPanel(source) {
     }
     
     // 自分の山札
-    if (source === 'deck') {
+    if (source === 'deck' && !(gameState.selectedCard && gameState.selectedCardSource === 'deck')) {
         const buttons = ['確認', 'シャッフル', 'ドロー'];
         buttons.forEach(label => {
             const btn = document.createElement('button');
@@ -1671,6 +2013,7 @@ function updateActionPanel(source) {
             } else if (label === '確認') {
                 btn.addEventListener('click', () => {
                     gameState.handZoneMode = 'deck';
+                    gameState.logs.push({ type: 'system', message: '1Pが山札を確認しました', time: Date.now() });
                     clearAfterAction();
                     renderUI();
                 });
@@ -1682,7 +2025,7 @@ function updateActionPanel(source) {
     }
     
     // 自分のEX
-    if (source === 'ex') {
+    if (source === 'ex' && !(gameState.selectedCard && gameState.selectedCardSource === 'ex')) {
         const btn = document.createElement('button');
         btn.className = 'action-btn full-width';
         btn.textContent = '確認';
@@ -2019,7 +2362,7 @@ function updateActionPanel(source) {
             }
         }
     }
-    else if (source === 'graveyard') {
+    else if (source === 'graveyard' && !(gameState.selectedCard && gameState.selectedCardSource === 'graveyard')) {
         const buttons = ['確認', 'シャッフル'];
         buttons.forEach(label => {
             const btn = document.createElement('button');
@@ -2040,7 +2383,7 @@ function updateActionPanel(source) {
             
             actionPanel.appendChild(btn);
         });
-    } else if (source === 'deck') {
+    } else if (source === 'deck' && !(gameState.selectedCard && gameState.selectedCardSource === 'deck')) {
         const buttons = ['確認', 'シャッフル', 'ドロー'];
         buttons.forEach(label => {
             const btn = document.createElement('button');
@@ -2066,7 +2409,7 @@ function updateActionPanel(source) {
             
             actionPanel.appendChild(btn);
         });
-    } else if (source === 'ex') {
+    } else if (source === 'ex' && !(gameState.selectedCard && gameState.selectedCardSource === 'ex')) {
         const btn = document.createElement('button');
         btn.className = 'action-btn full-width';
         btn.textContent = '確認';
@@ -2098,7 +2441,8 @@ function updateActionPanel(source) {
     
     if (gameState.selectedCard && ['deck', 'graveyard', 'ex', 'free'].includes(source)) {
         const sourceKey = source === 'deck' ? 'deck' : source === 'graveyard' ? 'graveyard' : source === 'ex' ? 'ex' : 'free';
-        const index = gameState.players[1][sourceKey].indexOf(gameState.selectedCard);
+        const selectedCardAtBuild = gameState.selectedCard;
+        const index = gameState.players[1][sourceKey].indexOf(selectedCardAtBuild);
         
         if (index !== -1) {
             const addHandBtn = document.createElement('button');
@@ -2106,30 +2450,72 @@ function updateActionPanel(source) {
             addHandBtn.textContent = '手札に加える';
             addHandBtn.disabled = !isMyTurn;
             addHandBtn.addEventListener('click', () => {
-                executeAction({ type: 'ADD_TO_HAND', source: source, index: index });
+                const currentIndex = gameState.players[1][sourceKey].indexOf(selectedCardAtBuild);
+                if (currentIndex === -1) {
+                    clearAfterAction();
+                    renderUI();
+                    return;
+                }
+                executeAction({ type: 'ADD_TO_HAND', source: source, index: currentIndex });
                 clearAfterAction();
+                renderUI();
             });
             actionPanel.appendChild(addHandBtn);
+
+            if (source === 'deck') {
+                const graveyardBtn = document.createElement('button');
+                graveyardBtn.className = 'action-btn';
+                graveyardBtn.textContent = '墓地へ送る';
+                graveyardBtn.disabled = !isMyTurn;
+                graveyardBtn.addEventListener('click', () => {
+                    const currentIndex = gameState.players[1].deck.indexOf(gameState.selectedCard);
+                    if (currentIndex === -1) {
+                        clearAfterAction();
+                        renderUI();
+                        return;
+                    }
+                    executeAction({ type: 'SEND_TO_GRAVEYARD', source: 'deck', index: currentIndex });
+                    clearAfterAction();
+                    renderUI();
+                });
+                actionPanel.appendChild(graveyardBtn);
+            }
             
-            const returnBtn = document.createElement('button');
-            returnBtn.className = 'action-btn';
-            returnBtn.textContent = 'デッキに戻す';
-            returnBtn.disabled = !isMyTurn;
-            returnBtn.addEventListener('click', () => {
-                executeAction({ type: 'RETURN_TO_DECK', source: source, index: index });
-                clearAfterAction();
-            });
-            actionPanel.appendChild(returnBtn);
+            if (source !== 'deck') {
+                const returnBtn = document.createElement('button');
+                returnBtn.className = 'action-btn';
+                returnBtn.textContent = 'デッキに戻す';
+                returnBtn.disabled = !isMyTurn;
+                returnBtn.addEventListener('click', () => {
+                    const currentIndex = gameState.players[1][sourceKey].indexOf(selectedCardAtBuild);
+                    if (currentIndex === -1) {
+                        clearAfterAction();
+                        renderUI();
+                        return;
+                    }
+                    executeAction({ type: 'RETURN_TO_DECK', source: source, index: currentIndex });
+                    clearAfterAction();
+                    renderUI();
+                });
+                actionPanel.appendChild(returnBtn);
+            }
             
-            // フリーゾーンの場合は「フリーゾーンへ」ボタンを表示しない
-            if (source !== 'deck' && source !== 'free') {
+            // デッキ選択時でもフリーゾーンへ移動できるように変更
+            if (source !== 'free') {
                 const freeBtn = document.createElement('button');
                 freeBtn.className = 'action-btn';
                 freeBtn.textContent = 'フリーゾーンへ';
                 freeBtn.disabled = !isMyTurn;
                 freeBtn.addEventListener('click', () => {
-                    executeAction({ type: 'ADD_TO_FREE', source: source, index: index });
+                    const currentIndex = gameState.players[1][sourceKey].indexOf(selectedCardAtBuild);
+                    if (currentIndex === -1) {
+                        clearAfterAction();
+                        renderUI();
+                        return;
+                    }
+                    executeAction({ type: 'ADD_TO_FREE', source: source, index: currentIndex });
                     clearAfterAction();
+                    renderUI();
                 });
                 actionPanel.appendChild(freeBtn);
             }
@@ -2150,10 +2536,11 @@ function updateActionPanel(source) {
                 placeBtn.textContent = '場に出す';
                 placeBtn.disabled = !isMyTurn;
                 placeBtn.addEventListener('click', () => {
-                    alert('場に出す機能は実装中です');
+                    showPlacementPanel(index, gameState.selectedCard.card, false, source);
                 });
                 actionPanel.appendChild(placeBtn);
             }
+            return;
         }
     }
 }
@@ -2165,31 +2552,34 @@ function loadDeck(deckData) {
     gameState.players[1].hand = [];
     gameState.players[1].graveyard = [];
     gameState.players[1].free = [];
-    
+
+    const addCardToZone = (zoneArray, item) => {
+        const card = resolveDeckCard(item);
+        if (!card) {
+            console.warn('カードが見つかりませんでした:', item);
+            return;
+        }
+        zoneArray.push({ card, currentDamage: 0 });
+    };
+
     if (deckData.main) {
         deckData.main.forEach(item => {
-            for (let i = 0; i < item.count; i++) {
-                gameState.players[1].deck.push({
-                    card: item.card,
-                    currentDamage: 0
-                });
+            for (let i = 0; i < (item.count || 0); i++) {
+                addCardToZone(gameState.players[1].deck, item);
             }
         });
     }
-    
+
     if (deckData.ex) {
         deckData.ex.forEach(item => {
-            for (let i = 0; i < item.count; i++) {
-                gameState.players[1].ex.push({
-                    card: item.card,
-                    currentDamage: 0
-                });
+            for (let i = 0; i < (item.count || 0); i++) {
+                addCardToZone(gameState.players[1].ex, item);
             }
         });
     }
-    
+
     shuffleDeck(1);
-    
+
     gameState.mulliganPhase = true;
     gameState.mulliganSelected = [];
     executeAction({ type: 'INITIAL_DRAW' });
@@ -2199,16 +2589,33 @@ function loadDeck(deckData) {
 
 // 初期化
 const savedDeckData = localStorage.getItem('battleDeck');
-if (savedDeckData) {
-    try {
-        const deck = JSON.parse(savedDeckData);
-        loadDeck(deck);
-    } catch (error) {
-        console.error('デッキ読み込みエラー:', error);
+initializeCardDatabase().then(() => {
+    if (savedDeckData) {
+        try {
+            const deck = JSON.parse(savedDeckData);
+            loadDeck(deck);
+        } catch (error) {
+            console.error('デッキ読み込みエラー:', error);
+        }
     }
-}
+    // 相手の場を初期化
+    initOpponentField();
+    renderUI();
 
-// 相手の場を初期化（この行を追加）
-initOpponentField();
+    const connectBtn = document.getElementById('onlineConnectBtn');
+    if (connectBtn) {
+        connectBtn.addEventListener('click', () => {
+            const params = new URLSearchParams(window.location.search);
+            const roomId = params.get('room') || 'default';
+            const playerId = params.get('player') || '1P';
+            connectOnline(roomId, playerId);
+        });
+    }
 
-renderUI();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('online') === '1') {
+        const roomId = params.get('room') || 'default';
+        const playerId = params.get('player') || '1P';
+        connectOnline(roomId, playerId);
+    }
+});

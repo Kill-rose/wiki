@@ -7,58 +7,68 @@
     <link rel="stylesheet" href="../css/default.css">
     <style>
         * { box-sizing: border-box; }
-        body { padding: 0; margin: 0; display: flex; min-height: 100vh; }
-        
+        body { margin: 0; min-height: 100vh; }
+
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 2em auto 10em auto;
+            gap: 2em;
+            padding: 0 2em;
+        }
         .sidebar {
-            width: 60px;
-            background: var(--callout-bg);
-            border-right: 1px solid var(--callout-border);
+            width: 72px;
+            flex-shrink: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 1rem 0;
             gap: 0.5rem;
-            flex-shrink: 0;
+        }
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .page-card {
+            background: var(--callout-bg);
+            border: 1px solid var(--callout-border);
+            border-radius: 18px;
+            padding: 2rem;
         }
         .sidebar-item {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
+            font-size: 1.4rem;
+            border-radius: 12px;
             border: 1px solid transparent;
-            text-decoration: none;
             color: var(--text-color);
+            background: rgba(255,255,255,0.05);
+            text-decoration: none;
+            transition: all 0.2s ease;
         }
         .sidebar-item:hover {
-            background: rgba(139, 158, 125, 0.2);
             border-color: var(--accent-color);
+            background: rgba(139, 158, 125, 0.18);
         }
         .sidebar-item.active {
             background: var(--accent-color);
             color: white;
+            border-color: var(--accent-green);
         }
         .sidebar-divider {
-            width: 80%;
+            width: 60%;
             height: 1px;
             background: var(--border-color);
             margin: 0.5rem 0;
         }
         
-        .main-container {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-        .cards-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem;
-            transition: all 0.3s;
+        .main-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
         }
         .main-container.deck-mode .cards-area {
             max-width: 600px;
@@ -722,21 +732,18 @@
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="sidebar-item" title="ルール">📖</div>
-        <a href="cardview.html" class="sidebar-item active" title="カード一覧">🎴</a>
-        <div class="sidebar-item" title="実践">⚔️</div>
-        <div class="sidebar-item" title="印刷">🖨️</div>
-        <div class="sidebar-divider"></div>
-        <div class="sidebar-item" id="deckModeToggle" title="デッキ作成">📋</div>
-    </div>
+    <div class="container" id="mainContainer">
+        <aside class="sidebar">
+            <a href="cardview.html" class="sidebar-item active" title="カード一覧">🎴</a>
+            <a href="deckSelect.html" class="sidebar-item" title="対戦">⚔️</a>
+            <a href="rules.html" class="sidebar-item" title="ルール">📖</a>
+            <a href="16.html" class="sidebar-item" title="印刷">🖨️</a>
+            <a href="../index.html" class="sidebar-item" title="Wikiトップ">🏠</a>
+        </aside>
+        <main class="main-content">
+            <h1>時のアマリス カード一覧</h1>
 
-    <div class="main-container" id="mainContainer">
-        <div class="cards-area">
-            <div class="main-content">
-                <h1>時のアマリス カード一覧</h1>
-
-                <div class="upload-section" id="uploadSection">
+            <div class="upload-section" id="uploadSection">
                     <label for="fileInput" class="upload-area">
                         <div class="upload-icon">🎴</div>
                         <div class="upload-text">JSONファイルをドロップ</div>
@@ -774,6 +781,7 @@
                             </div>
                         </div>
                         <div class="controls-row">
+                            <button id="deckModeToggle" class="filter-btn">デッキ表示</button>
                             <div class="control-group">
                                 <label class="control-label">表示:</label>
                                 <select id="viewMode">
@@ -838,7 +846,9 @@
             <div class="deck-footer">
                 <button class="deck-action-btn primary" id="saveDeckBtn" disabled>💾 デッキを保存</button>
                 <button class="deck-action-btn secondary" id="exportDeckBtn">📤 JSONエクスポート</button>
+                <button class="deck-action-btn secondary" id="importDeckBtn">📥 JSONインポート</button>
                 <button class="deck-action-btn danger" id="clearDeckBtn">🗑️ 全消去</button>
+                <input type="file" id="deckImportInput" accept=".json" style="display: none;">
             </div>
         </div>
     </div>

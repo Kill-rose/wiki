@@ -1,123 +1,19 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>対戦 - 時のアマリス</title>
-    <link rel="stylesheet" href="../../css/default.css">
+    <link rel="stylesheet" href="../css/default.css">
     <link rel="stylesheet" href="battle.css">
     <style>
-        .image-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
-            align-items: center;
-            justify-content: center;
-        }
-        .image-modal.active {
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
             display: flex;
-        }
-        .image-modal-content {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-        }
-        .image-modal-close {
-            position: absolute;
-            top: 20px;
-            right: 40px;
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .target-selection-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-        }
-        .target-selection-modal.active {
-            display: flex;
-        }
-        .target-selection-panel {
-            background: var(--callout-bg);
-            border: 2px solid var(--accent-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            max-width: 500px;
-        }
-        .target-selection-title {
-            color: var(--accent-color);
-            font-weight: bold;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        .target-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        .target-cell {
-            background: rgba(139, 158, 125, 0.1);
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-        }
-        .target-cell:hover:not(.disabled) {
-            background: rgba(139, 158, 125, 0.2);
-            border-color: var(--accent-color);
-        }
-        .target-cell.selected {
-            background: var(--accent-color);
-            border-color: var(--accent-green);
-            color: white;
-        }
-        .target-cell.disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-        .target-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .target-btn {
-            flex: 1;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'MainFont', sans-serif;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-        .target-btn.confirm {
-            background: var(--accent-color);
-            color: white;
-        }
-        .target-btn.cancel {
-            background: rgba(139, 158, 125, 0.2);
-            color: var(--text-color);
-        }
-        .log-time {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-right: 0.5rem;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'MainFont', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
     </style>
 </head>
@@ -199,12 +95,11 @@
             <div class="field-row hand-zone" id="handZone">
                 <!-- 手札/フリーゾーン/確認中 -->
                 <button class="zone-toggle-btn" id="zoneToggleBtn">手札</button>
+                <button class="menu-toggle" id="menuToggle" title="メニュー">☰</button>
                 <!-- カードがここに追加される -->
             </div>
         </div>
 
-        <!-- メニュートグルボタン -->
-        <button class="menu-toggle" id="menuToggle">⚙️</button>
         <div class="menu-panel" id="menuPanel">
             <button class="menu-btn" id="coinTossBtn">コイントス</button>
             <button class="menu-btn" id="turnEndBtn">ターンエンド</button>
@@ -216,14 +111,35 @@
 
         <!-- 独立した場出しパネル -->
         <div class="placement-panel" id="placementPanel">
-            <div class="placement-title">場に出す位置を選択</div>
+            <div class="placement-title">
+                <span>場に出す位置を選択</span>
+                <button class="placement-view-toggle" id="placementViewToggleBtn">相手ゾーンを表示</button>
+            </div>
+            <div class="placement-preview" id="placementPreview">
+                <img id="placementPreviewImage" src="img/monster.png" alt="カードプレビュー">
+                <div class="placement-preview-name" id="placementPreviewName">カードを選択してください</div>
+            </div>
             <div class="placement-grid" id="placementGrid">
-                <div class="placement-cell" data-zone="battle" data-index="0">B1</div>
-                <div class="placement-cell" data-zone="battle" data-index="1">B2</div>
-                <div class="placement-cell" data-zone="battle" data-index="2">B3</div>
-                <div class="placement-cell" data-zone="reserve" data-index="0">R1</div>
-                <div class="placement-cell" data-zone="reserve" data-index="1">R2</div>
-                <div class="placement-cell" data-zone="reserve" data-index="2">R3</div>
+                <div class="placement-row">
+                    <div class="placement-cell" data-player="0" data-zone="battle" data-index="0">相手バトル1</div>
+                    <div class="placement-cell" data-player="0" data-zone="battle" data-index="1">相手バトル2</div>
+                    <div class="placement-cell" data-player="0" data-zone="battle" data-index="2">相手バトル3</div>
+                </div>
+                <div class="placement-row">
+                    <div class="placement-cell" data-player="0" data-zone="reserve" data-index="0">相手控え1</div>
+                    <div class="placement-cell" data-player="0" data-zone="reserve" data-index="1">相手控え2</div>
+                    <div class="placement-cell" data-player="0" data-zone="reserve" data-index="2">相手控え3</div>
+                </div>
+                <div class="placement-row">
+                    <div class="placement-cell" data-player="1" data-zone="battle" data-index="0">自分バトル1</div>
+                    <div class="placement-cell" data-player="1" data-zone="battle" data-index="1">自分バトル2</div>
+                    <div class="placement-cell" data-player="1" data-zone="battle" data-index="2">自分バトル3</div>
+                </div>
+                <div class="placement-row">
+                    <div class="placement-cell" data-player="1" data-zone="reserve" data-index="0">自分控え1</div>
+                    <div class="placement-cell" data-player="1" data-zone="reserve" data-index="1">自分控え2</div>
+                    <div class="placement-cell" data-player="1" data-zone="reserve" data-index="2">自分控え3</div>
+                </div>
             </div>
             <div class="placement-buttons">
                 <button class="placement-btn cancel" id="placementCancelBtn">キャンセル</button>
@@ -271,6 +187,10 @@
                     <span class="status-label">経過ターン:</span>
                     <span class="status-value" id="turnStatus">1 - あなたのターン</span>
                 </div>
+            </div>
+            <div class="online-control">
+                <button class="online-btn" id="onlineConnectBtn">オンライン接続</button>
+                <span class="online-status" id="onlineStatus">未接続</span>
             </div>
         </div>
 

@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時のアマリス カードメニュー</title>
+    <link rel="stylesheet" href="../css/default.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 2em auto 10em auto;
+            gap: 2em;
+            padding: 0 2em;
+        }
+        .sidebar {
+            width: 72px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 0.5rem;
+        }
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .page-card {
+            background: var(--callout-bg);
+            border: 1px solid var(--callout-border);
+            border-radius: 18px;
+            padding: 2rem;
+        }
+        .sidebar-item {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            color: var(--text-color);
+            background: rgba(255,255,255,0.05);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .sidebar-item:hover {
+            border-color: var(--accent-color);
+            background: rgba(139, 158, 125, 0.18);
+        }
+        .sidebar-item.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-green);
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .menu-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(139, 158, 125, 0.2);
+            border-radius: 18px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            min-height: 180px;
+        }
+        .menu-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 158, 125, 0.35);
+        }
+        .menu-card h2 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+        .menu-card p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+        .menu-card a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.85rem 1rem;
+            border-radius: 999px;
+            background: var(--accent-color);
+            color: #111827;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background 0.2s ease;
+        }
+        .menu-card a:hover {
+            background: var(--accent-green);
+        }
+        .description {
+            color: var(--text-secondary);
+            line-height: 1.75;
+            max-width: 860px;
+        }
+        .footer {
+            margin-top: 1.75rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <a href="cardview.html" class="sidebar-item" title="カード一覧">🎴</a>
+            <a href="deckSelect.html" class="sidebar-item" title="対戦">⚔️</a>
+            <a href="rules.html" class="sidebar-item" title="ルール">📖</a>
+            <a href="16.html" class="sidebar-item" title="印刷">🖨️</a>
+            <a href="index.html" class="sidebar-item active" title="Wikiトップ">🏠</a>
+        </aside>
+        <main class="main-content">
+            <section class="page-card">
+                <h1>時のアマリス カードメニュー</h1>
+                <p class="description">このページからカード関連の主要機能へアクセスできます。カード作成は cardview.html、対戦は deckSelect.html、ルール確認と印刷ページもここから移動できます。</p>
+                <div class="menu-grid">
+                    <div class="menu-card">
+                        <div>
+                            <h2>デッキ作成</h2>
+                            <p>デッキを組み立てたいときはこちら。カード種別ごとの操作も用意しています。</p>
+                        </div>
+                        <a href="cardview.html">cardview.html</a>
+                    </div>
+                    <div class="menu-card">
+                        <div>
+                            <h2>対戦</h2>
+                            <p>作成したデッキを読み込み、対戦画面に進みます。ここから直接開始できます。</p>
+                        </div>
+                        <a href="deckSelect.html">deckSelect.html</a>
+                    </div>
+                    <div class="menu-card">
+                        <div>
+                            <h2>ゲームルール</h2>
+                            <p>基本ルールと勝利条件、カードタイプを整理した専用ページです。</p>
+                        </div>
+                        <a href="rules.html">rules.html</a>
+                    </div>
+                    <div class="menu-card">
+                        <div>
+                            <h2>印刷</h2>
+                            <p>カード印刷用ページです。カード画像やデザインをまとめて印刷できます。</p>
+                        </div>
+                        <a href="16.html">16.html</a>
+                    </div>
+                </div>
+                <div class="footer"> cardmaker.html はデッキ読み込み/出力を sample_deck.json 形式に対応しました。</div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

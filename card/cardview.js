@@ -57,15 +57,31 @@ function setCardsFromData(data) {
 }
 
 function autoLoadLocalJson() {
-    fetch('card.json', { cache: 'no-cache' })
-        .then(resp => {
-            if (!resp.ok) throw new Error('not found');
-            return resp.json();
-        })
-        .then(json => {
-            setCardsFromData(json);
-        })
-        .catch(() => {});
+    const paths = ['card.json', './card.json'];
+    let tried = 0;
+
+    const tryFetch = () => {
+        if (tried >= paths.length) {
+            console.warn('card.json の自動読み込みに失敗しました。手動でアップロードしてください。');
+            return;
+        }
+
+        const path = paths[tried++];
+        fetch(path, { cache: 'no-cache' })
+            .then(resp => {
+                if (!resp.ok) throw new Error(`${path} not found (${resp.status})`);
+                return resp.json();
+            })
+            .then(json => {
+                setCardsFromData(json);
+            })
+            .catch((error) => {
+                console.warn(`card.json 自動読み込み: ${path} を読み込めませんでした。`, error);
+                tryFetch();
+            });
+    };
+
+    tryFetch();
 }
 
 // デッキモード切り替え
@@ -227,11 +243,11 @@ document.getElementById('saveDeckBtn').addEventListener('click', () => {
 document.getElementById('exportDeckBtn').addEventListener('click', () => {
     const exportData = {
         main: Object.keys(deck.main).map(idx => ({
-            card: allCards[idx],
+            cardName: allCards[idx].cardName || '名前なし',
             count: deck.main[idx]
         })),
         ex: Object.keys(deck.ex).map(idx => ({
-            card: allCards[idx],
+            cardName: allCards[idx].cardName || '名前なし',
             count: deck.ex[idx]
         }))
     };
@@ -243,6 +259,59 @@ document.getElementById('exportDeckBtn').addEventListener('click', () => {
     a.download = `deck-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
+});
+
+document.getElementById('importDeckBtn').addEventListener('click', () => {
+    document.getElementById('deckImportInput').click();
+});
+
+document.getElementById('deckImportInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const data = JSON.parse(event.target.result);
+            if (data && (Array.isArray(data.main) || Array.isArray(data.ex))) {
+                deck = { main: {}, ex: {} };
+                const warnings = [];
+
+                const fillDeck = (items, deckKey) => {
+                    if (!Array.isArray(items)) return;
+                    items.forEach(item => {
+                        if (!item.cardName || !item.count) return;
+                        const cardIndex = allCards.findIndex(card => card.cardName === item.cardName);
+                        if (cardIndex === -1) {
+                            warnings.push(`見つかりません: ${item.cardName}`);
+                            return;
+                        }
+                        const card = allCards[cardIndex];
+                        const targetKey = getDeckTypeForCard(card);
+                        if (targetKey !== deckKey) {
+                            warnings.push(`${item.cardName} は ${deckKey} ではなく ${targetKey} に分類されます`);
+                        }
+                        deck[targetKey][cardIndex] = Math.min(3, Number(item.count || 0));
+                    });
+                };
+
+                fillDeck(data.main, 'main');
+                fillDeck(data.ex, 'ex');
+
+                updateDeckCount();
+                renderDeck();
+                saveDeckToCookie();
+                renderCards();
+                alert(`デッキを読み込みました。${warnings.length ? '\n' + warnings.join('\n') : ''}`);
+            } else {
+                alert('sample形式のデッキJSONを選択してください');
+            }
+        } catch (error) {
+            alert('デッキJSON読み込みエラー: ' + error.message);
+        }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
 });
 
 // 全消去
@@ -595,4 +664,4 @@ function closeModal(event) {
     document.getElementById('detailModal').classList.remove('active');
 }
 
-autoLoadLocalJson();
+window.addEventListener('DOMContentLoaded', autoLoadLocalJson);

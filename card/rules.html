@@ -1,0 +1,309 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲームのルール - 時のアマリス</title>
+    <link rel="stylesheet" href="../css/default.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 2em auto 10em auto;
+            gap: 2em;
+            padding: 0 2em;
+        }
+        .sidebar {
+            width: 72px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 0.5rem;
+        }
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .page-card {
+            background: var(--callout-bg);
+            border: 1px solid var(--callout-border);
+            border-radius: 18px;
+            padding: 2rem;
+        }
+        .sidebar-item {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            color: var(--text-color);
+            background: rgba(255,255,255,0.05);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .sidebar-item:hover {
+            border-color: var(--accent-color);
+            background: rgba(139, 158, 125, 0.18);
+        }
+        .sidebar-item.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-green);
+        }
+        .document-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 2rem;
+            color: var(--text-color);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: clamp(2rem, 2.5vw, 2.6rem);
+            color: var(--text-color);
+        }
+        h2 {
+            margin-top: 2rem;
+            font-size: 1.25rem;
+            color: var(--text-color);
+        }
+        p,
+        li {
+            margin: 0 0 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+        ul {
+            margin: 0 0 1rem 1.4rem;
+            padding: 0;
+            list-style: disc inside;
+        }
+        .note {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            color: var(--text-color);
+            margin: 1.5rem 0;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 0.9rem 1.1rem;
+            background: var(--accent-color);
+            color: #111827;
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+        .back-link:hover {
+            background: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <a href="cardview.html" class="sidebar-item" title="カード一覧">🎴</a>
+            <a href="deckSelect.html" class="sidebar-item" title="対戦">⚔️</a>
+            <a href="rules.html" class="sidebar-item active" title="ルール">📖</a>
+            <a href="16.html" class="sidebar-item" title="印刷">🖨️</a>
+            <a href="index.html" class="sidebar-item" title="Wikiトップ">🏠</a>
+        </aside>
+        <main class="main-content">
+            <section class="page-card document-card">
+                <h1>TCG - 時のアマリス ルール</h1>
+                <p>「時のアマリス」は、山札を使いながらモンスターを召喚し、相手のHPまたはシールドを削り合うカード対戦ゲームです。</p>
+                <div class="note">
+                    <strong>タイトルの由来：</strong>ASMRKT（種族の略称）→TKAMRS→TKのAMRS→時のアマリス。特別な意味はありません。
+                </div>
+                <section>
+                    <h2>試合の流れ</h2>
+                    <ul>
+                        <li>先攻後攻を決める。</li>
+                        <li>デッキをシャッフルして山札に置く。</li>
+                        <li>初手でカードを5枚引く。</li>
+                        <li>指定したカードをデッキに戻し、山札をシャッフルして同じ枚数だけ引き直す（引き直し）。</li>
+                        <li>先攻のドローフェイズからゲームを開始する。</li>
+                        <li>エネルギーは「マナ」と同じ意味で、一部カードでは古い呼び名として使われる場合があります。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>ターンの構成</h2>
+                    <ul>
+                        <li>ドローフェイズ  メインフェイズ  エンドフェイズ（ターンエンド）</li>
+                        <li>エンドフェイズ後は相手のドローフェイズに移行する。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>ドローフェイズ</h2>
+                    <ul>
+                        <li>カードを1枚引く。</li>
+                        <li>マナを全回復する。</li>
+                        <li>先攻の1ターン目は攻撃できない。</li>
+                        <li>ドローフェイズが終わるとメインフェイズに移る。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>メインフェイズ</h2>
+                    <ul>
+                        <li>モンスターを場に出す。</li>
+                        <li>魔法を発動する。</li>
+                        <li>モンスターで攻撃する。</li>
+                        <li>終了宣言でエンドフェイズに移行する。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>エンドフェイズ</h2>
+                    <ul>
+                        <li>自分のターンを終了し、相手ターンに移る。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>デッキ構築</h2>
+                    <ul>
+                        <li>デッキ枚数：40〜60枚。</li>
+                        <li>EXデッキ：最大15枚。</li>
+                        <li>同じカードは1種類につき最大3枚まで。</li>
+                        <li>デッキに戻す場合は戻した後に必ずシャッフルする。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>場の構成</h2>
+                    <ul>
+                        <li>各プレイヤーに以下のゾーンがある。</li>
+                        <li>バトルゾーン：最大3枚のモンスターを配置できる。</li>
+                        <li>控えゾーン：最大3枚のモンスターを配置できる。バトルゾーンより手前に置く。</li>
+                        <li>カウンターゾーン：魔法を伏せて待機させるエリア。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>バトルゾーン</h2>
+                    <ul>
+                        <li>ここにいるモンスターは1ターンに1回、通常攻撃かアタックスキルのいずれか1つを使用できる。</li>
+                        <li>パッシブスキルも条件を満たせば使用できる。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>控えゾーン</h2>
+                    <ul>
+                        <li>アタックスキルは使えないが、パッシブスキルの発動は可能。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>入れ替え</h2>
+                    <ul>
+                        <li>自分のメインフェイズに、バトルゾーン内または控えゾーン内でモンスターの位置を入れ替えられる。</li>
+                        <li>入れ替えは隣接または斜めに位置するモンスター同士に限られる。</li>
+                        <li>マナを1消費し、1ターンに1回だけ行える。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>カウンターゾーン</h2>
+                    <ul>
+                        <li>魔法カードを伏せて置く場所。</li>
+                        <li>相手ターン中に表にして発動できる。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>カードの種類</h2>
+                    <ul>
+                        <li>モンスター／魔法／サポーター</li>
+                        <li>モンスターは攻撃力、HP、種族、属性を持ち、タイプやスキルを持つ場合がある。</li>
+                        <li>HPが0になったモンスターは破壊されて墓地へ移動する。</li>
+                        <li>攻撃力とHPは0以下にはならない。</li>
+                        <li>モンスターは自分のメインフェイズに1回、通常攻撃かアタックスキルのどちらかを選んで使用できる。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>モンスターの分類</h2>
+                    <ul>
+                        <li>通常モンスター</li>
+                        <li>進化モンスター：EXに収録し、進化元として指定された場のモンスターを墓地へ送って場に出す。進化にはカードに指定されたマナコストを支払う。</li>
+                        <li>特殊進化モンスター：手札から、特殊進化元として指定された場のモンスターの上に重ねて出す。特殊進化にはマナを使わない。</li>
+                        <li>EXモンスター：EXデッキに収録し、特殊な条件を満たすと場に出せる。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>進化の注意</h2>
+                    <ul>
+                        <li>進化元と記載されたモンスターを墓地へ送り、進化モンスターを場に出す。</li>
+                        <li>特殊進化は手札の特殊進化モンスターを場のモンスターに重ねて出す。効果や魔法でデッキから進化する場合も特殊進化に含まれる。</li>
+                        <li>特殊進化元のモンスターの残り攻撃回数が0の場合、そのターンは攻撃できない。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>マナ</h2>
+                    <ul>
+                        <li>最大10まで存在する。</li>
+                        <li>進化、魔法、モンスターのスキルの使用に必要になる。</li>
+                        <li>自分のドローフェイズに全回復する。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>魔法</h2>
+                    <ul>
+                        <li>手札からマナを支払って使用する。</li>
+                        <li>使用後は墓地へ送られる。</li>
+                        <li>同名カードは1ターンに1度だけ使用できる。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>スキルの種類</h2>
+                    <ul>
+                        <li>アタックスキル（Aスキル）：モンスターが持つ効果。必要ならマナを支払い、1ターンに1回だけ使用できる。使用すると通常攻撃は行えない。</li>
+                        <li>パッシブスキル（Pスキル）：場にいるモンスターが条件を満たせば発動できる。基本的には自分メインフェイズに選択できる。同名カードの同じ効果は1ターンに1度まで。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>攻撃とダメージ</h2>
+                    <ul>
+                        <li>通常攻撃は相手のモンスターにダメージを与える。</li>
+                        <li>相手の場にモンスターがいない場合、直接攻撃が可能になる。</li>
+                        <li>直接攻撃は相手のシールドを1減少させる。シールドが0なら相手のHPに1ダメージを与える。</li>
+                        <li>光と闇の属性は互いに有利関係がある（光闇）。火水地風は循環関係で有利属性には20ダメージのボーナスが入る。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>HP と シールド</h2>
+                    <ul>
+                        <li>プレイヤーのHPは5。0以下で敗北。</li>
+                        <li>シールドは3。モンスターが破壊されると基本的に1減少する。</li>
+                        <li>シールドが1減少するたびにカードを1枚ドローする。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>敗北条件</h2>
+                    <ul>
+                        <li>プレイヤーのHPが0以下になると敗北。</li>
+                        <li>山札のカードが0枚でドローしようとしたとき、ライブラリアウト（LO）で敗北する。</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>その他のルール</h2>
+                    <ul>
+                        <li>「発動する」と書かれている効果は強制発動で、選択できない。</li>
+                        <li>「発動できる」や特に書かれていないものは、プレイヤーが選択して発動できる。</li>
+                        <li>特殊進化で上に重ねた場合、下のカードは場のモンスターとしてカウントしない。</li>
+                        <li>攻撃とは通常攻撃とアタックスキルをまとめた意味で使う。</li>
+                        <li>ドローフェイズでマナが回復するので、カウンター魔法のコスト分は残しておくと良い。</li>
+                    </ul>
+                </section>
+                <a class="back-link" href="index.html"> トップに戻る</a>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

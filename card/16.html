@@ -1,384 +1,513 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>画像グリッド合成ツール</title>
+    <title>カード所持管理 / 欠損カードグリッド</title>
+    <link rel="stylesheet" href="../css/default.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(to bottom right, #f0f9ff, #e0e7ff);
+            margin: 0;
             min-height: 100vh;
-            padding: 2rem;
         }
-
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
+            display: flex;
+            max-width: 1200px;
+            margin: 2em auto 10em auto;
+            gap: 2em;
+            padding: 0 2em;
         }
-
-        h1 {
-            font-size: 2.25rem;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
+        .sidebar {
+            width: 72px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 0.5rem;
         }
-
-        .subtitle {
-            color: #4b5563;
-            margin-bottom: 0.5rem;
+        .main-content {
+            flex: 1;
+            min-width: 0;
         }
-
-        .specs {
-            color: #6b7280;
-            font-size: 0.875rem;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        .page-card {
+            background: var(--callout-bg);
+            border: 1px solid var(--callout-border);
+            border-radius: 18px;
             padding: 2rem;
         }
-
-        .controls {
+        .page-header {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
             flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
         }
-
-        .btn {
+        .page-header h1 {
+            margin: 0;
+            font-size: clamp(2rem, 2.5vw, 2.4rem);
+        }
+        .summary-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .summary-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 1rem;
+            padding: 1rem;
+            min-height: 84px;
+        }
+        .summary-card strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        .deck-actions {
             display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+        .card-panel {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-panel h2 {
+            margin-top: 0;
+            color: var(--text-color);
+        }
+        .card-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .card-table th,
+        .card-table td {
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 0.75rem;
+            text-align: left;
+            color: var(--text-color);
+        }
+        .card-table th {
+            background: rgba(255,255,255,0.08);
+        }
+        .count-control {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
-            font-weight: 600;
-            border: none;
+            gap: 0.35rem;
+        }
+        .count-control button {
+            width: 30px;
+            height: 30px;
             border-radius: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.08);
+            color: var(--text-color);
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1rem;
-            flex: 1;
-            min-width: 150px;
         }
-
-        .btn-primary {
-            background: #4f46e5;
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: #4338ca;
-        }
-
-        .btn-success {
-            background: #16a34a;
-            color: white;
-        }
-
-        .btn-success:hover:not(:disabled) {
-            background: #15803d;
-        }
-
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            background: #b91c1c;
-        }
-
-        .btn:disabled {
-            background: #d1d5db;
+        .count-control button:disabled {
+            opacity: 0.4;
             cursor: not-allowed;
         }
-
-        #fileInput {
-            display: none;
-        }
-
-        .grid-container {
+        .grid-preview {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 0.75rem;
-            margin-bottom: 2rem;
+            margin-top: 1rem;
         }
-
-        .grid-item {
-            position: relative;
-            background: #e5e7eb;
-            border: 2px dashed #d1d5db;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            aspect-ratio: 723 / 1023;
+        .preview-card {
+            min-height: 110px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 0.9rem;
+            padding: 0.85rem;
+            background: rgba(255,255,255,0.04);
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-        }
-
-        .grid-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .grid-item-number {
-            color: #9ca3af;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-
-        .grid-item .remove-btn {
-            position: absolute;
-            top: 0.25rem;
-            right: 0.25rem;
-            background: #dc2626;
-            color: white;
-            border: none;
-            border-radius: 9999px;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            display: none;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .grid-item:hover .remove-btn {
-            display: flex;
             align-items: center;
-            justify-content: center;
-            opacity: 1;
+            text-align: center;
+            color: var(--text-color);
         }
-
-        .grid-item .remove-btn:hover {
-            background: #b91c1c;
-        }
-
-        .spec-box {
-            background: #f3f4f6;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            color: #4b5563;
-        }
-
-        .success-box {
-            margin-top: 2rem;
-            background: #dcfce7;
-            border-left: 4px solid #16a34a;
-            padding: 1rem;
-            border-radius: 0.25rem;
-            color: #166534;
-            font-weight: 600;
-            display: none;
-        }
-
-        .success-box.show {
+        .preview-card span {
             display: block;
+            color: var(--text-muted);
+            margin-top: 0.35rem;
+            font-size: 0.9rem;
+        }
+        .preview-empty {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .control-hint {
+            margin-top: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .canvas-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .canvas-actions button {
+            min-width: 160px;
+            padding: 0.85rem 1rem;
+            border: none;
+            border-radius: 999px;
+            background: var(--accent-color);
+            color: #111827;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s ease;
+        }
+        .canvas-actions button:hover:not(:disabled) {
+            background: var(--accent-green);
+        }
+        .canvas-actions button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn {
+            border: none;
+            border-radius: 999px;
+            padding: 0.85rem 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s ease, opacity 0.2s ease;
+            color: #111827;
+            background: rgba(255,255,255,0.14);
+        }
+        .btn:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+        .btn-primary {
+            background: var(--accent-color);
+            color: #111827;
+        }
+        .btn-success {
+            background: #22c55e;
+            color: #111827;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .sidebar-item {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            color: var(--text-color);
+            background: rgba(255,255,255,0.05);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .sidebar-item:hover {
+            border-color: var(--accent-color);
+            background: rgba(139, 158, 125, 0.18);
+        }
+        .sidebar-item.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-green);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>画像グリッド合成ツール</h1>
-        <p class="subtitle">16枚の画像を4×4のグリッドに組み合わせます</p>
-        <p class="specs">各画像: 723×1023px → 出力: 2892×4092px</p>
+        <aside class="sidebar">
+            <a href="cardview.html" class="sidebar-item" title="カード一覧">🎴</a>
+            <a href="deckSelect.html" class="sidebar-item" title="対戦">⚔️</a>
+            <a href="rules.html" class="sidebar-item" title="ルール">📖</a>
+            <a href="16.html" class="sidebar-item active" title="印刷">🖨️</a>
+            <a href="../index.html" class="sidebar-item" title="Wikiトップ">🏠</a>
+        </aside>
+        <main class="main-content">
+            <section class="page-card">
+                <div class="page-header">
+                    <div>
+                        <h1>カード所持管理 / 欠損カードグリッド</h1>
+                        <p class="control-hint">エクスポートしたデッキJSONを読み込み、所持数を入力すると欠損カードを44グリッド表示できます。</p>
+                    </div>
+                    <div class="deck-actions">
+                        <button class="btn btn-primary" id="importDeckBtn"> デッキJSONを読み込む</button>
+                        <button class="btn btn-primary" id="resetOwnershipBtn" disabled> 所持数をリセット</button>
+                        <input type="file" id="deckFileInput" accept=".json" style="display:none">
+                    </div>
+                </div>
 
-        <div class="card">
-            <div class="controls">
-                <button class="btn btn-primary" id="uploadBtn">
-                    📁 画像を選択 (<span id="imageCount">0</span>/16)
-                </button>
-                <button class="btn btn-success" id="downloadBtn" disabled>
-                    💾 ダウンロード
-                </button>
-                <button class="btn btn-danger" id="clearBtn" disabled>
-                    🗑 クリア
-                </button>
-                <input type="file" id="fileInput" multiple accept="image/*">
-            </div>
+                <div class="summary-box">
+                    <div class="summary-card">
+                        <strong>デッキカード数</strong>
+                        <span id="deckCardCount">0</span>
+                    </div>
+                    <div class="summary-card">
+                        <strong>欠損カード数</strong>
+                        <span id="missingCardCount">0</span>
+                    </div>
+                    <div class="summary-card">
+                        <strong>グリッド枚数</strong>
+                        <span id="gridCardCount">0 / 16</span>
+                    </div>
+                </div>
 
-            <div class="grid-container" id="gridContainer">
-                <!-- グリッドアイテムが動的に生成されます -->
-            </div>
+                <div class="card-panel">
+                    <h2>カード一覧</h2>
+                    <div class="control-hint">所持数を変更すると欠損数が自動再計算されます。</div>
+                    <table class="card-table" id="cardTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>カード名</th>
+                                <th>枚数</th>
+                                <th>所持</th>
+                                <th>欠損</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="5" class="preview-empty">まずはデッキJSONを読み込んでください。</td></tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="spec-box">
-                <strong>出力サイズ:</strong> 2892×4092px
-            </div>
-        </div>
-
-        <div class="success-box" id="successBox">
-            ✓ 16枚すべて揃いました。ダウンロードボタンをクリックして合成画像を保存できます。
-        </div>
+                <div class="card-panel">
+                    <h2>欠損カードグリッド</h2>
+                    <div class="control-hint">欠損カードの上位16枚を44で表示します。</div>
+                    <div class="grid-preview" id="gridPreview">
+                        <div class="preview-card preview-empty">欠損カードがありません</div>
+                    </div>
+                    <div class="canvas-actions">
+                        <button class="btn btn-primary" id="generateGridBtn" disabled> グリッドを生成</button>
+                        <button class="btn btn-success" id="downloadGridBtn" disabled> グリッドをPNGで保存</button>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
+    <canvas id="gridCanvas" width="1200" height="1200" style="display:none"></canvas>
+
     <script>
-        const IMAGE_WIDTH = 723;
-        const IMAGE_HEIGHT = 1023;
-        const TOTAL_IMAGES = 16;
-        const GRID_COLS = 4;
-        const GRID_ROWS = 4;
+        const deckFileInput = document.getElementById('deckFileInput');
+        const importDeckBtn = document.getElementById('importDeckBtn');
+        const resetOwnershipBtn = document.getElementById('resetOwnershipBtn');
+        const deckCardCount = document.getElementById('deckCardCount');
+        const missingCardCount = document.getElementById('missingCardCount');
+        const gridCardCount = document.getElementById('gridCardCount');
+        const cardTableBody = document.querySelector('#cardTable tbody');
+        const gridPreview = document.getElementById('gridPreview');
+        const generateGridBtn = document.getElementById('generateGridBtn');
+        const downloadGridBtn = document.getElementById('downloadGridBtn');
+        const gridCanvas = document.getElementById('gridCanvas');
 
-        let images = [];
+        let cardStates = [];
 
-        const uploadBtn = document.getElementById('uploadBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const fileInput = document.getElementById('fileInput');
-        const gridContainer = document.getElementById('gridContainer');
-        const imageCount = document.getElementById('imageCount');
-        const successBox = document.getElementById('successBox');
+        importDeckBtn.addEventListener('click', () => deckFileInput.click());
+        resetOwnershipBtn.addEventListener('click', resetOwnership);
+        deckFileInput.addEventListener('change', loadDeckFile);
+        generateGridBtn.addEventListener('click', updateGridPreview);
+        downloadGridBtn.addEventListener('click', downloadGridImage);
 
-        // 初期グリッド表示
-        initializeGrid();
+        function loadDeckFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data || (!Array.isArray(data.main) && !Array.isArray(data.ex))) {
+                        throw new Error('無効なデッキJSON形式です');
+                    }
+                    const deckCards = buildDeckCards(data);
+                    cardStates = deckCards.map(card => ({ ...card, owned: 0 }));
+                    renderCardTable();
+                    updateSummary();
+                    resetOwnershipBtn.disabled = false;
+                    generateGridBtn.disabled = false;
+                    downloadGridBtn.disabled = true;
+                } catch (error) {
+                    alert('読み込みエラー: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
 
-        uploadBtn.addEventListener('click', () => fileInput.click());
-        downloadBtn.addEventListener('click', combineImages);
-        clearBtn.addEventListener('click', clearAll);
-        fileInput.addEventListener('change', handleFileUpload);
+        function buildDeckCards(data) {
+            const merged = [];
+            const addCards = (list) => {
+                if (!Array.isArray(list)) return;
+                list.forEach(item => {
+                    if (!item.cardName || !item.count) return;
+                    const existing = merged.find(c => c.cardName === item.cardName);
+                    if (existing) {
+                        existing.count += Number(item.count);
+                    } else {
+                        merged.push({ cardName: item.cardName, count: Number(item.count) });
+                    }
+                });
+            };
+            addCards(data.main);
+            addCards(data.ex);
+            return merged.sort((a, b) => b.count - a.count || a.cardName.localeCompare(b.cardName));
+        }
 
-        function initializeGrid() {
-            gridContainer.innerHTML = '';
-            for (let i = 0; i < TOTAL_IMAGES; i++) {
-                const item = document.createElement('div');
-                item.className = 'grid-item';
-                item.id = `grid-${i}`;
-                item.innerHTML = `
-                    <span class="grid-item-number">${i + 1}</span>
-                    <button class="remove-btn" data-index="${i}">×</button>
+        function renderCardTable() {
+            if (cardStates.length === 0) {
+                cardTableBody.innerHTML = '<tr><td colspan="5" class="preview-empty">まずはデッキJSONを読み込んでください。</td></tr>';
+                return;
+            }
+            cardTableBody.innerHTML = cardStates.map((card, index) => {
+                const missing = Math.max(card.count - card.owned, 0);
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${card.cardName}</td>
+                        <td>${card.count}</td>
+                        <td>
+                            <div class="count-control">
+                                <button ${card.owned <= 0 ? 'disabled' : ''} data-action="decrease" data-index="${index}"></button>
+                                <span>${card.owned}</span>
+                                <button ${card.owned >= card.count ? 'disabled' : ''} data-action="increase" data-index="${index}">＋</button>
+                            </div>
+                        </td>
+                        <td>${missing}</td>
+                    </tr>
                 `;
-                gridContainer.appendChild(item);
-            }
-        }
-
-        function handleFileUpload(e) {
-            const files = Array.from(e.target.files);
-            let loadedCount = 0;
-
-            files.forEach(file => {
-                if (images.length >= TOTAL_IMAGES) return;
-
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        images.push({ src: event.target.result, name: file.name });
-                        updateGrid();
-                        loadedCount++;
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
+            }).join('');
+            cardTableBody.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', handleCountButton);
             });
-
-            fileInput.value = '';
         }
 
-        function updateGrid() {
-            imageCount.textContent = images.length;
-            downloadBtn.disabled = images.length !== TOTAL_IMAGES;
-            clearBtn.disabled = images.length === 0;
-            successBox.classList.toggle('show', images.length === TOTAL_IMAGES);
-
-            for (let i = 0; i < TOTAL_IMAGES; i++) {
-                const item = document.getElementById(`grid-${i}`);
-                item.innerHTML = '';
-
-                if (images[i]) {
-                    const img = document.createElement('img');
-                    img.src = images[i].src;
-                    item.appendChild(img);
-                }
-
-                const btn = document.createElement('button');
-                btn.className = 'remove-btn';
-                btn.textContent = '×';
-                btn.dataset.index = i;
-                btn.addEventListener('click', () => removeImage(i));
-                item.appendChild(btn);
-
-                if (!images[i]) {
-                    const num = document.createElement('span');
-                    num.className = 'grid-item-number';
-                    num.textContent = i + 1;
-                    item.appendChild(num);
-                }
+        function handleCountButton(event) {
+            const action = event.target.dataset.action;
+            const index = Number(event.target.dataset.index);
+            if (!cardStates[index]) return;
+            if (action === 'increase' && cardStates[index].owned < cardStates[index].count) {
+                cardStates[index].owned++;
             }
+            if (action === 'decrease' && cardStates[index].owned > 0) {
+                cardStates[index].owned--;
+            }
+            renderCardTable();
+            updateSummary();
+            downloadGridBtn.disabled = true;
         }
 
-        function removeImage(index) {
-            images.splice(index, 1);
-            updateGrid();
+        function updateSummary() {
+            const deckTotal = cardStates.reduce((sum, card) => sum + card.count, 0);
+            const missingTotal = cardStates.reduce((sum, card) => sum + Math.max(card.count - card.owned, 0), 0);
+            const gridTotal = Math.min(16, missingTotal);
+            deckCardCount.textContent = deckTotal;
+            missingCardCount.textContent = missingTotal;
+            gridCardCount.textContent = `${gridTotal} / 16`;
         }
 
-        function clearAll() {
-            images = [];
-            updateGrid();
-        }
+        function updateGridPreview() {
+            const missingCards = cardStates
+                .filter(card => card.count - card.owned > 0)
+                .flatMap(card => Array(card.count - card.owned).fill(card.cardName));
 
-        async function combineImages() {
-            if (images.length !== TOTAL_IMAGES) {
-                alert('16枚の画像を選択してください');
+            const gridItems = missingCards.slice(0, 16);
+            gridPreview.innerHTML = '';
+            if (gridItems.length === 0) {
+                gridPreview.innerHTML = '<div class="preview-card preview-empty">欠損カードがありません</div>';
+                downloadGridBtn.disabled = true;
                 return;
             }
 
-            downloadBtn.disabled = true;
-            downloadBtn.textContent = '⏳ 処理中...';
+            gridItems.forEach((name, index) => {
+                const item = document.createElement('div');
+                item.className = 'preview-card';
+                item.innerHTML = `<strong>${index + 1}</strong><span>${name}</span>`;
+                gridPreview.appendChild(item);
+            });
 
-            const canvas = document.createElement('canvas');
-            canvas.width = IMAGE_WIDTH * GRID_COLS;
-            canvas.height = IMAGE_HEIGHT * GRID_ROWS;
-            const ctx = canvas.getContext('2d');
-
-            try {
-                for (let i = 0; i < TOTAL_IMAGES; i++) {
-                    const row = Math.floor(i / GRID_COLS);
-                    const col = i % GRID_COLS;
-                    const x = col * IMAGE_WIDTH;
-                    const y = row * IMAGE_HEIGHT;
-
-                    const img = new Image();
-                    img.crossOrigin = 'anonymous';
-
-                    await new Promise((resolve, reject) => {
-                        img.onload = () => {
-                            ctx.drawImage(img, x, y, IMAGE_WIDTH, IMAGE_HEIGHT);
-                            resolve();
-                        };
-                        img.onerror = reject;
-                        img.src = images[i].src;
-                    });
-                }
-
-                canvas.toBlob(blob => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'grid_image_4x4.png';
-                    a.click();
-                    URL.revokeObjectURL(url);
-
-                    downloadBtn.disabled = false;
-                    downloadBtn.textContent = '💾 ダウンロード';
-                });
-            } catch (error) {
-                console.error('合成エラー:', error);
-                alert('画像の合成に失敗しました');
-                downloadBtn.disabled = false;
-                downloadBtn.textContent = '💾 ダウンロード';
+            for (let i = gridItems.length; i < 16; i++) {
+                const item = document.createElement('div');
+                item.className = 'preview-card preview-empty';
+                item.textContent = '空き枠';
+                gridPreview.appendChild(item);
             }
+
+            downloadGridBtn.disabled = false;
+            renderCanvas(gridItems);
+        }
+
+        function renderCanvas(gridItems) {
+            const ctx = gridCanvas.getContext('2d');
+            const size = 300;
+            gridCanvas.width = size * 4;
+            gridCanvas.height = size * 4;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, gridCanvas.width, gridCanvas.height);
+            ctx.strokeStyle = '#d1d5db';
+            ctx.lineWidth = 4;
+            ctx.font = 'bold 24px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#111827';
+
+            gridItems.forEach((name, index) => {
+                const row = Math.floor(index / 4);
+                const col = index % 4;
+                const x = col * size;
+                const y = row * size;
+                ctx.strokeRect(x + 10, y + 10, size - 20, size - 20);
+                wrapText(ctx, name, x + size / 2, y + size / 2, size - 24, 30);
+            });
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            const lines = [];
+            words.forEach(word => {
+                const testLine = line ? `${line} ${word}` : word;
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && line) {
+                    lines.push(line);
+                    line = word;
+                } else {
+                    line = testLine;
+                }
+            });
+            if (line) lines.push(line);
+            const offsetY = y - ((lines.length - 1) * lineHeight) / 2;
+            lines.forEach((lineText, index) => {
+                ctx.fillText(lineText, x, offsetY + index * lineHeight);
+            });
+        }
+
+        function downloadGridImage() {
+            if (gridCanvas.width === 0) return;
+            gridCanvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'missing_cards_grid.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        function resetOwnership() {
+            cardStates = cardStates.map(card => ({ ...card, owned: 0 }));
+            renderCardTable();
+            updateSummary();
+            downloadGridBtn.disabled = true;
         }
     </script>
 </body>

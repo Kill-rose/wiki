@@ -307,6 +307,16 @@
                     </div>
                 </div>
 
+                <div class="section">
+                    <div class="button-group">
+                        <button class="btn btn-success" onclick="exportDeck()">🧩 デッキJSON出力</button>
+                        <label class="btn btn-secondary" style="text-align: center; margin: 0;">
+                            📂 デッキJSON読み込み
+                            <input type="file" id="deckJsonInput" accept=".json" style="display: none;">
+                        </label>
+                    </div>
+                </div>
+
                 <div class="stats-display">
                     <h3>統計情報</h3>
                     <p>モンスター: <span id="statMonster">0</span>枚</p>
@@ -367,6 +377,11 @@
                         <div class="form-group full-width">
                             <label>カード名ルビ</label>
                             <input type="text" id="cardRuby" placeholder="ルビを入力（カタカナ推奨）">
+                        </div>
+
+                        <div class="form-group">
+                            <label>デッキ枚数</label>
+                            <input type="number" id="deckCount" min="0" value="0">
                         </div>
 
                         <!-- モンスター用フィールド -->
@@ -438,6 +453,7 @@
 
     <script>
         let cards = [];
+        let deckData = null;
         let currentCardIndex = -1;
 
         const defaultCard = {
@@ -455,7 +471,8 @@
             supplementText: '',
             skills: [],
             contentText: '',
-            flavorText: ''
+            flavorText: '',
+            deckCount: 0
         };
 
         // トグルボタンのイベント設定
@@ -479,7 +496,7 @@
 
         // 入力フィールドのイベント設定
         ['cardName', 'cardRuby', 'tribe', 'monsterTypeText', 'evolutionSource', 
-         'magicCost', 'attack', 'hp', 'supplementText', 'contentText'].forEach(id => {
+         'magicCost', 'attack', 'hp', 'supplementText', 'contentText', 'deckCount'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
                 el.addEventListener('input', () => {
@@ -538,6 +555,7 @@
                         <div class="card-item-name">${card.cardName || '名前なし'}</div>
                         <div class="card-item-type">${card.cardBase} / ${card.attribute || '-'}</div>
                     </div>
+                    <div class="card-item-type">デッキ枚数: ${card.deckCount || 0}</div>
                 `;
                 list.appendChild(item);
             });
@@ -578,6 +596,7 @@
             document.getElementById('magicCost').value = card.magicCost || 1;
             document.getElementById('attack').value = card.attack || 100;
             document.getElementById('hp').value = card.hp || 100;
+            document.getElementById('deckCount').value = card.deckCount || 0;
             document.getElementById('supplementText').value = card.supplementText || '';
             document.getElementById('contentText').value = card.contentText || '';
             
@@ -674,6 +693,40 @@
             URL.revokeObjectURL(url);
         }
 
+        function exportDeck() {
+            const main = [];
+            const ex = [];
+
+            cards.forEach(card => {
+                const count = Number(card.deckCount || 0);
+                if (count <= 0) return;
+                const item = { cardName: card.cardName || '名前なし', count };
+                if (card.cardBase === 'ex') {
+                    ex.push(item);
+                } else {
+                    main.push(item);
+                }
+            });
+
+            if (main.length === 0 && ex.length === 0) {
+                alert('デッキに追加されたカードがありません');
+                return;
+            }
+
+            const deck = {
+                deckName: '自作デッキ',
+                main,
+                ex
+            };
+            const blob = new Blob([JSON.stringify(deck, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sample_deck-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
         document.getElementById('jsonInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -695,6 +748,49 @@
                     }
                 } catch (error) {
                     alert('JSON読み込みエラー: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        document.getElementById('deckJsonInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (data && (Array.isArray(data.main) || Array.isArray(data.ex))) {
+                        cards.forEach(card => card.deckCount = 0);
+                        let warnings = [];
+
+                        const fillDeck = (items, label) => {
+                            if (!Array.isArray(items)) return;
+                            items.forEach(item => {
+                                if (!item.cardName) return;
+                                const card = cards.find(c => c.cardName === item.cardName);
+                                if (card) {
+                                    card.deckCount = Number(item.count || 0);
+                                } else {
+                                    warnings.push(`${label}でカードが見つかりません: ${item.cardName}`);
+                                }
+                            });
+                        };
+
+                        fillDeck(data.main, 'main');
+                        fillDeck(data.ex, 'ex');
+                        updateCardList();
+                        if (currentCardIndex >= 0) {
+                            loadCard(currentCardIndex);
+                        }
+                        alert(`デッキを読み込みました。${warnings.length ? '\n' + warnings.join('\n') : ''}`);
+                    } else {
+                        alert('sample形式のデッキJSONファイルを選択してください');
+                    }
+                } catch (error) {
+                    alert('デッキJSON読み込みエラー: ' + error.message);
                 }
             };
             reader.readAsText(file);
