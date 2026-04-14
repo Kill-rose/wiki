@@ -89,6 +89,7 @@ const networkState = {
     socket: null,
     roomId: null,
     playerId: null,
+    playerNumber: null,
 };
 
 const handledActionIds = new Set();
@@ -97,11 +98,38 @@ function generateActionId() {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+function parsePlayerNumber(value) {
+    if (!value) return null;
+    const normalized = String(value).trim().toUpperCase();
+    const match = normalized.match(/[12]/);
+    if (!match) return null;
+    return parseInt(match[0], 10);
+}
+
+function normalizePlayerId(value) {
+    const num = parsePlayerNumber(value);
+    return num ? `${num}P` : null;
+}
+
 function updateOnlineStatus(text) {
     const status = document.getElementById('onlineStatus');
     if (status) {
         status.textContent = text;
     }
+}
+
+function updateOnlinePlayers(players) {
+    const list = document.getElementById('onlinePlayers');
+    if (list) {
+        list.textContent = players && players.length ? `プレイヤー: ${players.join(' / ')}` : 'プレイヤー: -';
+    }
+}
+
+function isMyTurn() {
+    if (networkState.connected && networkState.playerNumber) {
+        return gameState.currentPlayer === networkState.playerNumber;
+    }
+    return gameState.currentPlayer === 1;
 }
 
 function sendOnlineMessage(payload) {
@@ -119,7 +147,8 @@ function connectOnline(roomId, playerId) {
     const url = `${protocol}://${host}/ws`;
 
     networkState.roomId = roomId;
-    networkState.playerId = playerId;
+    networkState.playerId = normalizePlayerId(playerId);
+    networkState.playerNumber = parsePlayerNumber(playerId);
     networkState.connected = false;
 
     updateOnlineStatus('接続中...');
@@ -154,9 +183,12 @@ function receiveOnlineMessage(event) {
         if (payload.type === 'JOINED') {
             updateOnlineStatus(`接続済み (${payload.playerId})`);
             networkState.playerId = payload.playerId;
+            if (payload.playerNumber) {
+                networkState.playerNumber = payload.playerNumber;
+            }
         }
         if (payload.type === 'PLAYER_LIST') {
-            console.log('オンラインプレイヤー一覧:', payload.players);
+            updateOnlinePlayers(payload.players);
         }
         if (payload.type === 'PLAYER_ACTION' && payload.action) {
             const action = payload.action;
@@ -435,7 +467,7 @@ function displayCardDetail(card, source) {
 
 // UIを更新
 function renderUI() {
-    const isMyTurn = gameState.currentPlayer === 1;
+    const isMyTurn = isMyTurn();
     
     const statusValues = document.querySelectorAll('.status-value');
     statusValues[0].textContent = gameState.players[0].hp;
@@ -981,7 +1013,7 @@ document.getElementById('loadDeckBtn').addEventListener('click', () => {
 // フィールドセル選択(場)
 document.querySelectorAll('.field-area:not(.opponent) .field-cell').forEach(cell => {
     cell.addEventListener('click', () => {
-        const isMyTurn = gameState.currentPlayer === 1;
+        const isMyTurn = isMyTurn();
         const zone = cell.dataset.zone;
 
         if (['graveyard', 'deck', 'ex', 'counter'].includes(zone)) {
@@ -1227,7 +1259,7 @@ function executeAction(action) {
         sendGameState();
     }
 
-    const isMyTurn = gameState.currentPlayer === 1;
+    const isMyTurn = isMyTurn();
     
     switch(action.type) {
         case 'COIN_TOSS':
@@ -1826,7 +1858,7 @@ function updateActionPanel(source) {
     const actionPanel = document.getElementById('actionPanel');
     actionPanel.innerHTML = '';
     
-    const isMyTurn = gameState.currentPlayer === 1;
+    const isMyTurn = isMyTurn();
     const isCardSelectionContext = gameState.selectedCard && gameState.selectedCardSource === source;
 
     // 操作後にパネルをクリアする関数
@@ -2605,9 +2637,10 @@ initializeCardDatabase().then(() => {
     const connectBtn = document.getElementById('onlineConnectBtn');
     if (connectBtn) {
         connectBtn.addEventListener('click', () => {
-            const params = new URLSearchParams(window.location.search);
-            const roomId = params.get('room') || 'default';
-            const playerId = params.get('player') || '1P';
+            const roomInput = document.getElementById('onlineRoomInput');
+            const playerInput = document.getElementById('onlinePlayerInput');
+            const roomId = roomInput?.value.trim() || 'default';
+            const playerId = playerInput?.value.trim() || '1P';
             connectOnline(roomId, playerId);
         });
     }
